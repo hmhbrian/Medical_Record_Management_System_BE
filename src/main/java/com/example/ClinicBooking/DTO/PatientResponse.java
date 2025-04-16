@@ -5,14 +5,8 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class PatientResponse {
+public class PatientResponse extends BaseUserResponse {
     public String patientcode;
-    public String fullname;
-    public String email;
-    public String phoneNumber;
-    public LocalDate dateOfBirth;
-    public int gender;
-    public String address;
     public String medicalHistory;
     public String insuranceNumber;
 }

@@ -5,15 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class DoctorRequest {
-    // user
-    public String fullname;
-    public String email;
-    public String phoneNumber;
-    public LocalDate dateOfBirth;
-    public int gender;
-    public String address;
-    public String password;
+public class DoctorRequest extends BaseUserRequest {
     // Staff
     public int departmentId;
     public int positionId;

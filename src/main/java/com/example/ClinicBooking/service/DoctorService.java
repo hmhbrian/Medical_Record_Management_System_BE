@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DoctorService {
+public class DoctorService implements IUserService<DoctorResponse, DoctorRequest> {
     private final UserRepository userRepo;
     private final StaffRepository staffRepo;
     private final DoctorRepository doctorRepo;
@@ -40,8 +40,9 @@ public class DoctorService {
         this.staffPositionRepo = staffPositionRepo;
     }
 
+    @Override
     @Transactional
-    public Doctor createDoctor(DoctorRequest request){
+    public DoctorResponse create(DoctorRequest request){
         if(userRepo.findByEmail(request.getEmail()).isPresent()){
             throw new RuntimeException("Email đã tồn tại");
         }
@@ -74,28 +75,32 @@ public class DoctorService {
         doctor.setIssuedBy(request.issuedBy);
         doctor.setIssueDate(request.issueDate);
 
-        return doctorRepo.save(doctor);
+        doctorRepo.save(doctor);
+        return covertToResponse(doctor);
     }
 
+    @Override
     public List<DoctorResponse> getAll() {
-        List<Doctor> doctors = doctorRepo.findAll();
+        return doctorRepo.findAll().stream()
+                .map(this::covertToResponse)
+                .collect(Collectors.toList());
+    }
 
-        return doctors.stream().map(doctor -> {
-            DoctorResponse dto = new DoctorResponse();
-            dto.setDoctorcode(doctor.getDoctorcode());
-            dto.setFullname(doctor.getStaff().getUser().getFullname());
-            dto.setEmail(doctor.getStaff().getUser().getEmail());
-            dto.setAddress(doctor.getStaff().getUser().getAddress());
-            dto.setPhoneNumber(doctor.getStaff().getUser().getPhoneNumber());
-            dto.setDateOfBirth(doctor.getStaff().getUser().getDateOfBirth());
-            dto.setGender(doctor.getStaff().getUser().getGender());
-            dto.setDepartment(doctor.getStaff().getDepartment().getName());
-            dto.setSpecialty(doctor.getSpecialty().getName());
-            dto.setExperienceYears(doctor.getExperienceYears());
-            dto.setCertificationName(doctor.getCertificationName());
-            dto.setIssuedBy(doctor.getIssuedBy());
-            dto.setIssueDate(doctor.getIssueDate());
-            return dto;
-        }).collect(Collectors.toList());
+    private DoctorResponse covertToResponse(Doctor doctor) {
+        DoctorResponse dto = new DoctorResponse();
+        dto.setDoctorcode(doctor.getDoctorcode());
+        dto.setFullname(doctor.getStaff().getUser().getFullname());
+        dto.setEmail(doctor.getStaff().getUser().getEmail());
+        dto.setAddress(doctor.getStaff().getUser().getAddress());
+        dto.setPhoneNumber(doctor.getStaff().getUser().getPhoneNumber());
+        dto.setDateOfBirth(doctor.getStaff().getUser().getDateOfBirth());
+        dto.setGender(doctor.getStaff().getUser().getGender());
+        dto.setDepartment(doctor.getStaff().getDepartment().getName());
+        dto.setSpecialty(doctor.getSpecialty().getName());
+        dto.setExperienceYears(doctor.getExperienceYears());
+        dto.setCertificationName(doctor.getCertificationName());
+        dto.setIssuedBy(doctor.getIssuedBy());
+        dto.setIssueDate(doctor.getIssueDate());
+        return dto;
     }
 }

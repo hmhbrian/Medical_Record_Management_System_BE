@@ -2,8 +2,7 @@ package com.example.ClinicBooking.controller;
 
 import com.example.ClinicBooking.DTO.PatientRequest;
 import com.example.ClinicBooking.DTO.PatientResponse;
-import com.example.ClinicBooking.entity.Patient;
-import com.example.ClinicBooking.service.PatientService;
+import com.example.ClinicBooking.service.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,23 +11,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/patients")
 public class PatientController {
-    private final PatientService patientService;
+    private final IUserService<PatientResponse,PatientRequest> patientService;
 
-    public PatientController(PatientService patientService) {
+    public PatientController(IUserService<PatientResponse,PatientRequest> patientService) {
         this.patientService = patientService;
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody PatientRequest request) {
-        try{
-            return ResponseEntity.ok(patientService.createPatient(request));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<PatientResponse> create(@RequestBody PatientRequest request) {
+        return ResponseEntity.ok(patientService.create(request));
     }
 
     @GetMapping
-    public List<PatientResponse> getAll() {
-        return patientService.getAll();
+    public ResponseEntity<List<PatientResponse>> getAll() {
+
+        return ResponseEntity.ok(patientService.getAll());
     }
 }

@@ -2,10 +2,7 @@ package com.example.ClinicBooking.controller;
 
 import com.example.ClinicBooking.DTO.DoctorRequest;
 import com.example.ClinicBooking.DTO.DoctorResponse;
-import com.example.ClinicBooking.DTO.PatientRequest;
-import com.example.ClinicBooking.entity.Doctor;
-import com.example.ClinicBooking.entity.Patient;
-import com.example.ClinicBooking.service.DoctorService;
+import com.example.ClinicBooking.service.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,23 +11,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/doctors")
 public class DoctorController {
-    private final DoctorService doctorService;
+    private final IUserService<DoctorResponse, DoctorRequest> doctorService;
 
-    public DoctorController(DoctorService doctorService) {
+    public DoctorController(IUserService<DoctorResponse, DoctorRequest> doctorService) {
         this.doctorService = doctorService;
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody DoctorRequest request) {
-        try{
-            return ResponseEntity.ok(doctorService.createDoctor(request));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<DoctorResponse> create(@RequestBody DoctorRequest request) {
+        return ResponseEntity.ok(doctorService.create(request));
     }
 
     @GetMapping
-    public List<DoctorResponse> getAll() {
-        return doctorService.getAll();
+    public ResponseEntity<List<DoctorResponse>> getAll() {
+        return ResponseEntity.ok(doctorService.getAll());
     }
 }

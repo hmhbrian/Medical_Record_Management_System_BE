@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class PatientService {
+public class PatientService implements IUserService<PatientResponse,PatientRequest> {
     private final UserRepository userRepo;
     private final PatientRepository patientRepo;
     private final PasswordEncoder passwordEncoder;
@@ -27,8 +27,9 @@ public class PatientService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     @Transactional
-    public Patient createPatient(PatientRequest request) {
+    public PatientResponse create(PatientRequest request) {
         if(userRepo.findByEmail(request.email).isPresent()) {
             throw new RuntimeException("Email đã được sử dụng");
         }
@@ -48,24 +49,29 @@ public class PatientService {
         patient.setUser(user);
         patient.setMedicalHistory(request.medicalHistory);
         patient.setInsuranceNumber(request.insuranceNumber);
-        return patientRepo.save(patient);
+
+        patientRepo.save(patient);
+        return covertToResponse(patient);
     }
 
+    @Override
     public List<PatientResponse> getAll() {
-        List<Patient> patients = patientRepo.findAll();
+        return patientRepo.findAll().stream()
+                .map(this::covertToResponse)
+                .collect(Collectors.toList());
+    }
 
-        return patients.stream().map(patient -> {
-            PatientResponse dto = new PatientResponse();
-            dto.setPatientcode(patient.getPatientcode());
-            dto.setFullname(patient.getUser().getFullname());
-            dto.setEmail(patient.getUser().getEmail());
-            dto.setAddress(patient.getUser().getAddress());
-            dto.setPhoneNumber(patient.getUser().getPhoneNumber());
-            dto.setDateOfBirth(patient.getUser().getDateOfBirth());
-            dto.setGender(patient.getUser().getGender());
-            dto.setMedicalHistory(patient.getMedicalHistory());
-            dto.setInsuranceNumber(patient.getInsuranceNumber());
-            return dto;
-        }).collect(Collectors.toList());
+    private PatientResponse covertToResponse(Patient patient) {
+        PatientResponse dto = new PatientResponse();
+        dto.setPatientcode(patient.getPatientcode());
+        dto.setFullname(patient.getUser().getFullname());
+        dto.setEmail(patient.getUser().getEmail());
+        dto.setAddress(patient.getUser().getAddress());
+        dto.setPhoneNumber(patient.getUser().getPhoneNumber());
+        dto.setDateOfBirth(patient.getUser().getDateOfBirth());
+        dto.setGender(patient.getUser().getGender());
+        dto.setMedicalHistory(patient.getMedicalHistory());
+        dto.setInsuranceNumber(patient.getInsuranceNumber());
+        return dto;
     }
 }
