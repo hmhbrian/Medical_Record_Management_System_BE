@@ -2,6 +2,7 @@ package com.example.ClinicBooking.service;
 
 import com.example.ClinicBooking.DTO.DoctorScheduleRequest;
 import com.example.ClinicBooking.DTO.DoctorScheduleResponse;
+import com.example.ClinicBooking.entity.Doctor;
 import com.example.ClinicBooking.entity.DoctorSchedules;
 import com.example.ClinicBooking.repository.DoctorRepository;
 import com.example.ClinicBooking.repository.DoctorSchedulesRepository;
@@ -60,20 +61,48 @@ public class DoctorScheduleService {
         return scheduleRepo.save(schedule);
     }
 
+    public List<DoctorScheduleResponse> getSchedulesBySpecialty(int specialtyId) {
+        LocalDate today = LocalDate.now();
+        List<Doctor> doctors = doctorRepo.findBySpecialtyId(specialtyId);
+        if (doctors.isEmpty()) {
+            throw new RuntimeException("No doctors found for this specialty");
+        }
+
+        // Lấy tất cả lịch làm việc của các bác sĩ trong chuyên khoa
+        return doctors.stream()
+                .flatMap(doctor -> scheduleRepo.findByDoctorIdAndDateAfterOrderByDateAsc(doctor.getId(),today).stream())
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
     public List<DoctorScheduleResponse> getScheduleByDoctorId(int doctorId) {
-        List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdOrderByDateAsc(doctorId);
-        return schedules.stream().map(schedule -> {
-            DoctorScheduleResponse dto = new DoctorScheduleResponse();
-            dto.setDate(schedule.getDate());
-            dto.setStatus(schedule.getStatus());
-            dto.setShiftName(schedule.getShiftType().getName_type());
-            dto.setRoomName(schedule.getRoom().getName());
-            dto.setMaxPatients(schedule.getMaxPatients());
-            dto.setBookedPatients(schedule.getBookedPatients());
-            dto.setStart_time(schedule.getShiftType().getStart_time());
-            dto.setEnd_time(schedule.getShiftType().getEnd_time());
-            return dto;
-        }).collect(Collectors.toList());
+        LocalDate today = LocalDate.now();
+        List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdAndDateAfterOrderByDateAsc(doctorId,today);
+        return schedules.stream().map(this::convertToResponse).collect(Collectors.toList());
+    }
+
+    public List<DoctorScheduleResponse> getSchedulesByDoctorAndWeek(int doctorId, LocalDate startDate) {
+        LocalDate endDate = startDate.plusDays(6);
+
+        // Lấy lịch làm việc trong khoảng thời gian
+        List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdAndDateBetween(doctorId, startDate, endDate);
+        return schedules.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    private DoctorScheduleResponse convertToResponse(DoctorSchedules schedule) {
+        DoctorScheduleResponse response = new DoctorScheduleResponse();
+        response.setId(schedule.getId());
+        response.setDate(schedule.getDate());
+        response.setStatus(schedule.getStatus());
+        response.setShift(schedule.getShiftType().getName_type());
+        response.setLocation(schedule.getRoom().getName());
+        response.setMaxPatients(schedule.getMaxPatients());
+        response.setBookedPatients(schedule.getBookedPatients());
+        response.setStart_time(schedule.getShiftType().getStart_time());
+        response.setEnd_time(schedule.getShiftType().getEnd_time());
+        return response;
     }
 
 }

@@ -40,6 +40,7 @@ public class StaffCreationService {
         user.setPhoneNumber(request.phoneNumber);
         user.setAddress(request.address);
         user.setDateOfBirth(request.dateOfBirth);
+        user.setAvatar_url(request.avatar_url);
         user.setGender(request.gender);
         user.setPass(passwordEncoder.encode(request.password));
         user.setRole(2);
@@ -59,4 +60,34 @@ public class StaffCreationService {
         staff.setPosition(pos);
         return staffRepo.save(staff);
     }
+
+    public void updateUserAndStaff(User user, Staff staff, BaseUserRequest request, int departmentId, int positionId) {
+        // Cập nhật User
+        user.setFullname(request.fullname);
+        user.setEmail(request.email);
+        user.setPhoneNumber(request.phoneNumber);
+        user.setDateOfBirth(request.dateOfBirth);
+        user.setGender(request.gender);
+        user.setAddress(request.address);
+        user.setAvatar_url(request.avatar_url);
+        userRepo.save(user);
+
+        // Cập nhật Staff
+        staff.setPosition(staffPositionRepo.findById(positionId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy vị trí")));
+        staff.setDepartment(departmentRepo.findById(departmentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy khoa")));
+        staffRepo.save(staff);
+    }
+
+    public void deleteUserAndStaff(Staff staff) {
+        User user = staff.getUser();
+
+        // Xóa Staff trước
+        staffRepo.delete(staff);
+
+        // Sau đó xóa User
+        userRepo.delete(user);
+    }
+
 }

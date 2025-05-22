@@ -15,6 +15,7 @@ public class Specialty {
     private int id;
     private String name;
     private String description;
+    private String icon;
     @ManyToOne
     @JoinColumn(name = "department_id")
     private Department department;

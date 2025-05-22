@@ -61,8 +61,68 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public PatientResponse getbyUserId(Integer userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+
+        try {
+            // Use Optional directly instead of stream
+            Patient patient = patientRepo.findByUserId(userId)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + userId));
+            return covertToResponse(patient);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi khi lấy bệnh nhân", e);
+        }
+    }
+
+    @Transactional
+    public PatientResponse update(Integer id, PatientRequest request) {
+        Patient patient = patientRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bệnh nhân"));
+
+        User user = patient.getUser();
+
+        // Update user information
+        user.setFullname(request.fullname);
+        user.setEmail(request.email);
+        user.setPhoneNumber(request.phoneNumber);
+        user.setDateOfBirth(request.dateOfBirth);
+        user.setGender(request.gender);
+        user.setAddress(request.address);
+        user.setAvatar_url(request.avatar_url);
+
+        // Update password if provided
+        if (request.password != null && !request.password.isEmpty()) {
+            user.setPass(passwordEncoder.encode(request.password));
+        }
+
+        userRepo.save(user);
+
+        // Update patient information
+        patient.setMedicalHistory(request.medicalHistory);
+        patient.setInsuranceNumber(request.insuranceNumber);
+        patientRepo.save(patient);
+
+        return covertToResponse(patient);
+    }
+
+    @Transactional
+    public void delete(Integer id) {
+        Patient patient = patientRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bệnh nhân"));
+
+        User user = patient.getUser();
+        patientRepo.delete(patient);
+        userRepo.delete(user);
+    }
+
     private PatientResponse covertToResponse(Patient patient) {
         PatientResponse dto = new PatientResponse();
+        dto.setId(patient.getId());
         dto.setPatientcode(patient.getPatientcode());
         dto.setFullname(patient.getUser().getFullname());
         dto.setEmail(patient.getUser().getEmail());
@@ -70,6 +130,7 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
         dto.setPhoneNumber(patient.getUser().getPhoneNumber());
         dto.setDateOfBirth(patient.getUser().getDateOfBirth());
         dto.setGender(patient.getUser().getGender());
+        dto.setAvatar_url(patient.getUser().getAvatar_url());
         dto.setMedicalHistory(patient.getMedicalHistory());
         dto.setInsuranceNumber(patient.getInsuranceNumber());
         return dto;

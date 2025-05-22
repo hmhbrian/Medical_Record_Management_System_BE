@@ -19,6 +19,8 @@ public class Patient {
     @JoinColumn(name = "user_id")
     private User user;
     private String patientcode;
+    @Column(name = "medical_history")
     private String medicalHistory;
+    @Column(name = "insurance_number")
     private String insuranceNumber;
 }

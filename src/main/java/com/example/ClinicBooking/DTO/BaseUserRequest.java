@@ -13,4 +13,5 @@ public class BaseUserRequest {
     public int gender;
     public String address;
     public String password;
+    public String avatar_url;
 }

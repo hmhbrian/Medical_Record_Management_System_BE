@@ -12,4 +12,5 @@ public class BaseUserResponse {
     public LocalDate dateOfBirth;
     public int gender;
     public String address;
+    public String avatar_url;
 }

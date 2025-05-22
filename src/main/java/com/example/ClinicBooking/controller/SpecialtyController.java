@@ -1,5 +1,6 @@
 package com.example.ClinicBooking.controller;
 
+import com.example.ClinicBooking.DTO.SpecialtyResponse;
 import com.example.ClinicBooking.entity.Specialty;
 import com.example.ClinicBooking.service.SpecialtyService;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,8 @@ public class SpecialtyController {
     }
 
     @GetMapping
-    public List<Specialty> getAllSpecialties() {
-        return specialtyService.findAll();
+    public List<SpecialtyResponse> getAllSpecialties() {
+        return specialtyService.getAll();
     }
 
     @GetMapping("/{id}")

@@ -27,4 +27,6 @@ public class User {
     private String pass;
     private int role; // 0: admin, 1: patient, 2: staff
     private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "avartar_url")
+    private String avatar_url;
 }

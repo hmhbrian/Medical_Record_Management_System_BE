@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class DoctorSchedules {
     @Id
     @GeneratedValue
-    private Long id;
+    private int id;
     @ManyToOne
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;

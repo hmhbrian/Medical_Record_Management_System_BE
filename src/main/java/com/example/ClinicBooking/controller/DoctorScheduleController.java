@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -26,5 +28,19 @@ public class DoctorScheduleController {
     public ResponseEntity<List<DoctorScheduleResponse>> getSchedulesByDoctor(@PathVariable int doctorId) {
         List<DoctorScheduleResponse> schedules = scheduleService.getScheduleByDoctorId(doctorId);
         return ResponseEntity.ok(schedules);
+    }
+
+    @GetMapping("/specialty/{specialtyId}")
+    public ResponseEntity<List<DoctorScheduleResponse>> getSchedulesBySpecialty(@PathVariable int specialtyId) {
+        return ResponseEntity.ok(scheduleService.getSchedulesBySpecialty(specialtyId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DoctorScheduleResponse>> getSchedulesByDoctor(
+            @RequestParam int doctorId,
+            @RequestParam String weekStart
+    ) {
+        LocalDate startDate = LocalDate.parse(weekStart, DateTimeFormatter.ISO_LOCAL_DATE);
+        return ResponseEntity.ok(scheduleService.getSchedulesByDoctorAndWeek(doctorId, startDate));
     }
 }
