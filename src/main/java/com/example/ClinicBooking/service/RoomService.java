@@ -1,10 +1,10 @@
 package com.example.ClinicBooking.service;
 
 import com.example.ClinicBooking.DTO.RoomResponse;
-import com.example.ClinicBooking.entity.Room;
-import com.example.ClinicBooking.entity.Specialty;
-import com.example.ClinicBooking.repository.SpecialtyRepository;
-import com.example.ClinicBooking.repository.roomRepository;
+import com.example.ClinicBooking.Domain.Entities.Room;
+import com.example.ClinicBooking.Domain.Entities.Specialty;
+import com.example.ClinicBooking.Infrastructure.Repository.SpecialtyRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.roomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

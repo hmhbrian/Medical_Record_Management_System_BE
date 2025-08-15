@@ -1,7 +1,7 @@
 package com.example.ClinicBooking.service.impl;
 
-import com.example.ClinicBooking.entity.User;
-import com.example.ClinicBooking.repository.UserRepository;
+import com.example.ClinicBooking.Domain.Entities.User;
+import com.example.ClinicBooking.Infrastructure.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

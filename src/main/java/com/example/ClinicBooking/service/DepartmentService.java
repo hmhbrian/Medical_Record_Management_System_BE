@@ -1,9 +1,7 @@
 package com.example.ClinicBooking.service;
 
-import com.example.ClinicBooking.entity.Department;
-import com.example.ClinicBooking.repository.DepartmentRepository;
-import lombok.AccessLevel;
-import lombok.Setter;
+import com.example.ClinicBooking.Domain.Entities.Department;
+import com.example.ClinicBooking.Infrastructure.Repository.DepartmentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -2,8 +2,8 @@ package com.example.ClinicBooking.service;
 
 import com.example.ClinicBooking.DTO.MedicineRequest;
 import com.example.ClinicBooking.DTO.MedicineResponse;
-import com.example.ClinicBooking.entity.Medicine;
-import com.example.ClinicBooking.repository.MedicineRepository;
+import com.example.ClinicBooking.Domain.Entities.Medicine;
+import com.example.ClinicBooking.Infrastructure.Repository.MedicineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +63,11 @@ public class MedicineService {
         cal.add(Calendar.DATE, daysAhead);
         Date threshold = cal.getTime();
         List<Medicine> list = repo.findExpiringSoon(threshold);
+        return list.stream().map(MedicineResponse::fromEntity).collect(Collectors.toList());
+    }
+
+    public List<MedicineResponse> getLowStockMedicines(int threshold) {
+        List<Medicine> list = repo.findLowStockMedicines(threshold);
         return list.stream().map(MedicineResponse::fromEntity).collect(Collectors.toList());
     }
 }

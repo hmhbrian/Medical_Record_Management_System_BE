@@ -2,9 +2,8 @@ package com.example.ClinicBooking.service;
 
 import com.example.ClinicBooking.DTO.AppointmentDTO;
 import com.example.ClinicBooking.DTO.AppointmentRequest;
-import com.example.ClinicBooking.DTO.DoctorResponse;
-import com.example.ClinicBooking.entity.*;
-import com.example.ClinicBooking.repository.*;
+import com.example.ClinicBooking.Domain.Entities.*;
+import com.example.ClinicBooking.Infrastructure.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

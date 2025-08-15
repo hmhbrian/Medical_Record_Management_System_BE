@@ -1,8 +1,8 @@
 package com.example.ClinicBooking.service;
 
 import com.example.ClinicBooking.DTO.ShiftTypeResponse;
-import com.example.ClinicBooking.entity.Shift_type;
-import com.example.ClinicBooking.repository.ShiftTypeRepository;
+import com.example.ClinicBooking.Domain.Entities.Shift_type;
+import com.example.ClinicBooking.Infrastructure.Repository.ShiftTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

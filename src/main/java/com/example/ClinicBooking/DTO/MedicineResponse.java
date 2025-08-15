@@ -1,6 +1,6 @@
 package com.example.ClinicBooking.DTO;
 
-import com.example.ClinicBooking.entity.Medicine;
+import com.example.ClinicBooking.Domain.Entities.Medicine;
 import lombok.Data;
 
 import java.util.Date;

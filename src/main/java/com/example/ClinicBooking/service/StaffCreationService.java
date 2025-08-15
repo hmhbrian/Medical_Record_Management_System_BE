@@ -1,11 +1,14 @@
 package com.example.ClinicBooking.service;
 
 import com.example.ClinicBooking.DTO.BaseUserRequest;
-import com.example.ClinicBooking.entity.Department;
-import com.example.ClinicBooking.entity.Staff;
-import com.example.ClinicBooking.entity.User;
-import com.example.ClinicBooking.entity.staff_position;
-import com.example.ClinicBooking.repository.*;
+import com.example.ClinicBooking.Domain.Entities.Department;
+import com.example.ClinicBooking.Domain.Entities.Staff;
+import com.example.ClinicBooking.Domain.Entities.User;
+import com.example.ClinicBooking.Domain.Entities.staff_position;
+import com.example.ClinicBooking.Infrastructure.Repository.DepartmentRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.StaffPositionRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.StaffRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

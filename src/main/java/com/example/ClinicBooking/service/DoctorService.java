@@ -2,11 +2,11 @@ package com.example.ClinicBooking.service;
 
 import com.example.ClinicBooking.DTO.DoctorRequest;
 import com.example.ClinicBooking.DTO.DoctorResponse;
-import com.example.ClinicBooking.entity.Doctor;
-import com.example.ClinicBooking.entity.Patient;
-import com.example.ClinicBooking.entity.Staff;
-import com.example.ClinicBooking.entity.User;
-import com.example.ClinicBooking.repository.*;
+import com.example.ClinicBooking.Domain.Entities.Doctor;
+import com.example.ClinicBooking.Domain.Entities.Staff;
+import com.example.ClinicBooking.Domain.Entities.User;
+import com.example.ClinicBooking.Infrastructure.Repository.DoctorRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.SpecialtyRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +62,7 @@ public class DoctorService implements IDoctorService {
 
         try {
             // Use Optional directly instead of stream
-            Doctor doctor = doctorRepo.findById(userId)
+            Doctor doctor = doctorRepo.findByStaffUserId(userId)
                     .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + userId));
             return covertToResponse(doctor);
         } catch (Exception e) {

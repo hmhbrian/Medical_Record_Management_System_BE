@@ -1,8 +1,7 @@
 package com.example.ClinicBooking.service;
 
-import com.example.ClinicBooking.entity.RoomTypes;
-import com.example.ClinicBooking.entity.Specialty;
-import com.example.ClinicBooking.repository.RoomTypesRepository;
+import com.example.ClinicBooking.Domain.Entities.RoomTypes;
+import com.example.ClinicBooking.Infrastructure.Repository.RoomTypesRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

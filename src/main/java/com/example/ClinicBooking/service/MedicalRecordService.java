@@ -1,20 +1,22 @@
 package com.example.ClinicBooking.service;
 
+import com.example.ClinicBooking.DTO.MedicalRecordReponse;
 import com.example.ClinicBooking.DTO.MedicalRecordRequest;
-import com.example.ClinicBooking.entity.Appointment;
-import com.example.ClinicBooking.entity.Doctor;
-import com.example.ClinicBooking.entity.MedicalRecord;
-import com.example.ClinicBooking.entity.Patient;
-import com.example.ClinicBooking.repository.AppointmentRepository;
-import com.example.ClinicBooking.repository.DoctorRepository;
-import com.example.ClinicBooking.repository.MedicalRecordRepository;
-import com.example.ClinicBooking.repository.PatientRepository;
+import com.example.ClinicBooking.Domain.Entities.Appointment;
+import com.example.ClinicBooking.Domain.Entities.Doctor;
+import com.example.ClinicBooking.Domain.Entities.MedicalRecord;
+import com.example.ClinicBooking.Domain.Entities.Patient;
+import com.example.ClinicBooking.Infrastructure.Repository.AppointmentRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.DoctorRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.MedicalRecordRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MedicalRecordService {
@@ -54,9 +56,13 @@ public class MedicalRecordService {
         return recordRepo.save(record);
     }
 
-    public List<MedicalRecord> getRecordsByPatientId(Integer patientId) {
-        return recordRepo.findByPatientId(patientId);
+    public List<MedicalRecordReponse> getRecordsByPatientId(Integer patientId) {
+        return recordRepo.findByPatientId(patientId)
+                .stream()
+                .map(this::covertToResponse)
+                .collect(Collectors.toList());
     }
+
 
     public List<MedicalRecord> getRecordsByDoctorId(Integer doctorId) {
         return recordRepo.findByDoctorId(doctorId);
@@ -68,6 +74,20 @@ public class MedicalRecordService {
 
     public Optional<MedicalRecord> getRecordById(Integer id) {
         return recordRepo.findById(id);
+    }
+
+    private MedicalRecordReponse covertToResponse(MedicalRecord medicalRecord) {
+        MedicalRecordReponse dto = new MedicalRecordReponse();
+        dto.setId(medicalRecord.getId());
+        dto.setDoctorId(medicalRecord.getDoctor().getId());
+        dto.setDoctorName(medicalRecord.getDoctor().getStaff().getUser().getFullname());
+        dto.setPatientId(medicalRecord.getPatient().getId());
+        dto.setPatientName(medicalRecord.getPatient().getUser().getFullname());
+        dto.setDiagnosis(medicalRecord.getDiagnosis());
+        dto.setInitialSymptoms(medicalRecord.getInitialSymptoms());
+        dto.setVisitDate(medicalRecord.getVisitDate());
+        dto.setVisitNumber(medicalRecord.getVisitNumber());
+        return dto;
     }
 }
 

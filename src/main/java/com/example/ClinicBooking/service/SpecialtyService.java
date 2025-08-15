@@ -1,11 +1,8 @@
 package com.example.ClinicBooking.service;
 
-import com.example.ClinicBooking.DTO.DoctorResponse;
 import com.example.ClinicBooking.DTO.SpecialtyResponse;
-import com.example.ClinicBooking.entity.Department;
-import com.example.ClinicBooking.entity.Doctor;
-import com.example.ClinicBooking.entity.Specialty;
-import com.example.ClinicBooking.repository.SpecialtyRepository;
+import com.example.ClinicBooking.Domain.Entities.Specialty;
+import com.example.ClinicBooking.Infrastructure.Repository.SpecialtyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

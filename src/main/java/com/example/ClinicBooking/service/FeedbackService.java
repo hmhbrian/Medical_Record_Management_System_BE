@@ -1,8 +1,7 @@
 package com.example.ClinicBooking.service;
 
-import com.example.ClinicBooking.entity.Feedback;
-import com.example.ClinicBooking.repository.FeedbackRepository;
-import lombok.Setter;
+import com.example.ClinicBooking.Domain.Entities.Feedback;
+import com.example.ClinicBooking.Infrastructure.Repository.FeedbackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

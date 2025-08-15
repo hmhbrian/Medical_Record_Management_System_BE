@@ -2,12 +2,12 @@ package com.example.ClinicBooking.service;
 
 import com.example.ClinicBooking.DTO.DoctorScheduleRequest;
 import com.example.ClinicBooking.DTO.DoctorScheduleResponse;
-import com.example.ClinicBooking.entity.Doctor;
-import com.example.ClinicBooking.entity.DoctorSchedules;
-import com.example.ClinicBooking.repository.DoctorRepository;
-import com.example.ClinicBooking.repository.DoctorSchedulesRepository;
-import com.example.ClinicBooking.repository.ShiftTypeRepository;
-import com.example.ClinicBooking.repository.roomRepository;
+import com.example.ClinicBooking.Domain.Entities.Doctor;
+import com.example.ClinicBooking.Domain.Entities.DoctorSchedules;
+import com.example.ClinicBooking.Infrastructure.Repository.DoctorRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.DoctorSchedulesRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.ShiftTypeRepository;
+import com.example.ClinicBooking.Infrastructure.Repository.roomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
