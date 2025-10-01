@@ -2,6 +2,7 @@ package com.example.clinicbooking.service;
 
 import com.example.clinicbooking.DTO.Doctor.DoctorScheduleRequest;
 import com.example.clinicbooking.DTO.Doctor.DoctorScheduleResponse;
+import com.example.clinicbooking.DTO.Doctor.DrScheduleSummaryRp;
 import com.example.clinicbooking.DTO.PatientInScheduleResponse;
 import com.example.clinicbooking.entity.Doctor;
 import com.example.clinicbooking.entity.DoctorSchedules;
@@ -87,14 +88,29 @@ public class DoctorScheduleService {
         return schedules.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
-    public List<DoctorScheduleResponse> getSchedulesByDoctorAndWeek(int doctorId, LocalDate startDate) {
+    public DrScheduleSummaryRp getSchedulesByDoctorAndWeek(int doctorId, LocalDate startDate) {
         LocalDate endDate = startDate.plusDays(6);
 
         // Lấy lịch làm việc trong khoảng thời gian
         List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdAndDateBetween(doctorId, startDate, endDate);
-        return schedules.stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
+        List<DoctorScheduleResponse> responses = schedules.stream()
+                                                .map(this::convertToResponse)
+                                                .collect(Collectors.toList());
+
+        // Tính toán số liệu tổng
+        int numberSchedules = responses.size();
+        int numberPatients = responses.stream().mapToInt(DoctorScheduleResponse::getBookedPatients).sum();
+        int totalCapacity = responses.stream().mapToInt(DoctorScheduleResponse::getMaxPatients).sum();
+        double usageRate = totalCapacity > 0 ? (double) numberPatients / totalCapacity : 0.0;
+
+        DrScheduleSummaryRp summary = new DrScheduleSummaryRp();
+        summary.setNumber_schedules(numberSchedules);
+        summary.setNumber_patients(numberPatients);
+        summary.setTotal_capacity(totalCapacity);
+        summary.setUsage_rate(usageRate);
+        summary.setSchedules(responses);
+
+        return summary;
     }
 
     @Transactional

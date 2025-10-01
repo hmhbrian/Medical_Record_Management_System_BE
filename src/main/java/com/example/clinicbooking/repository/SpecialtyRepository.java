@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface SpecialtyRepository extends JpaRepository<Specialty, Integer> {
     List<Specialty> findSpecialtiesByDepartment_Id(int departmentId);
+    int countSpecialtyByDepartment_Id(int departmentId);
 }

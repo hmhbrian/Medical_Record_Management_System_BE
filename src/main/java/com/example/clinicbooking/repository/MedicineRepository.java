@@ -14,7 +14,9 @@ public interface MedicineRepository extends JpaRepository<Medicine, Integer> {
     @Query("SELECT m FROM Medicine m WHERE m.expirationDate <= :threshold")
     List<Medicine> findExpiringSoon(@Param("threshold") Date threshold);
 
-    @Query("SELECT m FROM Medicine m WHERE m.stockQuantity <= :threshold")
+    @Query("SELECT m FROM Medicine m WHERE m.current_quantity <= :threshold")
     List<Medicine> findLowStockMedicines(@Param("threshold") int threshold);
+
+    List<Medicine> findAllByOrderByStatusDesc();
 
 }

@@ -5,9 +5,11 @@ import com.example.clinicbooking.DTO.Patient.PatientResponse;
 import com.example.clinicbooking.service.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
+@Tag(name = "Patients", description = "Quản lý bệnh nhân")
 @RestController
 @RequestMapping("/api/patients")
 public class PatientController {

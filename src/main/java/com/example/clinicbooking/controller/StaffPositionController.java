@@ -1,10 +1,7 @@
 package com.example.clinicbooking.controller;
 
-import com.example.clinicbooking.DTO.SpecialtyResponse;
 import com.example.clinicbooking.entity.staff_position;
-import com.example.clinicbooking.service.SpecialtyService;
 import com.example.clinicbooking.service.StaffPositionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

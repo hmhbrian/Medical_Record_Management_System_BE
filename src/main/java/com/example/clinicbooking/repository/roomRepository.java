@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface roomRepository extends JpaRepository<Room, Integer> {
     List<Room> findByDepartmentId(int departmentId);
+    int countByDepartmentId(int departmentId);
 }

@@ -17,4 +17,5 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
         where s.user.id = :userId
     """)
     Integer findIdByUserId(Integer userId);
+    Integer countBySpecialtyId(Integer specialtyId);
 }

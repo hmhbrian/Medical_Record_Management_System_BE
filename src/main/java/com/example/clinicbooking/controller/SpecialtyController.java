@@ -1,13 +1,17 @@
 package com.example.clinicbooking.controller;
 
-import com.example.clinicbooking.DTO.SpecialtyResponse;
+import com.example.clinicbooking.DTO.Specialty.SpecialtyRequest;
+import com.example.clinicbooking.DTO.Specialty.SpecialtyResponse;
+import com.example.clinicbooking.entity.Department;
 import com.example.clinicbooking.entity.Specialty;
 import com.example.clinicbooking.service.SpecialtyService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Specialty", description = "Quản lý chuyên khoa")
 @RestController
 @RequestMapping("/api/specialties")
 public class SpecialtyController {
@@ -23,30 +27,31 @@ public class SpecialtyController {
     }
 
     @GetMapping("/{id}")
-    public List<Specialty> getSpecialtyById(@PathVariable int id) {
-        return specialtyService.getSpecialtiesByDepartment(id);
+    public ResponseEntity<Specialty> getSpecialtyById(@PathVariable int id) {
+        return ResponseEntity.ok(specialtyService.getSpecialtyById(id));
     }
 
     @PostMapping
-    public Specialty createSpecialty(@RequestBody Specialty specialty) {
-        return specialtyService.save(specialty);
+    public Specialty createSpecialty(@RequestBody SpecialtyRequest specialtyRq) {
+        return specialtyService.save(specialtyRq);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Specialty> updateSpecialty(@PathVariable int id, @RequestBody Specialty specialty) {
-        if(specialtyService.getSpecialtyById(id) == null) {
+    public ResponseEntity<String> updateSpecialty(@PathVariable int id, @RequestBody SpecialtyRequest specialtyRq) {
+        try {
+            Specialty updated = specialtyService.update(id, specialtyRq);
+            return ResponseEntity.ok("Cập nhật chuyên khoa thành công!");
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
-        specialty.setId(id);
-        return ResponseEntity.ok(specialtyService.save(specialty));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSpecialtyById(@PathVariable int id) {
+    public ResponseEntity<String> deleteSpecialtyById(@PathVariable int id) {
         if(specialtyService.getSpecialtyById(id) == null) {
             return ResponseEntity.notFound().build();
         }
         specialtyService.deleteSpecialtyById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Xóa chuyên khoa thành công!");
     }
 }
