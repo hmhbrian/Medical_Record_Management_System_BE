@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mysql:8.0
+    command: [ "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci" ]
+    container_name: clinicbooking-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: clinicbooking
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: app
+      MYSQL_PASSWORD: Hoang41846192@
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL","mysqladmin ping -h localhost -uroot -proot | grep 'mysqld is alive'"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: clinic-booking:staging
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: staging
+      DB_URL: jdbc:mysql://db:3306/clinicbooking?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USER: app
+      DB_PASS: Hoang41846192@
+      JWT_SECRET: kG7yZ8X9vN2mP4qR6tW8uY0xA3B5C7D9E1F2G4H6
+      # Nếu bạn vẫn giữ basic user ở staging
+      SEC_NAME: admin
+      SEC_PASS: 123456
+    ports:
+      - "8080:8080"
+
+volumes:
+  dbdata:
