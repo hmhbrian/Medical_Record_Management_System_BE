@@ -11,6 +11,7 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String code;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
@@ -25,5 +26,7 @@ public class Appointment {
     private DoctorSchedules doctorSchedule;
 
     private LocalDateTime presentTime;
-    private String appointmentTime;
+    @OneToOne
+    @JoinColumn(name = "schedule_slot_id", nullable = false)
+    private ScheduleSlot scheduleSlot;
 }

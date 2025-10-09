@@ -9,21 +9,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "room")
-public class Room {
+@Table(name = "testtypes")
+public class TestTypes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+    @Column(unique = true, nullable = false)
+    private String testCode;
+    @Column(unique = true, nullable = false)
+    private String testName;
+    private double price;
+    private String description;
     @ManyToOne
-    @JoinColumn(name = "department_id", nullable = false)
+    @JoinColumn(name = "department_id")
     private Department department;
-
-    @Column(nullable = false)
-    private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "room_type_id", nullable = false)
-    private RoomTypes roomType;
-    private Integer status;
+    private int status;
 }

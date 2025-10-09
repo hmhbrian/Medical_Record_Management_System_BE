@@ -44,21 +44,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-//        try {
-//            String phoneNumber = normalizeText(request.getPhoneNumber());
-//            String password = normalizeText(request.getPassword());
-//            if (phoneNumber.isEmpty() || password.isEmpty()) {
-//                return ResponseEntity.badRequest().body("Phone number and password must not be empty");
-//            }
-//            authManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(phoneNumber, password)
-//            );
-//        } catch (AuthenticationException ex) {
-//            System.out.println("phone=" + request.getPhoneNumber()+ " pass=" + request.getPassword());
-//            System.out.println(passwordEncoder.encode(request.getPassword()));
-//            System.out.println("Authentication failed: " + ex.getMessage());
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid PhoneNumber or password");
-//        }
 
         String phone = normalizeText(request.getPhoneNumber());
         String raw   = normalizeText(request.getPassword());

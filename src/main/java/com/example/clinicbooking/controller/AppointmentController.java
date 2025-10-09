@@ -1,10 +1,15 @@
 package com.example.clinicbooking.controller;
 
+import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.Appointment.AppointmentDTO;
 import com.example.clinicbooking.DTO.Appointment.AppointmentRequest;
+import com.example.clinicbooking.DTO.Appointment.AppointmentSearchRequest;
 import com.example.clinicbooking.DTO.Appointment.AppointmentStatusUpdateRequest;
+import com.example.clinicbooking.DTO.Staff.StaffResponse;
 import com.example.clinicbooking.service.AppointmentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +19,32 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/appointments")
+@Tag(name = "Appointment", description = "Quản lý lịch hẹn khám bệnh(1: Chờ xác nhận, 2: Đã xác nhận, 3:Hoàn thành, 4: Hủy.)")
 @RequiredArgsConstructor
 public class AppointmentController {
     private final AppointmentService appointmentService;
+    @GetMapping("/find-all")
+    public ResponseEntity<ApiResponse<Page<AppointmentDTO>>> searchAppointments(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) Integer departmentId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
+        AppointmentSearchRequest req = new AppointmentSearchRequest();
+        req.setKeyword(keyword);
+        req.setStatus(status);
+        req.setDepartmentId(departmentId);
+        req.setFromDate(fromDate);
+        req.setPage(page);
+        req.setSize(size);
+
+        //return ResponseEntity.ok(appointmentService.searchAppointments(req));
+        Page<AppointmentDTO> result = appointmentService.searchAppointments(req);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Lấy danh sách lịch hẹn thành công!", result));
+
+    }
 
     @PostMapping
     public ResponseEntity<AppointmentDTO> bookAppointment(@RequestBody AppointmentRequest request) {
@@ -45,7 +73,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByStatus(@PathVariable String status) {
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByStatus(@PathVariable int status) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByStatus(status));
     }
 

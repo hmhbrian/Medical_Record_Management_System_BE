@@ -8,5 +8,5 @@ public class AppointmentRequest {
     private int doctorId;
     private int doctorScheduleId;
     //private LocalDateTime presentTime;
-    private String appointmentTime;
+    private int scheduleSlotId;
 }
