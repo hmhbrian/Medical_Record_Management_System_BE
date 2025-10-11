@@ -38,15 +38,21 @@ public class DepartmentService {
     public Optional<Department> findById(int id) { return repo.findById(id); }
 
     public Department save(DepartmentRequest deptRq) {
-        Doctor headDoctor = doctorRepo.findById(deptRq.getHead_doctor_id())
-                .orElseThrow(() -> new IllegalArgumentException("Head doctor not found with id: " + deptRq.getHead_doctor_id()));
         Department dept = new Department();
         dept.setName(deptRq.getName());
         dept.setDescription(deptRq.getDescription());
         dept.setContact(deptRq.getContact());
         dept.setEstablishment_date(deptRq.getEstablishment_date());
         dept.setStatus(deptRq.getStatus());
-        dept.setHeadDoctor(headDoctor);
+        // Chỉ tìm và gán headDoctor nếu có id hợp lệ
+        if (deptRq.getHead_doctor_id() != 0) {
+            Doctor headDoctor = doctorRepo.findById(deptRq.getHead_doctor_id())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Head doctor not found with id: " + deptRq.getHead_doctor_id()));
+            dept.setHeadDoctor(headDoctor);
+        } else {
+            dept.setHeadDoctor(null);
+        }
         return repo.save(dept);
     }
 
