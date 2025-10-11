@@ -8,11 +8,13 @@ services:
       MYSQL_DATABASE: clinicbooking
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: app
-      MYSQL_PASSWORD: Hoang41846192@
+      MYSQL_PASSWORD: "Hoang41846192@"
+      TZ: Asia/Ho_Chi_Minh
     ports:
       - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.
     healthcheck:
       test: ["CMD-SHELL","mysqladmin ping -h localhost -uroot -proot | grep 'mysqld is alive'"]
       interval: 20s
