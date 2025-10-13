@@ -56,4 +56,11 @@ public class DoctorScheduleController {
         var list = scheduleService.GetPatientOfDoctorSchedule(scheduleId);
         return ResponseEntity.ok(list);
     }
+
+    @Tag(name = "", description = "Xóa lịch làm việc")
+    @DeleteMapping("/{scheduleId}")
+    public ResponseEntity<?> deleteSchedule(@PathVariable int scheduleId) {
+        scheduleService.deleteSchedule(scheduleId);
+        return ResponseEntity.ok().build();
+    }
 }
