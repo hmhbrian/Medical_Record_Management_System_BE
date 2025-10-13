@@ -26,8 +26,15 @@ public class SpecialtyController {
         return specialtyService.getAll();
     }
 
+    // IMPORTANT: This route must come BEFORE /{id} to avoid conflicts  
+    @GetMapping("/by-department/{departmentId}")
+    public ResponseEntity<List<Specialty>> getSpecialtiesByDepartment(@PathVariable("departmentId") int departmentId) {
+        List<Specialty> specialties = specialtyService.getSpecialtiesByDepartment(departmentId);
+        return ResponseEntity.ok(specialties);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Specialty> getSpecialtyById(@PathVariable int id) {
+    public ResponseEntity<Specialty> getSpecialtyById(@PathVariable("id") int id) {
         return ResponseEntity.ok(specialtyService.getSpecialtyById(id));
     }
 
