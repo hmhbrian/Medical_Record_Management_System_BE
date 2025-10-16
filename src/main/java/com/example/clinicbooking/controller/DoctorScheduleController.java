@@ -45,6 +45,15 @@ public class DoctorScheduleController {
         return ResponseEntity.ok(scheduleService.getSchedulesByDoctorAndWeek(doctorId, startDate));
     }
 
+    @Tag(name = "", description = "Lấy danh sách lịch làm việc của doctor đang login và ngày bắt đầu trong tuần")
+    @GetMapping("/OfDoctor")
+    public ResponseEntity<DrScheduleSummaryRp> getSchedulesOfDoctor(
+            @RequestParam String weekStart
+    ) {
+        LocalDate startDate = LocalDate.parse(weekStart, DateTimeFormatter.ISO_LOCAL_DATE);
+        return ResponseEntity.ok(scheduleService.getSchedulesOfDoctorAndWeek(startDate));
+    }
+
 //    @GetMapping("/doctor/{doctorId}")
 //    public ResponseEntity<List<DoctorScheduleResponse>> getSchedulesByDoctor(@PathVariable int doctorId) {
 //        List<DoctorScheduleResponse> schedules = scheduleService.getScheduleByDoctorId(doctorId);

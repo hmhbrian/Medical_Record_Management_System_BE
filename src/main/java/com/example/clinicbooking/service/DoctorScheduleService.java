@@ -80,12 +80,6 @@ public class DoctorScheduleService {
                 .collect(Collectors.toList());
     }
 
-    public List<DoctorScheduleResponse> getScheduleByDoctorId(int doctorId) {
-        LocalDate today = LocalDate.now();
-        List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdAndDateAfterOrderByDateAsc(doctorId,today);
-        return schedules.stream().map(this::convertToResponse).collect(Collectors.toList());
-    }
-
     public DrScheduleSummaryRp getSchedulesByDoctorAndWeek(int doctorId, LocalDate startDate) {
         LocalDate endDate = startDate.plusDays(6);
 
@@ -94,6 +88,38 @@ public class DoctorScheduleService {
         List<DoctorScheduleResponse> responses = schedules.stream()
                                                 .map(this::convertToResponse)
                                                 .collect(Collectors.toList());
+
+        // Tính toán số liệu tổng
+        int numberSchedules = responses.size();
+        int numberPatients = responses.stream().mapToInt(DoctorScheduleResponse::getBookedPatients).sum();
+        int totalCapacity = responses.stream().mapToInt(DoctorScheduleResponse::getMaxPatients).sum();
+        double usageRate = totalCapacity > 0 ? (double) numberPatients / totalCapacity : 0.0;
+
+        DrScheduleSummaryRp summary = new DrScheduleSummaryRp();
+        summary.setNumber_schedules(numberSchedules);
+        summary.setNumber_patients(numberPatients);
+        summary.setTotal_capacity(totalCapacity);
+        summary.setUsage_rate(usageRate);
+        summary.setSchedules(responses);
+
+        return summary;
+    }
+
+    public DrScheduleSummaryRp getSchedulesOfDoctorAndWeek(LocalDate startDate) {
+        LocalDate endDate = startDate.plusDays(6);
+
+        //Lấy id doctor từ user đang đăng nhập
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+        Integer doctorId = doctorRepo.findIdByUserId(cud.getId());
+
+        // Lấy lịch làm việc trong khoảng thời gian
+        List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdAndDateBetweenOrderByShiftTypeIdAsc(doctorId, startDate, endDate);
+        List<DoctorScheduleResponse> responses = schedules.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
 
         // Tính toán số liệu tổng
         int numberSchedules = responses.size();
