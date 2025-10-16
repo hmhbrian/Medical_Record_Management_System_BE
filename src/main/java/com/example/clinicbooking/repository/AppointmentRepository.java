@@ -32,8 +32,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
             p.id, p.user.fullname
         )
         from Appointment a
-        join a.patient p
-        where a.doctorSchedule.id = :scheduleId
+        join Patient p on a.patient.id = p.id
+            join AppointmentStatus s on a.id = s.appointment.id
+        where a.doctorSchedule.id = :scheduleId AND s.status < 4
         order by p.user.fullname
     """)
     List<PatientInScheduleResponse> findPatientByDoctorScheduleId(@Param("scheduleId") int doctorScheduleId);

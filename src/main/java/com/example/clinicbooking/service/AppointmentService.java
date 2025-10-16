@@ -270,30 +270,6 @@ public class AppointmentService {
         };
     }
 
-    /** parse "field,ASC|DESC;field2,DESC" -> Sort */
-    private Sort parseSort(String sortStr) {
-        if (sortStr == null || sortStr.isBlank()) {
-            return Sort.by(Sort.Direction.DESC, "presentTime");
-        }
-        try {
-            List<Sort.Order> orders = Arrays.stream(sortStr.split(";"))
-                    .map(String::trim)
-                    .filter(s -> !s.isBlank())
-                    .map(s -> {
-                        String[] parts = s.split(",");
-                        String field = parts[0].trim();
-                        Sort.Direction dir = (parts.length > 1 && "ASC".equalsIgnoreCase(parts[1].trim()))
-                                ? Sort.Direction.ASC : Sort.Direction.DESC;
-                        return new Sort.Order(dir, field);
-                    })
-                    .toList();
-            if (orders.isEmpty()) return Sort.by(Sort.Direction.DESC, "presentTime");
-            return Sort.by(orders);
-        } catch (Exception e) {
-            return Sort.by(Sort.Direction.DESC, "presentTime");
-        }
-    }
-
     private AppointmentDTO covertToResponse(Appointment appointment) {
         AppointmentDTO dto = new AppointmentDTO();
         //String appointmentTime = appointment.getScheduleSlot().getStartTime() + " - " + appointment.getScheduleSlot().getEndTime();

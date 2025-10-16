@@ -56,7 +56,7 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointmentsByPatient(patientId));
     }
 
-    @GetMapping("/schedule/{doctorScheduleId}/appointments")
+    @GetMapping("/schedule/{doctorScheduleId}")
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsBySchedule(@PathVariable int doctorScheduleId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctorSchedule(doctorScheduleId));
     }
@@ -91,7 +91,7 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointmentsByWeek(startDate));
     }
 
-    @GetMapping("/doctor/{userId}/appointments")
+    @GetMapping("/doctor/{userId}")
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsByDoctor(@PathVariable int userId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(userId));
     }
