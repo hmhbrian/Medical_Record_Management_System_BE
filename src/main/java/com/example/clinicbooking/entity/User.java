@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 
 @Entity
 @Data
@@ -29,4 +30,10 @@ public class User {
     private LocalDateTime createdAt = LocalDateTime.now();
     @Column(name = "avartar_url")
     private String avatar_url;
+
+    @Transient
+    public Integer getAge() {
+        if (dateOfBirth == null) return null;
+        return Period.between(dateOfBirth, LocalDate.now()).getYears();
+    }
 }

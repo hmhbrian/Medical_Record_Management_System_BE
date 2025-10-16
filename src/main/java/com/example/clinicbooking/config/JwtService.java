@@ -1,6 +1,8 @@
 package com.example.clinicbooking.config;
 
 import com.example.clinicbooking.entity.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -20,11 +22,18 @@ public class JwtService {
     private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String extractPhone(String token) {
-        return Jwts.parser()
+        return parse(token).getBody().getSubject();
+    }
+
+    public Integer extractUserId(String token) {
+        return parse(token).getBody().get("userId", Integer.class);
+    }
+
+    public Jws<Claims> parse(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .build()
+                .parseClaimsJws(token);
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {

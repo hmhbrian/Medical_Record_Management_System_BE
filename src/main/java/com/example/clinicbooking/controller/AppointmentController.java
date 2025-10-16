@@ -56,20 +56,28 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointmentsByPatient(patientId));
     }
 
-    @GetMapping("/schedule/{doctorScheduleId}")
+    @GetMapping("/schedule/{doctorScheduleId}/appointments")
     public ResponseEntity<List<AppointmentDTO>> getAppointmentsBySchedule(@PathVariable int doctorScheduleId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctorSchedule(doctorScheduleId));
     }
 
-    @PostMapping("/status")
-    public ResponseEntity<String> updateAppointmentStatus(@RequestBody AppointmentStatusUpdateRequest request) {
-        appointmentService.updateAppointmentStatus(
-                request.getAppointmentId(),
-                request.getStatus(),
+    @PutMapping("{AppointmentId}/confirm")
+    public ResponseEntity<ApiResponse<?>> ConfirmAppointment(@PathVariable int AppointmentId, @RequestBody int UpdatedByUserId) {
+        appointmentService.ConfirmAppointment(
+                AppointmentId,
+                UpdatedByUserId
+        );
+        return ResponseEntity.ok(new ApiResponse<>(true, "Xác nhận lịch hẹn thành công!", null));
+    }
+
+    @PutMapping("{AppointmentId}/cancel")
+    public ResponseEntity<ApiResponse<?>> CancelAppointment(@PathVariable int AppointmentId, @RequestBody AppointmentStatusUpdateRequest request) {
+        appointmentService.DeleteAppointment(
+                AppointmentId,
                 request.getUpdatedByUserId(),
                 request.getReason()
         );
-        return ResponseEntity.ok("Appointment status updated successfully.");
+        return ResponseEntity.ok(new ApiResponse<>(true, "Hủy lịch hẹn thành công!", null));
     }
 
     @GetMapping("/status/{status}")
@@ -83,8 +91,8 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointmentsByWeek(startDate));
     }
 
-    @GetMapping("/doctor/{doctorId}")
-    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByDoctor(@PathVariable int doctorId) {
-        return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(doctorId));
+    @GetMapping("/doctor/{userId}/appointments")
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByDoctor(@PathVariable int userId) {
+        return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(userId));
     }
 }

@@ -3,6 +3,7 @@ package com.example.clinicbooking.service;
 import com.example.clinicbooking.DTO.Appointment.AppointmentDTO;
 import com.example.clinicbooking.DTO.Appointment.AppointmentRequest;
 import com.example.clinicbooking.DTO.Appointment.AppointmentSearchRequest;
+import com.example.clinicbooking.DTO.Appointment.StatusHistoryItemDTO;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.repository.*;
 import jakarta.persistence.criteria.Join;
@@ -31,6 +32,7 @@ public class AppointmentService {
     private final AppointmentStatusRepository appointmentStatusRepository;
     private final ScheduleSlotRepository scheduleSlotRepo;
     private final DoctorRepository doctorRepository;
+    private final UserRepository UserRepository;
 
     //đặt lịch khám mới của bệnh nhân
     public AppointmentDTO bookAppointment(AppointmentRequest request) {
@@ -60,32 +62,68 @@ public class AppointmentService {
         status.setAppointment(savedAppointment);
         status.setStatus(1);
         status.setUpdateAt(LocalDateTime.now());
+        status.setReason(request.getReason());
         status.setUpdate_by(patient.getUser());
         appointmentStatusRepository.save(status);
 
+        //Tăng số bệnh nhân đã đặt trong DoctorSchedules
+        schedule.setBookedPatients(schedule.getBookedPatients() + 1);
         doctorScheduleRepository.save(schedule);
+
+        // Cập nhật trạng thái của ScheduleSlot thành đã được đặt
+        slot.setIsBooked(true);
+        scheduleSlotRepo.save(slot);
 
         return covertToResponse(savedAppointment);
     }
 
-    //Cập nhật trạng thái lịch hẹn (VD:"Chờ xác nhận", “Đã xác nhận”,"Đang khám", “Hoàn thành”, “Hủy”).
-    public void updateAppointmentStatus(int appointmentId, int statusValue, int updatedByUserId, String reason) {
+    //Cập nhật trạng thái lịch hẹn (VD:"Chờ xác nhận", “Đã xác nhận”, “Hoàn thành”, “Hủy”).
+    public void ConfirmAppointment(int appointmentId, int updatedByUserId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
         // Tạo mới trạng thái
         AppointmentStatus status = new AppointmentStatus();
         status.setAppointment(appointment);
-        status.setStatus(statusValue);
-        status.setReason(reason);
+        status.setStatus(2); // Đã xác nhận
         status.setUpdateAt(LocalDateTime.now());
 
-        User updatedBy = new User();
-        updatedBy.setId(updatedByUserId);
+        User updatedBy = UserRepository.findById(updatedByUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         status.setUpdate_by(updatedBy);
 
         appointmentStatusRepository.save(status);
     }
+
+    public void DeleteAppointment(int appointmentId, int updatedByUserId, String reason) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        // Tạo mới trạng thái
+        AppointmentStatus status = new AppointmentStatus();
+        status.setAppointment(appointment);
+        status.setStatus(4); // Hủy
+        status.setReason(reason);
+        status.setUpdateAt(LocalDateTime.now());
+
+        User updatedBy = UserRepository.findById(updatedByUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        status.setUpdate_by(updatedBy);
+
+        //Giảm số bệnh nhân đã đặt trong DoctorSchedules
+        DoctorSchedules schedule = appointment.getDoctorSchedule();
+        schedule.setBookedPatients(schedule.getBookedPatients() - 1);
+        doctorScheduleRepository.save(schedule);
+
+        // Cập nhật trạng thái của ScheduleSlot thành chưa được đặt
+        ScheduleSlot slot = appointment.getScheduleSlot();
+        slot.setIsBooked(false);
+        scheduleSlotRepo.save(slot);
+
+        appointmentStatusRepository.save(status);
+    }
+
+
 
     //Lấy danh sách tất cả các lịch hẹn của một bệnh nhân cụ thể.
     public List<AppointmentDTO> getAppointmentsByPatient(int patientId) {
@@ -121,8 +159,11 @@ public class AppointmentService {
     }
 
     //Lấy danh sách lịch hẹn của một bác sĩ cụ thể, không giới hạn thời gian.
-    public List<AppointmentDTO> getAppointmentsByDoctor(int doctorId) {
-        return appointmentRepository.findByDoctorId(doctorId)
+    public List<AppointmentDTO> getAppointmentsByDoctor(int userId) {
+        Doctor doctor = doctorRepository.findByStaff_User_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found for user id: " + userId));
+
+        return appointmentRepository.findByDoctorId(doctor.getId())
                 .stream()
                 .map(this::covertToResponse)
                 .collect(Collectors.toList());
@@ -281,14 +322,16 @@ public class AppointmentService {
         dto.setPatientYearOfBirth(appointment.getPatient().getUser().getDateOfBirth());
         dto.setPatientPhone(appointment.getPatient().getUser().getPhoneNumber());
         dto.setPatientEmail(appointment.getPatient().getUser().getEmail());
+        dto.setPatientGender(appointment.getPatient().getUser().getGender() == 1 ? "Nữ" : "Nam");
+        dto.setPatientAge(appointment.getPatient().getUser().getAge());
         dto.setPresentTime(appointment.getPresentTime());
         dto.setRoomName(appointment.getDoctorSchedule().getRoom().getName());
         dto.setAppointmentDate(appointment.getDoctorSchedule().getDate().toString());
         dto.setAppointmentTime(appointmentTime);
         dto.setDoctorScheduleId(appointment.getDoctorSchedule().getId());
+
         Optional<AppointmentStatus> statusOpt = appointmentStatusRepository
                 .findTopByAppointmentIdOrderByUpdateAtDesc(appointment.getId());
-
         int statusId = statusOpt.map(AppointmentStatus::getStatus).orElse(0);
         switch (statusId) {
             case 1 -> {
@@ -313,6 +356,54 @@ public class AppointmentService {
             }
         };
 
+        //Reason của riêng trạng thái "Chờ xác nhận" (kể cả hiện tại đã đổi trạng thái)
+        String pendingReason = appointmentStatusRepository
+                .findByAppointmentIdAndStatus(appointment.getId(), 1)
+                .map(AppointmentStatus::getReason)
+                .orElse("");
+        dto.setReason(pendingReason);
+
+        //danh sách lịch sử trạng thái để hiển thị rõ ràng
+        var history = appointmentStatusRepository
+                .findByAppointmentIdOrderByUpdateAtDesc(appointment.getId())
+                .stream()
+                .map(this::mapStatusToHistoryItem)
+                .toList();
+        dto.setStatusHistory(history);
+
         return dto;
+    }
+
+    private StatusHistoryItemDTO mapStatusToHistoryItem(AppointmentStatus st) {
+        String statusName = switch (st.getStatus()) {
+            case 1 -> "Chờ xác nhận";
+            case 2 -> "Đã xác nhận";
+            case 3 -> "Hoàn thành";
+            case 4 -> "Hủy";
+            default -> "Không xác định";
+        };
+        Integer updatedById = (st.getUpdate_by() != null) ? st.getUpdate_by().getId() : null;
+        String updatedByName = (st.getUpdate_by() != null)
+                ? roleName(st.getUpdate_by().getRole())
+                : null;
+
+        return new StatusHistoryItemDTO(
+                st.getStatus(),
+                statusName,
+                st.getReason(),
+                st.getUpdateAt(),
+                updatedById,
+                updatedByName
+        );
+    }
+
+    private static String roleName(Integer role) {
+        if (role == null) return null;
+        return switch (role) {
+            case 0 -> "Admin";
+            case 1 -> "Patient";
+            case 2 -> "Doctor";
+            default -> "Unknown";
+        };
     }
 }

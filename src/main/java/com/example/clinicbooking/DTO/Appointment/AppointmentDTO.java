@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class AppointmentDTO {
@@ -16,12 +17,15 @@ public class AppointmentDTO {
     private String patientGender;
     private String patientPhone;
     private String patientEmail;
+    private int patientAge;
     private String doctorName;
     private String doctorSpecialty;
     private String roomName;
     private String appointmentDate;
     private LocalDateTime presentTime;
     private String appointmentTime;
+    private String reason; //reason của trạng thái "Chờ xác nhận"
     private int statusId; // 1: Chờ xác nhận, 2: Đã xác nhận, 3:Hoàn thành, 4: Hủy.
     private String status;
+    private List<StatusHistoryItemDTO> statusHistory; // danh sách lịch sử trạng thái
 }

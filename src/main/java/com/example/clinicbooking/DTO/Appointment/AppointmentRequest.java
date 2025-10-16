@@ -9,4 +9,5 @@ public class AppointmentRequest {
     private int doctorScheduleId;
     //private LocalDateTime presentTime;
     private int scheduleSlotId;
+    private String reason;
 }

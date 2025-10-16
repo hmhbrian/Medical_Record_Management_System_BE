@@ -18,4 +18,5 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     """)
     Integer findIdByUserId(Integer userId);
     Integer countBySpecialtyId(Integer specialtyId);
+    Optional<Doctor> findByStaff_User_Id(Integer userId);
 }
