@@ -6,6 +6,7 @@ import com.example.clinicbooking.DTO.Appointment.AppointmentSearchRequest;
 import com.example.clinicbooking.DTO.Appointment.StatusHistoryItemDTO;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.repository.*;
+import com.example.clinicbooking.security.CustomUserDetails;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
@@ -13,6 +14,8 @@ import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -77,7 +80,7 @@ public class AppointmentService {
         return covertToResponse(savedAppointment);
     }
 
-    //Cập nhật trạng thái lịch hẹn (VD:"Chờ xác nhận", “Đã xác nhận”, “Hoàn thành”, “Hủy”).
+    //Xác nhận lịch hẹn
     public void ConfirmAppointment(int appointmentId, int updatedByUserId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
@@ -95,6 +98,7 @@ public class AppointmentService {
         appointmentStatusRepository.save(status);
     }
 
+    //Hủy lịch hẹn
     public void DeleteAppointment(int appointmentId, int updatedByUserId, String reason) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
@@ -122,8 +126,6 @@ public class AppointmentService {
 
         appointmentStatusRepository.save(status);
     }
-
-
 
     //Lấy danh sách tất cả các lịch hẹn của một bệnh nhân cụ thể.
     public List<AppointmentDTO> getAppointmentsByPatient(int patientId) {
@@ -159,11 +161,15 @@ public class AppointmentService {
     }
 
     //Lấy danh sách lịch hẹn của một bác sĩ cụ thể, không giới hạn thời gian.
-    public List<AppointmentDTO> getAppointmentsByDoctor(int userId) {
-        Doctor doctor = doctorRepository.findByStaff_User_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found for user id: " + userId));
+    public List<AppointmentDTO> getAppointmentsByDoctor(LocalDate fromDate) {
+        //Lấy id doctor từ user đang đăng nhập
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+        Integer doctorId = doctorRepository.findIdByUserId(cud.getId());
 
-        return appointmentRepository.findByDoctorId(doctor.getId())
+        return appointmentRepository.findByDoctorIdAndDoctorSchedule_DateEqualsOrderByScheduleSlotAsc(doctorId, fromDate)
                 .stream()
                 .map(this::covertToResponse)
                 .collect(Collectors.toList());

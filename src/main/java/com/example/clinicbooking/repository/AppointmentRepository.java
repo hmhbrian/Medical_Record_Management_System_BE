@@ -15,6 +15,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     List<Appointment> findByPatientId(int patientId);
     List<Appointment> findByDoctorScheduleId(int doctorScheduleId);
     List<Appointment> findByDoctorId(int doctorId);
+    List<Appointment> findByDoctorIdAndDoctorSchedule_DateEqualsOrderByScheduleSlotAsc(Integer doctorId, LocalDate date);
 
     @Query("SELECT a FROM Appointment a WHERE a.doctorSchedule.date BETWEEN :startDate AND :endDate")
     List<Appointment> findByAppointmentDateBetween(

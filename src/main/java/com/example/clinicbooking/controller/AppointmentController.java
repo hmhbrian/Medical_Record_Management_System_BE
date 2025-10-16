@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -91,8 +92,9 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointmentsByWeek(startDate));
     }
 
-    @GetMapping("/doctor/{userId}")
-    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByDoctor(@PathVariable int userId) {
-        return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(userId));
+    @GetMapping("/doctor")
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByDoctor(String FindDate) {
+        LocalDate Date = LocalDate.parse(FindDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(Date));
     }
 }
