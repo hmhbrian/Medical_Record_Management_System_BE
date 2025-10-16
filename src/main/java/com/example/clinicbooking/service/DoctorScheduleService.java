@@ -29,8 +29,6 @@ public class DoctorScheduleService {
     @Autowired
     private roomRepository roomRepo;
     @Autowired
-    private  DoctorSchedulesRepository doctorScheduleRepo;
-    @Autowired
     private  AppointmentRepository appointmentRepo;
 
     public DoctorSchedules assignSchedule(DoctorScheduleRequest request) {
@@ -92,7 +90,7 @@ public class DoctorScheduleService {
         LocalDate endDate = startDate.plusDays(6);
 
         // Lấy lịch làm việc trong khoảng thời gian
-        List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdAndDateBetween(doctorId, startDate, endDate);
+        List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdAndDateBetweenOrderByShiftTypeIdAsc(doctorId, startDate, endDate);
         List<DoctorScheduleResponse> responses = schedules.stream()
                                                 .map(this::convertToResponse)
                                                 .collect(Collectors.toList());
@@ -124,12 +122,19 @@ public class DoctorScheduleService {
         if (doctorid == null) {
             throw new RuntimeException("Không tìm thấy bác sĩ. Vui lòng kiểm tra lại thông tin đăng nhập.");
         }
-        boolean owned = doctorScheduleRepo.existsByIdAndDoctorId(scheduleId, doctorid);
+        boolean owned = scheduleRepo.existsByIdAndDoctorId(scheduleId, doctorid);
         if (!owned) {
             throw new AccessDeniedException("Bạn không có quyền xem lịch này");
         }
 
         return appointmentRepo.findPatientByDoctorScheduleId(scheduleId);
+    }
+
+    public void deleteSchedule(int scheduleId) {
+        if(!scheduleRepo.findById(scheduleId).isPresent()) {
+            throw new RuntimeException("Không tìm thấy lịch làm việc");
+        }
+        scheduleRepo.deleteById(scheduleId);
     }
 
     private DoctorScheduleResponse convertToResponse(DoctorSchedules schedule) {

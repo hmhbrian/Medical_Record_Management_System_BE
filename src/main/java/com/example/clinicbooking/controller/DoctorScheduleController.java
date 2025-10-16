@@ -1,5 +1,6 @@
 package com.example.clinicbooking.controller;
 
+import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.Doctor.DoctorScheduleRequest;
 import com.example.clinicbooking.DTO.Doctor.DoctorScheduleResponse;
 import com.example.clinicbooking.DTO.Doctor.DrScheduleSummaryRp;
@@ -24,9 +25,9 @@ public class DoctorScheduleController {
 
     @Tag(name = "", description = "Thêm lịch làm việc mới")
     @PostMapping
-    public ResponseEntity<?> assignSchedule(@RequestBody DoctorScheduleRequest request) {
+    public ResponseEntity<ApiResponse<?>> assignSchedule(@RequestBody DoctorScheduleRequest request) {
         DoctorSchedules savedSchedule = scheduleService.assignSchedule(request);
-        return ResponseEntity.ok(savedSchedule);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Thêm lịch làm việc thành công!", null));
     }
 
 //    @GetMapping("/specialty/{specialtyId}")

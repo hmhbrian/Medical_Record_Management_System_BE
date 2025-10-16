@@ -5,6 +5,7 @@ import com.example.clinicbooking.DTO.Auth.LoginRequest;
 import com.example.clinicbooking.DTO.Auth.LoginResponse;
 import com.example.clinicbooking.DTO.Patient.PatientRequest;
 import com.example.clinicbooking.DTO.Patient.PatientResponse;
+import com.example.clinicbooking.config.CurrentUser;
 import com.example.clinicbooking.config.JwtService;
 import com.example.clinicbooking.entity.Staff;
 import com.example.clinicbooking.entity.User;
@@ -110,21 +111,10 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getMe() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = auth.getPrincipal();
-
-        if (principal instanceof CustomUserDetails cud) {
-            return ResponseEntity.ok(Map.of(
-                    "id", cud.getId(),
-                    "fullname", cud.getFullname(),
-                    "phone", cud.getUsername(),
-                    "position", cud.getPosition(),
-                    "authorities", cud.getAuthorities()
-            ));
-        }
+        Integer userId = CurrentUser.id();
 
         // principal có thể là "anonymousUser" (String) nếu chưa đăng nhập
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        return ResponseEntity.ok(userRepo.findById(userId));
     }
 
 }

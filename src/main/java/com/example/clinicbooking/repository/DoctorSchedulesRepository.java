@@ -13,6 +13,6 @@ public interface DoctorSchedulesRepository extends JpaRepository<DoctorSchedules
     boolean existsByDoctorAndDateAndShiftType(Doctor doctor, LocalDate date, Shift_type shiftType);
     boolean existsByRoomAndDateAndShiftType(Room room, LocalDate date, Shift_type shiftType);
     List<DoctorSchedules> findByDoctorIdAndDateAfterOrderByDateAsc(int doctorId, LocalDate currentDate);
-    List<DoctorSchedules> findByDoctorIdAndDateBetween(int doctorId, LocalDate startDate, LocalDate endDate);
+    List<DoctorSchedules> findByDoctorIdAndDateBetweenOrderByShiftTypeIdAsc(int doctorId, LocalDate startDate, LocalDate endDate);
     boolean existsByIdAndDoctorId(int scheduleId, int doctorId);
 }
