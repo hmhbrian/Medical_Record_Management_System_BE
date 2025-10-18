@@ -62,19 +62,19 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctorSchedule(doctorScheduleId));
     }
 
-    @PutMapping("{AppointmentId}/confirm")
-    public ResponseEntity<ApiResponse<?>> ConfirmAppointment(@PathVariable int AppointmentId, @RequestBody int UpdatedByUserId) {
+    @PutMapping("/{appointmentId}/confirm")
+    public ResponseEntity<ApiResponse<?>> ConfirmAppointment(@PathVariable int appointmentId, @RequestBody int UpdatedByUserId) {
         appointmentService.ConfirmAppointment(
-                AppointmentId,
+                appointmentId,
                 UpdatedByUserId
         );
         return ResponseEntity.ok(new ApiResponse<>(true, "Xác nhận lịch hẹn thành công!", null));
     }
 
-    @PutMapping("{AppointmentId}/cancel")
-    public ResponseEntity<ApiResponse<?>> CancelAppointment(@PathVariable int AppointmentId, @RequestBody AppointmentStatusUpdateRequest request) {
+    @PutMapping("/{appointmentId}/cancel")
+    public ResponseEntity<ApiResponse<?>> CancelAppointment(@PathVariable int appointmentId, @RequestBody AppointmentStatusUpdateRequest request) {
         appointmentService.DeleteAppointment(
-                AppointmentId,
+                appointmentId,
                 request.getUpdatedByUserId(),
                 request.getReason()
         );
