@@ -1,5 +1,6 @@
 package com.example.clinicbooking.controller;
 
+import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
 import com.example.clinicbooking.entity.MedicalRecord;
@@ -18,8 +19,9 @@ public class MedicalRecordController {
     private MedicalRecordService recordService;
 
     @PostMapping
-    public ResponseEntity<MedicalRecord> create(@RequestBody MedicalRecordRequest request) {
-        return ResponseEntity.ok(recordService.createMedicalRecord(request));
+    public ResponseEntity<ApiResponse<?>> create(@RequestBody MedicalRecordRequest request) {
+        recordService.createMedicalRecord(request);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Hồ sơ ngoại trú được thêm thành công", null));
     }
 
     @GetMapping("/patient/{patientId}")

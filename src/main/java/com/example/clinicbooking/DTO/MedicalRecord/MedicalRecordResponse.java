@@ -1,12 +1,12 @@
 package com.example.clinicbooking.DTO.MedicalRecord;
 
+import com.example.clinicbooking.DTO.Patient.PatientRp;
 import lombok.Data;
 
 @Data
 public class MedicalRecordResponse {
-    private int id;
-    private String patientName;
-    private int patientId;
+    private int recordId;
+    private PatientRp patient;
     private String doctorName;
     private int doctorId;
     private int appointmentId;
