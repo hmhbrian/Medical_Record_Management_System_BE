@@ -77,7 +77,7 @@ public class MedicalRecordService {
 
     private MedicalRecordResponse covertToResponse(MedicalRecord medicalRecord) {
         MedicalRecordResponse dto = new MedicalRecordResponse();
-        dto.setId(medicalRecord.getId());
+        dto.setRecordId(medicalRecord.getId());
         dto.setDoctorId(medicalRecord.getDoctor().getId());
         dto.setDoctorName(medicalRecord.getDoctor().getStaff().getUser().getFullname());
         dto.setPatientId(medicalRecord.getPatient().getId());

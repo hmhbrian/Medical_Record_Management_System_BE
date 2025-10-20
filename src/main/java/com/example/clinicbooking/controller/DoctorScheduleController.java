@@ -23,7 +23,7 @@ public class DoctorScheduleController {
     @Autowired
     private DoctorScheduleService scheduleService;
 
-    @Tag(name = "", description = "Thêm lịch làm việc mới")
+    //Thêm lịch làm việc mới
     @PostMapping
     public ResponseEntity<ApiResponse<?>> assignSchedule(@RequestBody DoctorScheduleRequest request) {
         DoctorSchedules savedSchedule = scheduleService.assignSchedule(request);
@@ -35,7 +35,7 @@ public class DoctorScheduleController {
 //        return ResponseEntity.ok(scheduleService.getSchedulesBySpecialty(specialtyId));
 //    }
 
-    @Tag(name = "", description = "Lấy danh sách lịch làm việc theo doctor và ngày bắt đầu trong tuần")
+    //Lấy danh sách lịch làm việc theo doctor và ngày bắt đầu trong tuần
     @GetMapping
     public ResponseEntity<DrScheduleSummaryRp> getSchedulesByDoctor(
             @RequestParam int doctorId,
@@ -45,7 +45,7 @@ public class DoctorScheduleController {
         return ResponseEntity.ok(scheduleService.getSchedulesByDoctorAndWeek(doctorId, startDate));
     }
 
-    @Tag(name = "", description = "Lấy danh sách lịch làm việc của doctor đang login và ngày bắt đầu trong tuần")
+    //Lấy danh sách lịch làm việc của doctor đang login và ngày bắt đầu trong tuần
     @GetMapping("/OfDoctor")
     public ResponseEntity<DrScheduleSummaryRp> getSchedulesOfDoctor(
             @RequestParam String weekStart
@@ -54,11 +54,11 @@ public class DoctorScheduleController {
         return ResponseEntity.ok(scheduleService.getSchedulesOfDoctorAndWeek(startDate));
     }
 
-//    @GetMapping("/doctor/{doctorId}")
-//    public ResponseEntity<List<DoctorScheduleResponse>> getSchedulesByDoctor(@PathVariable int doctorId) {
-//        List<DoctorScheduleResponse> schedules = scheduleService.getScheduleByDoctorId(doctorId);
-//        return ResponseEntity.ok(schedules);
-//    }
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<List<DoctorScheduleResponse>> getSchedulesByDoctor(@PathVariable int doctorId) {
+        List<DoctorScheduleResponse> schedules = scheduleService.getScheduleByDoctorId(doctorId);
+        return ResponseEntity.ok(schedules);
+    }
 
     //Lấy danh sách bệnh nhân trong ca làm việc(Doctor đăng nhập)
     @GetMapping("/{scheduleId}/patients")
@@ -67,10 +67,11 @@ public class DoctorScheduleController {
         return ResponseEntity.ok(list);
     }
 
-    @Tag(name = "", description = "Xóa lịch làm việc")
+    //Xóa lịch làm việc
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<?> deleteSchedule(@PathVariable int scheduleId) {
         scheduleService.deleteSchedule(scheduleId);
         return ResponseEntity.ok().build();
     }
+
 }
