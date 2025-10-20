@@ -13,6 +13,7 @@ import com.example.clinicbooking.repository.StaffRepository;
 import com.example.clinicbooking.repository.UserRepository;
 import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.PatientService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,8 @@ import java.util.Map;
 
 import static com.example.clinicbooking.Utils.TextUtils.normalizeText;
 
+
+@Tag(name = "Auth", description = "Xác thực và quản lý người dùng")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

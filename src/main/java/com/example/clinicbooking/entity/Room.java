@@ -22,8 +22,17 @@ public class Room {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "room_number",nullable = false)
+    private String roomNumber;
+
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "room_type_id", nullable = false)
     private RoomTypes roomType;
-    private Integer status;
+
+    @Enumerated(EnumType.STRING) // Dùng Enum cho trạng thái để dễ quản lý
+    @Column(nullable = false)
+    private RoomStatus status;
 }
+

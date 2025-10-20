@@ -6,7 +6,8 @@ import lombok.Data;
 @Data
 public class MedicalRecordResponse {
     private int recordId;
-    private PatientRp patient;
+    private int PatientId;
+    private String PatientName;
     private String doctorName;
     private int doctorId;
     private int appointmentId;

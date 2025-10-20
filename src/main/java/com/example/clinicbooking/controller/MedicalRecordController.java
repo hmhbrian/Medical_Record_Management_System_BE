@@ -5,12 +5,15 @@ import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
 import com.example.clinicbooking.entity.MedicalRecord;
 import com.example.clinicbooking.service.MedicalRecordService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+@Tag(name = "MedicalRecord", description = "Quản lý hồ sơ ngoại trú")
 @RestController
 @RequestMapping("/api/medical-records")
 public class MedicalRecordController {
