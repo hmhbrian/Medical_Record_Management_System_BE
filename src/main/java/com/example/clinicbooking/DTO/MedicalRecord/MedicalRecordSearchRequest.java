@@ -1,0 +1,21 @@
+package com.example.clinicbooking.DTO.MedicalRecord;
+
+import lombok.Data;
+
+@Data
+public class MedicalRecordSearchRequest {
+    // Phân trang và Sắp xếp
+    private Integer page = 0;
+    private Integer size = 10;
+    private String sortBy = "visitNumber";
+    private String sortDir = "ASC"; // ASC hoặc DESC
+
+    // Lọc theo Thời gian
+    private String currentDate; // Dạng YYYY-MM-DD
+
+    // Lọc theo Trạng thái
+    private String status;
+
+    // Tìm kiếm chung (Tên, Mã BN, Mã HS)
+    private String query;
+}

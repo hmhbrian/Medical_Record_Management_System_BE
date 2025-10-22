@@ -19,4 +19,11 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     Integer findIdByUserId(Integer userId);
     Integer countBySpecialtyId(Integer specialtyId);
     Optional<Doctor> findByStaff_User_Id(Integer userId);
+    @Query("""
+        select s.department.id
+        from Specialty s
+        join Doctor d on s.id = d.specialty.id
+        where d.id = :doctorId
+    """)
+    Integer findDepartmentIdByDoctorId(Integer doctorId);
 }

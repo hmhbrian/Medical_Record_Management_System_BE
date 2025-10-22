@@ -1,18 +1,19 @@
 package com.example.clinicbooking.DTO.MedicalRecord;
 
-import com.example.clinicbooking.DTO.Patient.PatientRp;
+import com.example.clinicbooking.DTO.Patient.PatientSummary;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 @Data
 public class MedicalRecordResponse {
-    private int recordId;
-    private int PatientId;
-    private String PatientName;
-    private String doctorName;
-    private int doctorId;
-    private int appointmentId;
+    private Integer recordId;
+    private Integer appointmentId;
     private String initialSymptoms;
     private String diagnosis;
-    private String visitDate;
+    private LocalDate visitDate;
     private int visitNumber;
+    private String status;
+    private PatientSummary patient;
 }

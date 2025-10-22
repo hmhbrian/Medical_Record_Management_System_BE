@@ -121,7 +121,7 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
     private PatientResponse covertToResponse(Patient patient) {
         PatientResponse dto = new PatientResponse();
         dto.setId(patient.getId());
-        dto.setPatientcode(patient.getPatientcode());
+        dto.setPatientCode(patient.getPatientcode());
         dto.setFullname(patient.getUser().getFullname());
         dto.setEmail(patient.getUser().getEmail());
         dto.setAddress(patient.getUser().getAddress());

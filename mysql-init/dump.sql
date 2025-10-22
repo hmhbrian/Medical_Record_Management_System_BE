@@ -43,7 +43,7 @@ CREATE TABLE `appointment_status` (
 
 LOCK TABLES `appointment_status` WRITE;
 /*!40000 ALTER TABLE `appointment_status` DISABLE KEYS */;
-INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,4,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,4,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,4,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07');
+INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,6,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,6,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,6,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07');
 /*!40000 ALTER TABLE `appointment_status` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -534,6 +534,34 @@ INSERT INTO `feedbacks` VALUES (1,1,5,'Bác sĩ tận tâm và nhiệt tình!',N
 UNLOCK TABLES;
 
 --
+-- Table structure for table `icd10_catalog`
+--
+
+DROP TABLE IF EXISTS `icd10_catalog`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `icd10_catalog` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) NOT NULL,
+  `name_vn` varchar(255) NOT NULL,
+  `name_en` varchar(255) DEFAULT NULL,
+  `category` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Danh mục chuẩn mã ICD-10';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `icd10_catalog`
+--
+
+LOCK TABLES `icd10_catalog` WRITE;
+/*!40000 ALTER TABLE `icd10_catalog` DISABLE KEYS */;
+INSERT INTO `icd10_catalog` VALUES (1,'A09','Viêm dạ dày-ruột và viêm đại tràng do nhiễm trùng và không đặc hiệu','Infectious and unspecified gastroenteritis and colitis','I: A00-B99'),(2,'A00.9','Bệnh tả, không đặc hiệu','Cholera, unspecified','I: A00-B99'),(3,'B18.1','Viêm gan vi rút B mạn tính không có delta tác nhân','Chronic viral hepatitis B without delta-agent','I: A00-B99'),(4,'B24','Bệnh do vi rút gây suy giảm miễn dịch ở người (HIV) không đặc hiệu','Unspecified human immunodeficiency virus [HIV] disease','I: A00-B99'),(5,'B35.1','Nấm móng tay/chân','Tinea unguium','I: A00-B99'),(6,'B02.9','Bệnh Zona, không biến chứng','Zoster without complication','I: A00-B99'),(7,'C34.9','U ác tính của phế quản hoặc phổi, không đặc hiệu','Malignant neoplasm of bronchus or lung, unspecified','II: C00-D48'),(8,'C50.9','U ác tính của vú, không đặc hiệu','Malignant neoplasm of breast, unspecified','II: C00-D48'),(9,'D12.6','U lành tính của đại tràng, không đặc hiệu','Benign neoplasm of colon, unspecified','II: C00-D48'),(10,'D50.9','Thiếu máu do thiếu sắt, không đặc hiệu','Iron deficiency anaemia, unspecified','III: D50-D89'),(11,'D64.9','Thiếu máu, không đặc hiệu','Anaemia, unspecified','III: D50-D89'),(12,'D80.9','Suy giảm miễn dịch, không đặc hiệu','Immunodeficiency, unspecified','III: D50-D89'),(13,'E11.9','Đái tháo đường không phụ thuộc insulin, không biến chứng','Non-insulin-dependent diabetes mellitus without complications','IV: E00-E90'),(14,'E78.5','Tăng lipid máu, không đặc hiệu','Hyperlipidaemia, unspecified','IV: E00-E90'),(15,'E66.9','Béo phì, không đặc hiệu','Obesity, unspecified','IV: E00-E90'),(16,'E05.9','Nhiễm độc tuyến giáp, không đặc hiệu','Thyrotoxicosis, unspecified','IV: E00-E90'),(17,'F32.9','Giai đoạn trầm cảm, không đặc hiệu','Depressive episode, unspecified','V: F00-F99'),(18,'F41.9','Rối loạn lo âu, không đặc hiệu','Anxiety disorder, unspecified','V: F00-F99'),(19,'F10.2','Rối loạn tâm thần và hành vi do sử dụng rượu, phụ thuộc','Mental and behavioural disorders due to use of alcohol, dependence syndrome','V: F00-F99'),(20,'G43.9','Đau nửa đầu, không đặc hiệu','Migraine, unspecified','VI: G00-G99'),(21,'G20','Bệnh Parkinson','Parkinson\'s disease','VI: G00-G99'),(22,'G44.2','Đau đầu kiểu căng thẳng','Tension-type headache','VI: G00-G99'),(23,'G81.9','Liệt nửa người, không đặc hiệu','Hemiplegia, unspecified','VI: G00-G99'),(24,'I10','Tăng huyết áp vô căn (nguyên phát)','Essential (primary) hypertension','IX: I00-I99'),(25,'I25.1','Bệnh tim thiếu máu cục bộ mạn tính','Atherosclerotic heart disease','IX: I00-I99'),(26,'I64','Đột quỵ, không phân loại là xuất huyết hoặc nhồi máu','Stroke, not specified as haemorrhage or infarction','IX: I00-I99'),(27,'I50.0','Suy tim sung huyết','Congest heart failure','IX: I00-I99'),(28,'I83.9','Giãn tĩnh mạch chi dưới không có loét hoặc viêm','Varicose veins of lower extremities without ulcer or inflammation','IX: I00-I99'),(29,'J45.9','Hen phế quản, không đặc hiệu','Asthma, unspecified','X: J00-J99'),(30,'J44.9','Bệnh phổi tắc nghẽn mạn tính (COPD), không đặc hiệu','Chronic obstructive pulmonary disease, unspecified','X: J00-J99'),(31,'J02.9','Viêm họng cấp, không đặc hiệu','Acute pharyngitis, unspecified','X: J00-J99'),(32,'J18.9','Viêm phổi, không đặc hiệu','Pneumonia, unspecified','X: J00-J99'),(33,'K29.7','Viêm dạ dày, không đặc hiệu','Gastritis, unspecified','XI: K00-K93'),(34,'K35.9','Viêm ruột thừa cấp, không đặc hiệu','Acute appendicitis, unspecified','XI: K00-K93'),(35,'K74.6','Xơ gan, không đặc hiệu','Other and unspecified cirrhosis of liver','XI: K00-K93'),(36,'M54.5','Đau thắt lưng dưới','Low back pain','XIII: M00-M99'),(37,'M17.9','Thoái hóa khớp gối, không đặc hiệu','Osteoarthritis of knee, unspecified','XIII: M00-M99'),(38,'M79.1','Đau cơ','Myalgia','XIII: M00-M99'),(39,'M25.5','Đau khớp, không đặc hiệu','Pain in joint, unspecified','XIII: M00-M99'),(40,'M81.9','Loãng xương, không đặc hiệu','Osteoporosis, unspecified','XIII: M00-M99'),(41,'N18.9','Suy thận mạn, không đặc hiệu','Chronic kidney disease, unspecified','XIV: N00-N99'),(42,'N39.0','Nhiễm trùng đường tiết niệu, vị trí không đặc hiệu','Urinary tract infection, site unspecified','XIV: N00-N99'),(43,'Z00.0','Khám sức khỏe tổng quát','General medical examination','XXI: Z00-Z99');
+/*!40000 ALTER TABLE `icd10_catalog` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `imagingstaff`
 --
 
@@ -775,7 +803,7 @@ CREATE TABLE `labtests` (
   `testType_id` int DEFAULT NULL,
   `requestDate` date DEFAULT NULL,
   `resultDate` date DEFAULT NULL,
-  `result` text,
+  `result_text` text,
   `status` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`),
@@ -801,6 +829,36 @@ LOCK TABLES `labtests` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `medical_record_icd10`
+--
+
+DROP TABLE IF EXISTS `medical_record_icd10`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `medical_record_icd10` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `record_id` int NOT NULL COMMENT 'ID của Hồ sơ bệnh án (MedicalRecord)',
+  `icd10_catalog_id` int NOT NULL COMMENT 'ID của Mã ICD-10 trong danh mục',
+  `is_principal` tinyint(1) DEFAULT '0' COMMENT 'TRUE nếu là chẩn đoán chính, FALSE nếu là chẩn đoán phụ',
+  `diagnosis_order` int DEFAULT '0' COMMENT 'Thứ tự ưu tiên của chẩn đoán (nếu là phụ)',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_record_icd10` (`record_id`,`icd10_catalog_id`),
+  KEY `icd10_catalog_id` (`icd10_catalog_id`),
+  CONSTRAINT `medical_record_icd10_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `medical_record_icd10_ibfk_2` FOREIGN KEY (`icd10_catalog_id`) REFERENCES `icd10_catalog` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Liên kết chẩn đoán ICD-10 với hồ sơ bệnh án';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `medical_record_icd10`
+--
+
+LOCK TABLES `medical_record_icd10` WRITE;
+/*!40000 ALTER TABLE `medical_record_icd10` DISABLE KEYS */;
+/*!40000 ALTER TABLE `medical_record_icd10` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `medical_records`
 --
 
@@ -816,6 +874,9 @@ CREATE TABLE `medical_records` (
   `diagnosis` varchar(255) DEFAULT NULL,
   `appointment_id` int DEFAULT NULL,
   `initial_symptoms` varchar(255) DEFAULT NULL,
+  `notes` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `patient_id` (`patient_id`),
   KEY `doctor_id` (`doctor_id`),
@@ -832,9 +893,28 @@ CREATE TABLE `medical_records` (
 
 LOCK TABLES `medical_records` WRITE;
 /*!40000 ALTER TABLE `medical_records` DISABLE KEYS */;
-INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng');
+INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3');
 /*!40000 ALTER TABLE `medical_records` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_medical_records` BEFORE INSERT ON `medical_records` FOR EACH ROW BEGIN
+    DECLARE new_code VARCHAR(20);
+    SET new_code = CONCAT('MR',  IFNULL((SELECT MAX(id) FROM medical_records), 0) + 1);
+    SET NEW.code = new_code;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `medicalexamination`
@@ -1320,7 +1400,7 @@ CREATE TABLE `room` (
   KEY `room_type_id` (`room_type_id`),
   CONSTRAINT `room_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
   CONSTRAINT `room_ibfk_2` FOREIGN KEY (`room_type_id`) REFERENCES `roomtypes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1329,7 +1409,7 @@ CREATE TABLE `room` (
 
 LOCK TABLES `room` WRITE;
 /*!40000 ALTER TABLE `room` DISABLE KEYS */;
-INSERT INTO `room` VALUES (1,1,1,'Phòng A1','AVAILABLE',NULL,'A1'),(2,1,1,'Phòng A2','AVAILABLE',NULL,'A2'),(3,2,1,'Phòng B1','AVAILABLE',NULL,'B1'),(4,2,1,'Phòng B2','AVAILABLE',NULL,'B2'),(5,2,8,'Phòng xét nghiệm 1','AVAILABLE',NULL,'BT1'),(6,1,5,'Phòng A3','AVAILABLE',NULL,'A3'),(7,1,5,'Phòng A4','AVAILABLE',NULL,'A4'),(8,1,5,'Phòng A5','AVAILABLE',NULL,'A5'),(9,1,5,'Phòng A6','AVAILABLE',NULL,'A6'),(10,2,6,'Phòng B3','AVAILABLE',NULL,'B3'),(11,2,6,'Phòng B4','AVAILABLE',NULL,'B4'),(12,2,6,'Phòng B5','AVAILABLE',NULL,'B5'),(13,2,6,'Phòng B6','AVAILABLE',NULL,'B6'),(14,2,6,'Phòng B7','AVAILABLE',NULL,'B7'),(15,3,6,'Phòng C1','AVAILABLE',NULL,'C1'),(16,3,6,'Phòng C2','AVAILABLE',NULL,'C2'),(17,2,2,'Phòng A22','AVAILABLE',NULL,'A22'),(18,2,2,'Phòng A23','AVAILABLE','Phòng chăm sóc bệnh nhân nội trú','A23');
+INSERT INTO `room` VALUES (1,1,1,'Phòng A1','AVAILABLE',NULL,'A1'),(2,1,1,'Phòng A2','AVAILABLE',NULL,'A2'),(3,2,1,'Phòng B1','AVAILABLE',NULL,'B1'),(4,2,1,'Phòng B2','AVAILABLE',NULL,'B2'),(5,2,8,'Phòng xét nghiệm 1','AVAILABLE',NULL,'BT1'),(6,1,5,'Phòng A3','AVAILABLE',NULL,'A3'),(7,1,5,'Phòng A4','AVAILABLE',NULL,'A4'),(8,1,5,'Phòng A5','AVAILABLE',NULL,'A5'),(9,1,5,'Phòng A6','AVAILABLE',NULL,'A6'),(10,2,6,'Phòng B3','AVAILABLE',NULL,'B3'),(11,2,6,'Phòng B4','AVAILABLE',NULL,'B4'),(12,2,6,'Phòng B5','AVAILABLE',NULL,'B5'),(13,2,6,'Phòng B6','AVAILABLE',NULL,'B6'),(14,2,6,'Phòng B7','AVAILABLE',NULL,'B7'),(15,3,6,'Phòng C1','AVAILABLE',NULL,'C1'),(16,3,6,'Phòng C2','AVAILABLE',NULL,'C2'),(17,2,2,'Phòng A22','AVAILABLE',NULL,'A22'),(18,2,2,'Phòng A23','AVAILABLE','Phòng chăm sóc bệnh nhân nội trú','A23'),(19,1,1,'Phòng 106','OCCUPIED','','106');
 /*!40000 ALTER TABLE `room` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1624,7 +1704,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Huỳnh Minh Hoàng','hoanghm4869@gmail.com','0337023824','2003-11-12',0,'TBH TDM','$2a$10$b6E2VmRKJ8pB25uky/vWN.1XnlYvFSOEwK3jtxPchw5nqbLmqQoPC',0,'2025-04-10 00:00:00',NULL),(3,'Nguyễn Văn A','nguyenvanA@example.com','0123456789','1995-05-20',0,'123 Đường Lê Lợi, Tdm, TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',1,'2025-04-10 04:48:35',NULL),(4,'Trần Văn C','tranvanc@hospital.com','0323456789','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$XiutYothZ4rma/P.J5c2leYOLb/hTj6V677Re5gy5hSWeB1yBe71y',2,'2025-04-10 08:28:32','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1747710399077.png'),(5,'Nguyễn Minh Thuận','Thuannm@example.com','0223456789','1985-06-20',0,'123 Nguyễn Trãi, TP.HCM','$2a$10$o/BAwrm8rlbRUtVKepG8iuhlFxvVMfn6LVhLyaaiLtmdvUAIkGLbC',2,'2025-04-16 08:06:58','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nam.png'),(7,'Nguyễn Hồng Yến','Yennh@example.com','0423456789','1995-06-20',1,'123 Lý Thái Tổ, TP.HCM','$2a$10$ZRb1sOPqiTR1NgDn7l9ryuU7JbBOT6QnX2.ai.skFTmg/VMVFNu5u',2,'2025-05-18 06:40:23','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(8,'Trần Thu Phương','Phuongtt20@example.com','0523456789','1994-08-20',1,'123 Phan Châu Trinh, TP.HCM','$2a$10$qFTu3C44lJEAz4.AEo/qIOnwihykzMMB5mYTqv0nKcnFePOhvBtxK',2,'2025-05-18 07:36:34','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(9,'Nguyễn Việt Trung','Truntnv@gmail.com','0336013824','2003-06-25',0,'Phú Hòa','$2a$10$kvsD41NR8tMs6ZFfth6wI.ksdSKpySwLVYW2Y/CT/0KoryGjrzxCq',1,'2025-05-19 00:13:09',''),(10,'Nguyễn Thanh Nam','Namnt@gmail.com','0723456789','2002-05-23',0,'Củ Chi','$2a$10$WYEA1.VFcVZYAR1tAqY8vO/Sr/C1Y3bVp6TDVwyKAbQIfPcTuBCQm',1,'2025-05-23 17:17:39',''),(11,'Hồ Ngọc Châu','Chaunh@gmail.com','0823456789','2000-06-24',1,'TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',2,'2025-05-24 16:47:19',NULL),(12,'Nguyễn Ngọc Hà','hann@gmail.com','038023564','2003-11-25',1,'phường Thủ Dầu Một','$2a$10$jtuaGLERzhkK9ScR63RZPO1VLcFgTratjYAmWhWZXz1.PHKX2p3XK',1,'2025-08-21 09:18:07',NULL),(13,'Nguyễn Thanh Thảo','thaont@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$Ru49ve58Uu1O0CXhf0.Lqu48tpwLWf32xZVJ32FS9VL91up0IulK6',1,'2025-08-21 16:05:53','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825874773.jpg'),(14,'Trần Văn C','Thuann1m@example.com','0323456789','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$iwcOFEhX3qKwdYfG/kQ6QuPxQUokKlxOENmeSJ/VYgu4918xbGLhq',2,'2025-08-22 01:23:35','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825850325.jpg'),(15,'Nguyễn Thanh Hằng','hangnt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$v4mss5YDekozGY9xkvRQIe/FdEjz8uFNx1U9u84TzjQkASAvkUdpO',1,'2025-08-22 01:26:01',NULL),(16,'Nguyễn Thanh Thu','nguyenvan123@example.com','0320156487','2002-05-14',0,'phường Chánh Hiệp','$2a$10$.cnH7Hx/jTUaCll79EDPk.q5zlRJ1ntCUmGtV9sQSULT8ybVYnCH6',1,'2025-08-22 01:26:52',NULL),(17,'Nguyễn Thanh Thuỷ','thuynt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$4iEmWwD6Ju6U/vamg5MbMOjWERSQ2PHCPA67uCq42eqQlKDxYlrtm',1,'2025-08-22 13:10:33',''),(18,'Nguyễn Thị Ngân','ngannt@gmail.com','0337033824','2000-09-28',0,'Chánh Hiệp','$2a$10$aOyLpSBFMRaj1n8MRk2.EOma7w1gsf/gIjKB4aMFkRd4Te./hMaAm',2,'2025-09-28 17:36:54','string'),(19,'Nguyễn Tiến Duy','duynt@gmail.com','0337043824','1999-10-28',1,'Phú Lợi','$2a$10$ixigocA1JDl.IF/Nu7vb4eh6.JAdWX7eZWGfX/J6C.8oDt5YPGtRO',2,'2025-09-28 17:39:05','');
+INSERT INTO `users` VALUES (1,'Huỳnh Minh Hoàng','hoanghm4869@gmail.com','0337023824','2003-11-12',0,'TBH TDM','$2a$10$b6E2VmRKJ8pB25uky/vWN.1XnlYvFSOEwK3jtxPchw5nqbLmqQoPC',0,'2025-04-10 00:00:00',NULL),(3,'Nguyễn Văn A','nguyenvanA@example.com','0123456789','1995-05-20',0,'123 Đường Lê Lợi, Tdm, TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',1,'2025-04-10 04:48:35',NULL),(4,'Trần Văn C','tranvanc@hospital.com','0323456709','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$XiutYothZ4rma/P.J5c2leYOLb/hTj6V677Re5gy5hSWeB1yBe71y',2,'2025-04-10 08:28:32','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1747710399077.png'),(5,'Nguyễn Minh Thuận','Thuannm@example.com','0223456789','1985-06-20',0,'123 Nguyễn Trãi, TP.HCM','$2a$10$o/BAwrm8rlbRUtVKepG8iuhlFxvVMfn6LVhLyaaiLtmdvUAIkGLbC',2,'2025-04-16 08:06:58','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nam.png'),(7,'Nguyễn Hồng Yến','Yennh@example.com','0423456789','1995-06-20',1,'123 Lý Thái Tổ, TP.HCM','$2a$10$ZRb1sOPqiTR1NgDn7l9ryuU7JbBOT6QnX2.ai.skFTmg/VMVFNu5u',2,'2025-05-18 06:40:23','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(8,'Trần Thu Phương','Phuongtt20@example.com','0523456789','1994-08-20',1,'123 Phan Châu Trinh, TP.HCM','$2a$10$qFTu3C44lJEAz4.AEo/qIOnwihykzMMB5mYTqv0nKcnFePOhvBtxK',2,'2025-05-18 07:36:34','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(9,'Nguyễn Việt Trung','Truntnv@gmail.com','0336013824','2003-06-25',0,'Phú Hòa','$2a$10$kvsD41NR8tMs6ZFfth6wI.ksdSKpySwLVYW2Y/CT/0KoryGjrzxCq',1,'2025-05-19 00:13:09',''),(10,'Nguyễn Thanh Nam','Namnt@gmail.com','0723456789','2002-05-23',0,'Củ Chi','$2a$10$WYEA1.VFcVZYAR1tAqY8vO/Sr/C1Y3bVp6TDVwyKAbQIfPcTuBCQm',1,'2025-05-23 17:17:39',''),(11,'Hồ Ngọc Châu','Chaunh@gmail.com','0823456789','2000-06-24',1,'TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',2,'2025-05-24 16:47:19',NULL),(12,'Nguyễn Ngọc Hà','hann@gmail.com','038023564','2003-11-25',1,'phường Thủ Dầu Một','$2a$10$jtuaGLERzhkK9ScR63RZPO1VLcFgTratjYAmWhWZXz1.PHKX2p3XK',1,'2025-08-21 09:18:07',NULL),(13,'Nguyễn Thanh Thảo','thaont@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$Ru49ve58Uu1O0CXhf0.Lqu48tpwLWf32xZVJ32FS9VL91up0IulK6',1,'2025-08-21 16:05:53','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825874773.jpg'),(14,'Trần Văn C','Thuann1m@example.com','0323456789','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$iwcOFEhX3qKwdYfG/kQ6QuPxQUokKlxOENmeSJ/VYgu4918xbGLhq',2,'2025-08-22 01:23:35','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825850325.jpg'),(15,'Nguyễn Thanh Hằng','hangnt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$v4mss5YDekozGY9xkvRQIe/FdEjz8uFNx1U9u84TzjQkASAvkUdpO',1,'2025-08-22 01:26:01',NULL),(16,'Nguyễn Thanh Thu','nguyenvan123@example.com','0320156487','2002-05-14',0,'phường Chánh Hiệp','$2a$10$.cnH7Hx/jTUaCll79EDPk.q5zlRJ1ntCUmGtV9sQSULT8ybVYnCH6',1,'2025-08-22 01:26:52',NULL),(17,'Nguyễn Thanh Thuỷ','thuynt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$4iEmWwD6Ju6U/vamg5MbMOjWERSQ2PHCPA67uCq42eqQlKDxYlrtm',1,'2025-08-22 13:10:33',''),(18,'Nguyễn Thị Ngân','ngannt@gmail.com','0337033824','2000-09-28',0,'Chánh Hiệp','$2a$10$aOyLpSBFMRaj1n8MRk2.EOma7w1gsf/gIjKB4aMFkRd4Te./hMaAm',2,'2025-09-28 17:36:54','string'),(19,'Nguyễn Tiến Duy','duynt@gmail.com','0337043824','1999-10-28',1,'Phú Lợi','$2a$10$ixigocA1JDl.IF/Nu7vb4eh6.JAdWX7eZWGfX/J6C.8oDt5YPGtRO',2,'2025-09-28 17:39:05','');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1771,4 +1851,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-20 11:06:16
+-- Dump completed on 2025-10-22 23:24:12

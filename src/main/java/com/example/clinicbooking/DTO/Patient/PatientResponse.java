@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class PatientResponse extends BaseUserResponse {
     public int id;
-    public String patientcode;
+    public String patientCode;
     public String medicalHistory;
     public String insuranceNumber;
 }

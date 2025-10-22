@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/appointments")
-@Tag(name = "Appointment", description = "Quản lý lịch hẹn khám bệnh(1: Chờ xác nhận, 2: Đã xác nhận, 3:Hoàn thành, 4: Hủy.)")
+@Tag(name = "Appointment", description = "Quản lý lịch hẹn khám bệnh(1: Chờ xác nhận, 2: Đã xác nhận, 3:Chờ khám, 4:Đang khám, 5:Hoàn thành, 6: Hủy.)")
 @RequiredArgsConstructor
 public class AppointmentController {
     private final AppointmentService appointmentService;
