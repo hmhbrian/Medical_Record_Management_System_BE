@@ -120,6 +120,7 @@ public class RoomService {
         room.setStatus(status);
         room.setDepartment(department);
         room.setRoomType(roomTypes);
+        roomRepository.save(room);
 
         return new ApiResponse<>(true, "Thêm phòng thành công", convertToResponse(room));
     }

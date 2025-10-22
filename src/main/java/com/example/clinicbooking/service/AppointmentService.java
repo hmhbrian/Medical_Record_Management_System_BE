@@ -106,7 +106,7 @@ public class AppointmentService {
         // Tạo mới trạng thái
         AppointmentStatus status = new AppointmentStatus();
         status.setAppointment(appointment);
-        status.setStatus(4); // Hủy
+        status.setStatus(6); // Hủy
         status.setReason(reason);
         status.setUpdateAt(LocalDateTime.now());
 

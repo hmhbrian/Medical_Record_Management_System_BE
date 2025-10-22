@@ -25,5 +25,4 @@ public class AppointmentStatus {
     @Column(name = "update_at")
     private LocalDateTime updateAt;
     private int status; //1: Chờ xác nhận, 2: Đã xác nhận, 3:Hoàn thành, 4: Hủy.
-
 }
