@@ -7,4 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 public interface Icd10Repository extends JpaRepository<Icd10, Integer>, JpaSpecificationExecutor<Icd10> {
+    boolean existsByCode(String code);
+    boolean existsByNameEn(String nameEn);
+
 }

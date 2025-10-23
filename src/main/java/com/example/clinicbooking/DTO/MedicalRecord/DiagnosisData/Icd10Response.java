@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Icd10Response {
+    private int id;
     private String code;
     private String name;
     private boolean isPrincipal; // TRUE nếu là chẩn đoán chính
+    private Integer diagnosisOrder;
 }

@@ -11,6 +11,8 @@ public class AppointmentDTO {
     private int id;
     private int doctorScheduleId;
     private int specialtyId;
+    // Thông tin bệnh nhân
+    private int patientId;
     private String code;
     private String patientName;
     private LocalDate patientYearOfBirth;
@@ -18,8 +20,11 @@ public class AppointmentDTO {
     private String patientPhone;
     private String patientEmail;
     private int patientAge;
+    // Thông tin bác sĩ
+    private int doctorId;
     private String doctorName;
     private String doctorSpecialty;
+    // Thông tin cuộc hẹn
     private String roomName;
     private String appointmentDate;
     private LocalDateTime presentTime;

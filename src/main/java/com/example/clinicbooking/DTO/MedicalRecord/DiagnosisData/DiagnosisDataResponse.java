@@ -18,6 +18,7 @@ public class DiagnosisDataResponse {
 
     // Dịch vụ Khám đã chỉ định (nếu có, VD: Khám chuyên khoa)
     private Integer examinationServiceId;
+    private String examinationServiceName;
 
     private List<Icd10Response> icd10Diagnoses;
 }

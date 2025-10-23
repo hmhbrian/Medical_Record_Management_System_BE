@@ -298,8 +298,10 @@ public class AppointmentService {
         dto.setId(appointment.getId());
         dto.setCode(appointment.getCode());
         dto.setSpecialtyId(appointment.getDoctor().getSpecialty().getDepartment().getId());
+        dto.setDoctorId(appointment.getDoctor().getId());
         dto.setDoctorName(appointment.getDoctor().getStaff().getUser().getFullname());
         dto.setDoctorSpecialty(appointment.getDoctor().getSpecialty().getDepartment().getName());
+        dto.setPatientId(appointment.getPatient().getId());
         dto.setPatientName(appointment.getPatient().getUser().getFullname());
         dto.setPatientYearOfBirth(appointment.getPatient().getUser().getDateOfBirth());
         dto.setPatientPhone(appointment.getPatient().getUser().getPhoneNumber());
