@@ -7,6 +7,5 @@ public class MedicalRecordRequest {
     private Integer patientId;
     private Integer doctorId;
     private Integer appointmentId;
-    private String initialSymptoms;
-    private String diagnosis;
+    private String initialSymptoms;//được bác sĩ hoặc nhân viên y tế ghi nhận ban đầu
 }

@@ -1,6 +1,8 @@
 package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.ApiResponse;
+import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisDataResponse;
+import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisUpdateRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordMetricsResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
@@ -28,6 +30,7 @@ public class MedicalRecordController {
     @Autowired
     private MedicalRecordService recordService;
 
+    //Lấy danh sách hồ sơ ngoại trú của bác sĩ với phân trang và lọc
     @GetMapping("/OfDoctor")
     public ResponseEntity<PaginatedResponseDTO<MedicalRecordResponse>> getDoctorMedicalRecords(
             @RequestParam(required = false) String keyword,
@@ -50,18 +53,21 @@ public class MedicalRecordController {
         return ResponseEntity.ok(response);
     }
 
+    // Thống kê hồ sơ ngoại trú theo ngày
     @GetMapping("/overview-metrics")
     public ResponseEntity<MedicalRecordMetricsResponse> getMetricsByDate(@RequestParam String date) {
         MedicalRecordMetricsResponse metrics = recordService.getMetricsByDate(date);
         return ResponseEntity.ok(metrics);
     }
 
+    // Tạo mới hồ sơ ngoại trú
     @PostMapping
     public ResponseEntity<ApiResponse<?>> create(@RequestBody MedicalRecordRequest request) {
         recordService.CreateMedicalRecord(request);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Hồ sơ ngoại trú được thêm thành công", null));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Hồ sơ ngoại trú được tạo thành công", null));
     }
 
+    // Cập nhật trạng thái hồ sơ ngoại trú thành "Đang tiến hành"
     @PutMapping("/{recordId}/in_progress")
     public ResponseEntity<ApiResponse<?>> update_inProgress(@PathVariable Integer recordId) {
         Boolean updateStatus = recordService.UpdateMedicalRecordStatus(recordId, MedicalRecordStatus.IN_PROGRESS.name());
@@ -71,26 +77,54 @@ public class MedicalRecordController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật trạng thái hồ sơ thành công!", null));
     }
 
+    // Lấy hồ sơ ngoại trú theo bệnh nhân
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<List<MedicalRecordResponse>> getByPatient(@PathVariable Integer patientId) {
         return ResponseEntity.ok(recordService.getRecordsByPatientId(patientId));
     }
 
+    // Lấy hồ sơ ngoại trú theo bác sĩ
     @GetMapping("/doctor/{doctorId}")
-    public ResponseEntity<List<MedicalRecord>> getByDoctor(@PathVariable Integer doctorId) {
+    public ResponseEntity<List<MedicalRecordResponse>> getByDoctor(@PathVariable Integer doctorId) {
         return ResponseEntity.ok(recordService.getRecordsByDoctorId(doctorId));
     }
 
+    // Lấy tất cả hồ sơ ngoại trú, nhóm theo bệnh nhân
     @GetMapping("/grouped/patient")
     public ResponseEntity<List<MedicalRecord>> getAllGroupedByPatient() {
         return ResponseEntity.ok(recordService.getAllRecordsGroupedByPatient());
     }
 
+    // Lấy hồ sơ ngoại trú theo ID
     @GetMapping("/{id}")
     public ResponseEntity<MedicalRecord> getById(@PathVariable Integer id) {
         return recordService.getRecordById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{recordId}/diagnosis")
+    public ResponseEntity<ApiResponse<?>> updateDiagnosis(
+            @PathVariable Integer recordId,
+            @RequestBody DiagnosisUpdateRequest dto) {
+
+        recordService.updateDiagnosis(recordId, dto);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật chẩn đoán thành công", null));
+    }
+
+    //Lấy dữ liệu để hiển thị Tab 1: Khám & Chẩn đoán.
+    @GetMapping("/{recordId}/diagnosis-data")
+    public ResponseEntity<ApiResponse<DiagnosisDataResponse>> getDiagnosisData(
+            @PathVariable Integer recordId) {
+
+        DiagnosisDataResponse response = recordService.getDiagnosisData(recordId);
+
+        // Xử lý NotFoundException bằng ControllerAdvice hoặc ExceptionHandler
+        if (response == null) {
+            return ResponseEntity.ok(new ApiResponse<>(true, "Lấy dữ liệu khám & chânr đoán thất bại", null));
+        }
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "Lấy dữ liệu khám & chânr đoán thành công", response));
     }
 }
 

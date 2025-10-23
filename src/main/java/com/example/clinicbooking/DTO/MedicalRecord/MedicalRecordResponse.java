@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Data
 public class MedicalRecordResponse {
     private Integer recordId;
+    private String recordCode;
     private Integer appointmentId;
     private String initialSymptoms;
     private String diagnosis;

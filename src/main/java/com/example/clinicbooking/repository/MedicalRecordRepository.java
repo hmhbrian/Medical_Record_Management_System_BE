@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Integer>, JpaSpecificationExecutor<MedicalRecord> {
 
@@ -27,4 +28,8 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, In
 
     // Truy vấn để đếm số hồ sơ theo trạng thái
     Integer countByDoctorIdAndVisitDateAndStatus(Integer doctorId, LocalDate visitDate, MedicalRecordStatus status);
+
+    //Query fetch join để tối ưu hiệu suất nếu cần lấy Patient/User/Appointment cùng lúc.
+    @Query("SELECT mr FROM MedicalRecord mr JOIN FETCH mr.patient p JOIN FETCH p.user u WHERE mr.id = :recordId")
+    Optional<MedicalRecord> findByIdWithPatientAndUser(Integer recordId);
 }
