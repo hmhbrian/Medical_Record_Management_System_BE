@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Lab_staff")
-public class LabTechnician{
+@Table(name = "Receptionist")
+public class Receptionist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -18,8 +18,8 @@ public class LabTechnician{
     @OneToOne
     @JoinColumn(name = "staff_id")
     private Staff staff;
-    @Column(name = "lab_scode")
-    private String LabTechnicianCode;
+    @Column(name = "receptionist_code")
+    private String ReceptionistCode;
     @Column(name = "experience_years")
     private int experienceYears;
 }

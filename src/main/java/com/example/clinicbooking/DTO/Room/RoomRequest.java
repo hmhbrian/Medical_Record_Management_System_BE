@@ -10,4 +10,5 @@ public class RoomRequest {
     private int roomTypeId;
     private String description;
     private String roomStatus;
+    private int roomCapacity;
 }

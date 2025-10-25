@@ -120,6 +120,7 @@ public class RoomService {
         room.setStatus(status);
         room.setDepartment(department);
         room.setRoomType(roomTypes);
+        room.setCapacity(newRoom.getRoomCapacity());
         roomRepository.save(room);
 
         return new ApiResponse<>(true, "Thêm phòng thành công", convertToResponse(room));
@@ -136,6 +137,10 @@ public class RoomService {
                 //throw new IllegalArgumentException("Room name already exists: " + request.getName());
             }
             existingRoom.setName(request.getName());
+        }
+
+        if(request.getRoomCapacity() != existingRoom.getCapacity() && request.getRoomCapacity() >= 0) {
+            existingRoom.setCapacity(request.getRoomCapacity());
         }
 
         if (request.getRoomNumber() != null) {
@@ -192,6 +197,7 @@ public class RoomService {
         response.setRoomTypeName(room.getRoomType().getName());
         response.setDepartmentName(room.getDepartment().getName());
         response.setDepartmentId(room.getDepartment().getId());
+        response.setRoomCapacity(room.getCapacity());
         return response;
     }
 }
