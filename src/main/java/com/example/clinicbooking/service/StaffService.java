@@ -4,10 +4,8 @@ import com.example.clinicbooking.DTO.Doctor.DoctorResponse;
 import com.example.clinicbooking.DTO.Staff.StaffRequest;
 import com.example.clinicbooking.DTO.Staff.StaffResponse;
 import com.example.clinicbooking.entity.*;
-import com.example.clinicbooking.repository.LabTechnicianRepository;
-import com.example.clinicbooking.repository.NurseRepository;
-import com.example.clinicbooking.repository.SpecialtyRepository;
-import com.example.clinicbooking.repository.UnifiedStaffViewRepository;
+import com.example.clinicbooking.repository.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,24 +14,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class StaffService implements IStaffService {
-    private NurseRepository nurseRepo;
-    private LabTechnicianRepository labTechnicianRepo;
-    private SpecialtyRepository specialtyRepo;
-    private StaffCreationService staffCreationService;
-    private UnifiedStaffViewRepository unifiedRepo;
+    private final NurseRepository nurseRepo;
+    private final ImagingStaffRepository imagingStaffRepo;
+    private final CashierRepository cashierRepo;
+    private final PharmacyStaffRepository pharmacyStaffRepo;
+    private final ReceptionistRepository receptionistRepo;
+    private final LabTechnicianRepository labTechnicianRepo;
+    private final StaffCreationService staffCreationService;
+    private final UnifiedStaffViewRepository unifiedRepo;
 
-    public StaffService(NurseRepository nurseRepo,
-                         LabTechnicianRepository labTechnicianRepo,
-                         SpecialtyRepository specialtyRepo,
-                         StaffCreationService staffCreationService,
-                         UnifiedStaffViewRepository unifiedRepo) {
-        this.unifiedRepo = unifiedRepo;
-        this.nurseRepo = nurseRepo;
-        this.labTechnicianRepo = labTechnicianRepo;
-        this.specialtyRepo = specialtyRepo;
-        this.staffCreationService = staffCreationService;
-    }
     @Override
     public String create(StaffRequest staffRequest) {
         User user = staffCreationService.createUser(staffRequest);
@@ -53,6 +44,34 @@ public class StaffService implements IStaffService {
             labTech.setExperienceYears(staffRequest.experienceYears);
             labTechnicianRepo.save(labTech);
             message = "Thêm kỹ thuật viên phòng thí nghiệm thành công!";
+        }
+        else if(staffRequest.getPositionId() == 4) {
+            ImagingStaff imagingStaff = new ImagingStaff();
+            imagingStaff.setStaff(staff);
+            imagingStaff.setExperienceYears(staffRequest.experienceYears);
+            imagingStaffRepo.save(imagingStaff);
+            message = "Thêm nhân viên phòng hình ảnh thành công!";
+        }
+        else if(staffRequest.getPositionId() == 5) {
+            PharmacyStaff pharmacyStaff = new PharmacyStaff();
+            pharmacyStaff.setStaff(staff);
+            pharmacyStaff.setExperienceYears(staffRequest.experienceYears);
+            pharmacyStaffRepo.save(pharmacyStaff);
+            message = "Thêm nhân viên phát thuốc thành công!";
+        }
+        else if(staffRequest.getPositionId() == 6) {
+            Cashier cashier = new Cashier();
+            cashier.setStaff(staff);
+            cashier.setExperienceYears(staffRequest.experienceYears);
+            cashierRepo.save(cashier);
+            message = "Thêm nhân viên thu ngân thành công!";
+        }
+        else if(staffRequest.getPositionId() == 7) {
+            Receptionist receptionist = new Receptionist();
+            receptionist.setStaff(staff);
+            receptionist.setExperienceYears(staffRequest.experienceYears);
+            receptionistRepo.save(receptionist);
+            message = "Thêm nhân viên tiếp nhận bệnh nhân thành công!";
         }
 
         return message;

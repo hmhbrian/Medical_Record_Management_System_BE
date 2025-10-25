@@ -1,5 +1,6 @@
 package com.example.clinicbooking.entity;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Lab_staff")
-public class LabTechnician{
+@Table(name = "Cashier")
+public class Cashier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -18,8 +19,8 @@ public class LabTechnician{
     @OneToOne
     @JoinColumn(name = "staff_id")
     private Staff staff;
-    @Column(name = "lab_scode")
-    private String LabTechnicianCode;
+    @Column(name = "cas_scode")
+    private String CashierCode;
     @Column(name = "experience_years")
     private int experienceYears;
 }

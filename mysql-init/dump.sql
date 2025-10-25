@@ -34,7 +34,7 @@ CREATE TABLE `appointment_status` (
   KEY `update_by` (`update_by`),
   CONSTRAINT `appointment_status_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`id`),
   CONSTRAINT `appointment_status_ibfk_2` FOREIGN KEY (`update_by`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `appointment_status` (
 
 LOCK TABLES `appointment_status` WRITE;
 /*!40000 ALTER TABLE `appointment_status` DISABLE KEYS */;
-INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,6,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,6,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,6,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07');
+INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,6,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,6,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,6,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07'),(26,14,2,NULL,8,'2025-10-23 08:20:16'),(27,14,3,NULL,NULL,'2025-10-23 08:24:22'),(28,14,4,NULL,NULL,'2025-10-23 08:26:27');
 /*!40000 ALTER TABLE `appointment_status` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -223,8 +223,9 @@ DROP TABLE IF EXISTS `cashier`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cashier` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `casScode` varchar(20) DEFAULT NULL,
   `staff_id` int DEFAULT NULL,
+  `experience_years` int DEFAULT NULL,
+  `cas_scode` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_cashier_staff_id` (`staff_id`),
   CONSTRAINT `cashier_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
@@ -251,7 +252,7 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_cashier` BEFORE INSERT ON `cashier` FOR EACH ROW BEGIN
     DECLARE new_code VARCHAR(20);
     SET new_code = CONCAT('CAS',  IFNULL((SELECT MAX(id) FROM cashier), 0) + 1);
-    SET NEW.casScode = new_code;
+    SET NEW.cas_scode = new_code;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -277,7 +278,7 @@ CREATE TABLE `department` (
   PRIMARY KEY (`id`),
   KEY `FK_hd_d` (`head_doctor_id`),
   CONSTRAINT `FK_hd_d` FOREIGN KEY (`head_doctor_id`) REFERENCES `doctors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -286,7 +287,7 @@ CREATE TABLE `department` (
 
 LOCK TABLES `department` WRITE;
 /*!40000 ALTER TABLE `department` DISABLE KEYS */;
-INSERT INTO `department` VALUES (1,'Khoa Nội','Chuyên điều trị các bệnh nội khoa','027412345602',1,1,'2024-10-01 08:44:25.422000'),(2,'Khoa Ngoại','Chuyên phẫu thuật và ngoại khoa','027425341602',1,4,'2024-09-02 08:44:25.422000'),(3,'Khoa Nhi','Chăm sóc và điều trị cho trẻ em','027652441602',1,NULL,'2024-09-15 08:44:25.422000'),(5,'Khoa Sản','Chăm sóc sức khỏe sinh sản và phụ nữ mang thai','027652321602',1,3,'2024-09-15 08:44:25.422000');
+INSERT INTO `department` VALUES (1,'Khoa Nội','Chuyên điều trị các bệnh nội khoa','027412345602',1,1,'2024-10-01 08:44:25.422000'),(2,'Khoa Ngoại','Chuyên phẫu thuật và ngoại khoa','027425341602',1,4,'2024-09-02 08:44:25.422000'),(3,'Khoa Nhi','Chăm sóc và điều trị cho trẻ em','027652441602',1,NULL,'2024-09-15 08:44:25.422000'),(5,'Khoa Sản','Chăm sóc sức khỏe sinh sản và phụ nữ mang thai','027652321602',1,3,'2024-09-15 08:44:25.422000'),(8,'Khoa Xét Nghiệm',NULL,'027651241503',1,NULL,'2024-09-15 08:45:25.422000'),(9,'Khoa Chẩn Đoán Hình Ảnh',NULL,'027656351503',1,NULL,'2024-09-15 08:46:25.422000'),(10,'Phòng Lễ Tân',NULL,'027655847503',1,NULL,'2024-09-15 08:47:25.422000'),(11,'Phòng Tài Chính',NULL,'027651358403',1,NULL,'2024-09-15 08:48:25.422000'),(12,'Khoa Dược',NULL,'027632541503',1,NULL,'2024-09-15 08:49:25.422000');
 /*!40000 ALTER TABLE `department` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -548,7 +549,7 @@ CREATE TABLE `icd10_catalog` (
   `category` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Danh mục chuẩn mã ICD-10';
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Danh mục chuẩn mã ICD-10';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -557,35 +558,36 @@ CREATE TABLE `icd10_catalog` (
 
 LOCK TABLES `icd10_catalog` WRITE;
 /*!40000 ALTER TABLE `icd10_catalog` DISABLE KEYS */;
-INSERT INTO `icd10_catalog` VALUES (1,'A09','Viêm dạ dày-ruột và viêm đại tràng do nhiễm trùng và không đặc hiệu','Infectious and unspecified gastroenteritis and colitis','I: A00-B99'),(2,'A00.9','Bệnh tả, không đặc hiệu','Cholera, unspecified','I: A00-B99'),(3,'B18.1','Viêm gan vi rút B mạn tính không có delta tác nhân','Chronic viral hepatitis B without delta-agent','I: A00-B99'),(4,'B24','Bệnh do vi rút gây suy giảm miễn dịch ở người (HIV) không đặc hiệu','Unspecified human immunodeficiency virus [HIV] disease','I: A00-B99'),(5,'B35.1','Nấm móng tay/chân','Tinea unguium','I: A00-B99'),(6,'B02.9','Bệnh Zona, không biến chứng','Zoster without complication','I: A00-B99'),(7,'C34.9','U ác tính của phế quản hoặc phổi, không đặc hiệu','Malignant neoplasm of bronchus or lung, unspecified','II: C00-D48'),(8,'C50.9','U ác tính của vú, không đặc hiệu','Malignant neoplasm of breast, unspecified','II: C00-D48'),(9,'D12.6','U lành tính của đại tràng, không đặc hiệu','Benign neoplasm of colon, unspecified','II: C00-D48'),(10,'D50.9','Thiếu máu do thiếu sắt, không đặc hiệu','Iron deficiency anaemia, unspecified','III: D50-D89'),(11,'D64.9','Thiếu máu, không đặc hiệu','Anaemia, unspecified','III: D50-D89'),(12,'D80.9','Suy giảm miễn dịch, không đặc hiệu','Immunodeficiency, unspecified','III: D50-D89'),(13,'E11.9','Đái tháo đường không phụ thuộc insulin, không biến chứng','Non-insulin-dependent diabetes mellitus without complications','IV: E00-E90'),(14,'E78.5','Tăng lipid máu, không đặc hiệu','Hyperlipidaemia, unspecified','IV: E00-E90'),(15,'E66.9','Béo phì, không đặc hiệu','Obesity, unspecified','IV: E00-E90'),(16,'E05.9','Nhiễm độc tuyến giáp, không đặc hiệu','Thyrotoxicosis, unspecified','IV: E00-E90'),(17,'F32.9','Giai đoạn trầm cảm, không đặc hiệu','Depressive episode, unspecified','V: F00-F99'),(18,'F41.9','Rối loạn lo âu, không đặc hiệu','Anxiety disorder, unspecified','V: F00-F99'),(19,'F10.2','Rối loạn tâm thần và hành vi do sử dụng rượu, phụ thuộc','Mental and behavioural disorders due to use of alcohol, dependence syndrome','V: F00-F99'),(20,'G43.9','Đau nửa đầu, không đặc hiệu','Migraine, unspecified','VI: G00-G99'),(21,'G20','Bệnh Parkinson','Parkinson\'s disease','VI: G00-G99'),(22,'G44.2','Đau đầu kiểu căng thẳng','Tension-type headache','VI: G00-G99'),(23,'G81.9','Liệt nửa người, không đặc hiệu','Hemiplegia, unspecified','VI: G00-G99'),(24,'I10','Tăng huyết áp vô căn (nguyên phát)','Essential (primary) hypertension','IX: I00-I99'),(25,'I25.1','Bệnh tim thiếu máu cục bộ mạn tính','Atherosclerotic heart disease','IX: I00-I99'),(26,'I64','Đột quỵ, không phân loại là xuất huyết hoặc nhồi máu','Stroke, not specified as haemorrhage or infarction','IX: I00-I99'),(27,'I50.0','Suy tim sung huyết','Congest heart failure','IX: I00-I99'),(28,'I83.9','Giãn tĩnh mạch chi dưới không có loét hoặc viêm','Varicose veins of lower extremities without ulcer or inflammation','IX: I00-I99'),(29,'J45.9','Hen phế quản, không đặc hiệu','Asthma, unspecified','X: J00-J99'),(30,'J44.9','Bệnh phổi tắc nghẽn mạn tính (COPD), không đặc hiệu','Chronic obstructive pulmonary disease, unspecified','X: J00-J99'),(31,'J02.9','Viêm họng cấp, không đặc hiệu','Acute pharyngitis, unspecified','X: J00-J99'),(32,'J18.9','Viêm phổi, không đặc hiệu','Pneumonia, unspecified','X: J00-J99'),(33,'K29.7','Viêm dạ dày, không đặc hiệu','Gastritis, unspecified','XI: K00-K93'),(34,'K35.9','Viêm ruột thừa cấp, không đặc hiệu','Acute appendicitis, unspecified','XI: K00-K93'),(35,'K74.6','Xơ gan, không đặc hiệu','Other and unspecified cirrhosis of liver','XI: K00-K93'),(36,'M54.5','Đau thắt lưng dưới','Low back pain','XIII: M00-M99'),(37,'M17.9','Thoái hóa khớp gối, không đặc hiệu','Osteoarthritis of knee, unspecified','XIII: M00-M99'),(38,'M79.1','Đau cơ','Myalgia','XIII: M00-M99'),(39,'M25.5','Đau khớp, không đặc hiệu','Pain in joint, unspecified','XIII: M00-M99'),(40,'M81.9','Loãng xương, không đặc hiệu','Osteoporosis, unspecified','XIII: M00-M99'),(41,'N18.9','Suy thận mạn, không đặc hiệu','Chronic kidney disease, unspecified','XIV: N00-N99'),(42,'N39.0','Nhiễm trùng đường tiết niệu, vị trí không đặc hiệu','Urinary tract infection, site unspecified','XIV: N00-N99'),(43,'Z00.0','Khám sức khỏe tổng quát','General medical examination','XXI: Z00-Z99');
+INSERT INTO `icd10_catalog` VALUES (1,'A09','Viêm dạ dày-ruột và viêm đại tràng do nhiễm trùng và không đặc hiệu','Infectious and unspecified gastroenteritis and colitis','I: A00-B99'),(2,'A00.9','Bệnh tả, không đặc hiệu','Cholera, unspecified','I: A00-B99'),(3,'B18.1','Viêm gan vi rút B mạn tính không có delta tác nhân','Chronic viral hepatitis B without delta-agent','I: A00-B99'),(4,'B24','Bệnh do vi rút gây suy giảm miễn dịch ở người (HIV) không đặc hiệu','Unspecified human immunodeficiency virus [HIV] disease','I: A00-B99'),(5,'B35.1','Nấm móng tay/chân','Tinea unguium','I: A00-B99'),(6,'B02.9','Bệnh Zona, không biến chứng','Zoster without complication','I: A00-B99'),(7,'C34.9','U ác tính của phế quản hoặc phổi, không đặc hiệu','Malignant neoplasm of bronchus or lung, unspecified','II: C00-D48'),(8,'C50.9','U ác tính của vú, không đặc hiệu','Malignant neoplasm of breast, unspecified','II: C00-D48'),(9,'D12.6','U lành tính của đại tràng, không đặc hiệu','Benign neoplasm of colon, unspecified','II: C00-D48'),(10,'D50.9','Thiếu máu do thiếu sắt, không đặc hiệu','Iron deficiency anaemia, unspecified','III: D50-D89'),(11,'D64.9','Thiếu máu, không đặc hiệu','Anaemia, unspecified','III: D50-D89'),(12,'D80.9','Suy giảm miễn dịch, không đặc hiệu','Immunodeficiency, unspecified','III: D50-D89'),(13,'E11.9','Đái tháo đường không phụ thuộc insulin, không biến chứng','Non-insulin-dependent diabetes mellitus without complications','IV: E00-E90'),(14,'E78.5','Tăng lipid máu, không đặc hiệu','Hyperlipidaemia, unspecified','IV: E00-E90'),(15,'E66.9','Béo phì, không đặc hiệu','Obesity, unspecified','IV: E00-E90'),(16,'E05.9','Nhiễm độc tuyến giáp, không đặc hiệu','Thyrotoxicosis, unspecified','IV: E00-E90'),(17,'F32.9','Giai đoạn trầm cảm, không đặc hiệu','Depressive episode, unspecified','V: F00-F99'),(18,'F41.9','Rối loạn lo âu, không đặc hiệu','Anxiety disorder, unspecified','V: F00-F99'),(19,'F10.2','Rối loạn tâm thần và hành vi do sử dụng rượu, phụ thuộc','Mental and behavioural disorders due to use of alcohol, dependence syndrome','V: F00-F99'),(20,'G43.9','Đau nửa đầu, không đặc hiệu','Migraine, unspecified','VI: G00-G99'),(21,'G20','Bệnh Parkinson','Parkinson\'s disease','VI: G00-G99'),(22,'G44.2','Đau đầu kiểu căng thẳng','Tension-type headache','VI: G00-G99'),(23,'G81.9','Liệt nửa người, không đặc hiệu','Hemiplegia, unspecified','VI: G00-G99'),(24,'I10','Tăng huyết áp vô căn (nguyên phát)','Essential (primary) hypertension','IX: I00-I99'),(25,'I25.1','Bệnh tim thiếu máu cục bộ mạn tính','Atherosclerotic heart disease','IX: I00-I99'),(26,'I64','Đột quỵ, không phân loại là xuất huyết hoặc nhồi máu','Stroke, not specified as haemorrhage or infarction','IX: I00-I99'),(27,'I50.0','Suy tim sung huyết','Congest heart failure','IX: I00-I99'),(28,'I83.9','Giãn tĩnh mạch chi dưới không có loét hoặc viêm','Varicose veins of lower extremities without ulcer or inflammation','IX: I00-I99'),(29,'J45.9','Hen phế quản, không đặc hiệu','Asthma, unspecified','X: J00-J99'),(30,'J44.9','Bệnh phổi tắc nghẽn mạn tính (COPD), không đặc hiệu','Chronic obstructive pulmonary disease, unspecified','X: J00-J99'),(31,'J02.9','Viêm họng cấp, không đặc hiệu','Acute pharyngitis, unspecified','X: J00-J99'),(32,'J18.9','Viêm phổi, không đặc hiệu','Pneumonia, unspecified','X: J00-J99'),(33,'K29.7','Viêm dạ dày, không đặc hiệu','Gastritis, unspecified','XI: K00-K93'),(34,'K35.9','Viêm ruột thừa cấp, không đặc hiệu','Acute appendicitis, unspecified','XI: K00-K93'),(35,'K74.6','Xơ gan, không đặc hiệu','Other and unspecified cirrhosis of liver','XI: K00-K93'),(36,'M54.5','Đau thắt lưng dưới','Low back pain','XIII: M00-M99'),(37,'M17.9','Thoái hóa khớp gối, không đặc hiệu','Osteoarthritis of knee, unspecified','XIII: M00-M99'),(38,'M79.1','Đau cơ','Myalgia','XIII: M00-M99'),(39,'M25.5','Đau khớp, không đặc hiệu','Pain in joint, unspecified','XIII: M00-M99'),(40,'M81.9','Loãng xương, không đặc hiệu','Osteoporosis, unspecified','XIII: M00-M99'),(41,'N18.9','Suy thận mạn, không đặc hiệu','Chronic kidney disease, unspecified','XIV: N00-N99'),(42,'N39.0','Nhiễm trùng đường tiết niệu, vị trí không đặc hiệu','Urinary tract infection, site unspecified','XIV: N00-N99'),(43,'Z00.0','Khám sức khỏe tổng quát','General medical examination','XXI: Z00-Z99'),(44,'K02.9','Sâu răng, không đặc hiệu','Dental caries, unspecified','XI: K00-K93'),(45,'K04.0','Viêm tủy răng','Pulpitis','XI: K00-K93'),(46,'K04.4','Viêm nha chu cấp tính','Acute apical periodontitis of pulpal origin','XI: K00-K93'),(47,'K05.1','Viêm lợi mạn tính','Chronic gingivitis','XI: K00-K93'),(48,'K05.3','Viêm nha chu mạn tính','Chronic periodontitis','XI: K00-K93'),(49,'K08.1','Mất răng do tai nạn, nhổ răng hoặc do bệnh quanh răng','Loss of teeth due to accident, extraction or local periodontal disease','XI: K00-K93'),(50,'K12.0','Viêm lợi/miệng áp tơ tái diễn','Recurrent oral aphthae','XI: K00-K93'),(51,'K00.0','Thiếu răng (Mất răng bẩm sinh)','Anodontia','XI: K00-K93'),(52,'K07.3','Bất thường vị trí răng, không đặc hiệu','Anomalies of tooth position, unspecified','XI: K00-K93'),(53,'K06.9','Rối loạn lợi và xương ổ răng mất răng, không đặc hiệu','Disorder of gingiva and edentulous alveolar ridge, unspecified','XI: K00-K93'),(54,'K04.7','Áp xe quanh chóp không có lỗ rò','Periapical abscess without sinus','XI: K00-K93'),(55,'K01.1','Răng kẹt hoặc răng mọc ngầm','Impacted teeth','XI: K00-K93'),(56,'K03.6','Mòn răng (Bào mòn răng)','Attrition and abrasion of teeth','XI: K00-K93'),(57,'K11.2','Viêm tuyến nước bọt','Sialadenitis','XI: K00-K93'),(58,'K13.7','Các tổn thương và bệnh lý khác của niêm mạc miệng, không đặc hiệu','Other and unspecified lesions of oral mucosa','XI: K00-K93');
 /*!40000 ALTER TABLE `icd10_catalog` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `imagingstaff`
+-- Table structure for table `imaging_staff`
 --
 
-DROP TABLE IF EXISTS `imagingstaff`;
+DROP TABLE IF EXISTS `imaging_staff`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `imagingstaff` (
+CREATE TABLE `imaging_staff` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `imgScode` varchar(20) DEFAULT NULL,
-  `staff_id` int DEFAULT NULL,
   `experience_years` int DEFAULT NULL,
+  `img_scode` varchar(255) DEFAULT NULL,
+  `staff_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_imaging_staff_id` (`staff_id`),
-  CONSTRAINT `imagingstaff_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `UKe2rg732qdwscgydn78nuvco2q` (`staff_id`),
+  CONSTRAINT `FKknjmdqkkoxj0op524vopd0u8w` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `imagingstaff`
+-- Dumping data for table `imaging_staff`
 --
 
-LOCK TABLES `imagingstaff` WRITE;
-/*!40000 ALTER TABLE `imagingstaff` DISABLE KEYS */;
-/*!40000 ALTER TABLE `imagingstaff` ENABLE KEYS */;
+LOCK TABLES `imaging_staff` WRITE;
+/*!40000 ALTER TABLE `imaging_staff` DISABLE KEYS */;
+INSERT INTO `imaging_staff` VALUES (2,3,'IMGS1',10);
+/*!40000 ALTER TABLE `imaging_staff` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -596,10 +598,10 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_imagingstaff` BEFORE INSERT ON `imagingstaff` FOR EACH ROW BEGIN
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_imagingstaff` BEFORE INSERT ON `imaging_staff` FOR EACH ROW BEGIN
     DECLARE new_code VARCHAR(20);
-    SET new_code = CONCAT('IMGS', IFNULL((SELECT MAX(id) FROM cashier), 0) + 1);
-    SET NEW.imgScode = new_code;
+    SET new_code = CONCAT('IMGS', IFNULL((SELECT MAX(id) FROM imaging_staff), 0) + 1);
+    SET NEW.img_scode = new_code;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -630,13 +632,13 @@ CREATE TABLE `imagingtests` (
   KEY `record_id` (`record_id`),
   KEY `inpatient_record_id` (`inpatient_record_id`),
   KEY `doctor_id` (`doctor_id`),
-  KEY `imagingStaff_id` (`imagingStaff_id`),
   KEY `imageType_id` (`imageType_id`),
+  KEY `imagingtests_ibfk_6` (`imagingStaff_id`),
   CONSTRAINT `imagingtests_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
   CONSTRAINT `imagingtests_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
   CONSTRAINT `imagingtests_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
-  CONSTRAINT `imagingtests_ibfk_4` FOREIGN KEY (`imagingStaff_id`) REFERENCES `imagingstaff` (`id`),
-  CONSTRAINT `imagingtests_ibfk_5` FOREIGN KEY (`imageType_id`) REFERENCES `imagingtypes` (`id`)
+  CONSTRAINT `imagingtests_ibfk_5` FOREIGN KEY (`imageType_id`) REFERENCES `imagingtypes` (`id`),
+  CONSTRAINT `imagingtests_ibfk_6` FOREIGN KEY (`imagingStaff_id`) REFERENCES `imaging_staff` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -721,7 +723,10 @@ CREATE TABLE `inpatient_records` (
   `dischargeDate` datetime DEFAULT NULL,
   `bed_id` int DEFAULT NULL,
   `treatmentPlan` text,
-  `status` enum('Admitted','Discharged') DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `admission_date` datetime(6) DEFAULT NULL,
+  `discharge_date` datetime(6) DEFAULT NULL,
+  `treatment_plan` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`),
   KEY `bed_id` (`bed_id`),
@@ -740,32 +745,31 @@ LOCK TABLES `inpatient_records` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `labstaffs`
+-- Table structure for table `lab_staff`
 --
 
-DROP TABLE IF EXISTS `labstaffs`;
+DROP TABLE IF EXISTS `lab_staff`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `labstaffs` (
+CREATE TABLE `lab_staff` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `labScode` varchar(20) DEFAULT NULL,
   `staff_id` int DEFAULT NULL,
   `experience_years` int DEFAULT NULL,
   `lab_scode` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_lab_staff_id` (`staff_id`),
-  CONSTRAINT `labstaffs_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
+  CONSTRAINT `lab_staff_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `labstaffs`
+-- Dumping data for table `lab_staff`
 --
 
-LOCK TABLES `labstaffs` WRITE;
-/*!40000 ALTER TABLE `labstaffs` DISABLE KEYS */;
-INSERT INTO `labstaffs` VALUES (1,'LABS1',8,3,NULL);
-/*!40000 ALTER TABLE `labstaffs` ENABLE KEYS */;
+LOCK TABLES `lab_staff` WRITE;
+/*!40000 ALTER TABLE `lab_staff` DISABLE KEYS */;
+INSERT INTO `lab_staff` VALUES (1,8,3,'LABS1');
+/*!40000 ALTER TABLE `lab_staff` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -776,10 +780,10 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_labstaffs` BEFORE INSERT ON `labstaffs` FOR EACH ROW BEGIN
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_labstaffs` BEFORE INSERT ON `lab_staff` FOR EACH ROW BEGIN
     DECLARE new_code VARCHAR(15);
-    SET new_code = CONCAT('LABS',  IFNULL((SELECT MAX(id) FROM labstaffs), 0) + 1);
-    SET NEW.labScode = new_code;
+    SET new_code = CONCAT('LABS',  IFNULL((SELECT MAX(id) FROM lab_staff), 0) + 1);
+    SET NEW.lab_scode = new_code;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -814,7 +818,7 @@ CREATE TABLE `labtests` (
   CONSTRAINT `labtests_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
   CONSTRAINT `labtests_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
   CONSTRAINT `labtests_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
-  CONSTRAINT `labtests_ibfk_4` FOREIGN KEY (`labStaff_id`) REFERENCES `labstaffs` (`id`),
+  CONSTRAINT `labtests_ibfk_4` FOREIGN KEY (`labStaff_id`) REFERENCES `lab_staff` (`id`),
   CONSTRAINT `labtests_ibfk_5` FOREIGN KEY (`testType_id`) REFERENCES `testtypes` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -846,7 +850,7 @@ CREATE TABLE `medical_record_icd10` (
   KEY `icd10_catalog_id` (`icd10_catalog_id`),
   CONSTRAINT `medical_record_icd10_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`) ON DELETE CASCADE,
   CONSTRAINT `medical_record_icd10_ibfk_2` FOREIGN KEY (`icd10_catalog_id`) REFERENCES `icd10_catalog` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Liên kết chẩn đoán ICD-10 với hồ sơ bệnh án';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Liên kết chẩn đoán ICD-10 với hồ sơ bệnh án';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -855,6 +859,7 @@ CREATE TABLE `medical_record_icd10` (
 
 LOCK TABLES `medical_record_icd10` WRITE;
 /*!40000 ALTER TABLE `medical_record_icd10` DISABLE KEYS */;
+INSERT INTO `medical_record_icd10` VALUES (1,4,44,1,0),(2,4,45,0,1);
 /*!40000 ALTER TABLE `medical_record_icd10` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -884,7 +889,7 @@ CREATE TABLE `medical_records` (
   CONSTRAINT `FK_mr_ap` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`id`),
   CONSTRAINT `medical_records_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`),
   CONSTRAINT `medical_records_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -893,7 +898,7 @@ CREATE TABLE `medical_records` (
 
 LOCK TABLES `medical_records` WRITE;
 /*!40000 ALTER TABLE `medical_records` DISABLE KEYS */;
-INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3');
+INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3'),(4,1,4,'2025-10-23',1,'đau răng do sâu',14,'Đau răng hàm','Đau răng do sâu','IN_PROGRESS','MR4');
 /*!40000 ALTER TABLE `medical_records` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1049,9 +1054,10 @@ DROP TABLE IF EXISTS `nurses`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `nurses` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nursecode` varchar(255) DEFAULT NULL,
+  `nurse_code` varchar(255) DEFAULT NULL,
   `staff_id` int DEFAULT NULL,
   `experience_years` int DEFAULT NULL,
+  `nursecode` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_nurse_staff_id` (`staff_id`),
   CONSTRAINT `nurses_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
@@ -1064,7 +1070,7 @@ CREATE TABLE `nurses` (
 
 LOCK TABLES `nurses` WRITE;
 /*!40000 ALTER TABLE `nurses` DISABLE KEYS */;
-INSERT INTO `nurses` VALUES (1,'NUR1',7,2);
+INSERT INTO `nurses` VALUES (1,'NUR1',7,2,NULL);
 /*!40000 ALTER TABLE `nurses` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1201,31 +1207,31 @@ LOCK TABLES `payments` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pharmacystaff`
+-- Table structure for table `pharmacy_staff`
 --
 
-DROP TABLE IF EXISTS `pharmacystaff`;
+DROP TABLE IF EXISTS `pharmacy_staff`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `pharmacystaff` (
+CREATE TABLE `pharmacy_staff` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `phaScode` varchar(20) DEFAULT NULL,
-  `staff_id` int DEFAULT NULL,
+  `pha_scode` varchar(255) DEFAULT NULL,
   `experience_years` int DEFAULT NULL,
+  `staff_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_pharmact_staff_id` (`staff_id`),
-  CONSTRAINT `pharmacystaff_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
+  UNIQUE KEY `UKntva7w46rxffkbqnhgfeu54gc` (`staff_id`),
+  CONSTRAINT `FK1fq7vmyodls1ygd8lrt35n4cg` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pharmacystaff`
+-- Dumping data for table `pharmacy_staff`
 --
 
-LOCK TABLES `pharmacystaff` WRITE;
-/*!40000 ALTER TABLE `pharmacystaff` DISABLE KEYS */;
-INSERT INTO `pharmacystaff` VALUES (1,'PHA1',5,3);
-/*!40000 ALTER TABLE `pharmacystaff` ENABLE KEYS */;
+LOCK TABLES `pharmacy_staff` WRITE;
+/*!40000 ALTER TABLE `pharmacy_staff` DISABLE KEYS */;
+INSERT INTO `pharmacy_staff` VALUES (1,'PHA1',3,5);
+/*!40000 ALTER TABLE `pharmacy_staff` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1236,10 +1242,10 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_pharmacystaff` BEFORE INSERT ON `pharmacystaff` FOR EACH ROW BEGIN
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_pharmacystaff` BEFORE INSERT ON `pharmacy_staff` FOR EACH ROW BEGIN
     DECLARE new_code VARCHAR(20);
-    SET new_code = CONCAT('PHA',  IFNULL((SELECT MAX(id) FROM pharmacystaff), 0) + 1);
-    SET NEW.phaScode = new_code;
+    SET new_code = CONCAT('PHA',  IFNULL((SELECT MAX(id) FROM pharmacy_staff), 0) + 1);
+    SET NEW.pha_scode = new_code;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1298,11 +1304,11 @@ CREATE TABLE `prescriptions` (
   KEY `record_id` (`record_id`),
   KEY `inpatient_record_id` (`inpatient_record_id`),
   KEY `doctor_id` (`doctor_id`),
-  KEY `pharmacist_id` (`pharmacist_id`),
+  KEY `prescriptions_ibfk_4_idx` (`pharmacist_id`),
   CONSTRAINT `prescriptions_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
   CONSTRAINT `prescriptions_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
   CONSTRAINT `prescriptions_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
-  CONSTRAINT `prescriptions_ibfk_4` FOREIGN KEY (`pharmacist_id`) REFERENCES `pharmacystaff` (`id`)
+  CONSTRAINT `prescriptions_ibfk_4` FOREIGN KEY (`pharmacist_id`) REFERENCES `pharmacy_staff` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1325,8 +1331,9 @@ DROP TABLE IF EXISTS `receptionist`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `receptionist` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `PatRecCode` varchar(20) DEFAULT NULL,
   `staff_id` int DEFAULT NULL,
+  `experience_years` int DEFAULT NULL,
+  `receptionist_code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_receptionist_staff_id` (`staff_id`),
   CONSTRAINT `receptionist_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
@@ -1341,6 +1348,25 @@ LOCK TABLES `receptionist` WRITE;
 /*!40000 ALTER TABLE `receptionist` DISABLE KEYS */;
 /*!40000 ALTER TABLE `receptionist` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_receptionist` BEFORE INSERT ON `receptionist` FOR EACH ROW BEGIN
+    DECLARE new_code VARCHAR(20);
+    SET new_code = CONCAT('PHA',  IFNULL((SELECT MAX(id) FROM receptionist), 0) + 1);
+    SET NEW.receptionist_code = new_code;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `resultexamination`
@@ -1355,10 +1381,10 @@ CREATE TABLE `resultexamination` (
   `inpatient_record_id` int DEFAULT NULL,
   `doctor_id` int DEFAULT NULL,
   `examination_id` int DEFAULT NULL,
-  `requestDate` date DEFAULT NULL,
-  `resultDate` date DEFAULT NULL,
   `result` text,
-  `status` varchar(50) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `requested_date` datetime(6) DEFAULT NULL,
+  `result_date` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`),
   KEY `inpatient_record_id` (`inpatient_record_id`),
@@ -1368,7 +1394,7 @@ CREATE TABLE `resultexamination` (
   CONSTRAINT `resultexamination_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
   CONSTRAINT `resultexamination_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
   CONSTRAINT `resultexamination_ibfk_4` FOREIGN KEY (`examination_id`) REFERENCES `medicalexamination` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1377,6 +1403,7 @@ CREATE TABLE `resultexamination` (
 
 LOCK TABLES `resultexamination` WRITE;
 /*!40000 ALTER TABLE `resultexamination` DISABLE KEYS */;
+INSERT INTO `resultexamination` VALUES (2,4,NULL,4,2,NULL,'PENDING_PAYMENT','2025-10-23 08:40:58.550920',NULL);
 /*!40000 ALTER TABLE `resultexamination` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1395,6 +1422,7 @@ CREATE TABLE `room` (
   `status` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `room_number` varchar(255) NOT NULL,
+  `capacity` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `department_id` (`department_id`),
   KEY `room_type_id` (`room_type_id`),
@@ -1409,7 +1437,7 @@ CREATE TABLE `room` (
 
 LOCK TABLES `room` WRITE;
 /*!40000 ALTER TABLE `room` DISABLE KEYS */;
-INSERT INTO `room` VALUES (1,1,1,'Phòng A1','AVAILABLE',NULL,'A1'),(2,1,1,'Phòng A2','AVAILABLE',NULL,'A2'),(3,2,1,'Phòng B1','AVAILABLE',NULL,'B1'),(4,2,1,'Phòng B2','AVAILABLE',NULL,'B2'),(5,2,8,'Phòng xét nghiệm 1','AVAILABLE',NULL,'BT1'),(6,1,5,'Phòng A3','AVAILABLE',NULL,'A3'),(7,1,5,'Phòng A4','AVAILABLE',NULL,'A4'),(8,1,5,'Phòng A5','AVAILABLE',NULL,'A5'),(9,1,5,'Phòng A6','AVAILABLE',NULL,'A6'),(10,2,6,'Phòng B3','AVAILABLE',NULL,'B3'),(11,2,6,'Phòng B4','AVAILABLE',NULL,'B4'),(12,2,6,'Phòng B5','AVAILABLE',NULL,'B5'),(13,2,6,'Phòng B6','AVAILABLE',NULL,'B6'),(14,2,6,'Phòng B7','AVAILABLE',NULL,'B7'),(15,3,6,'Phòng C1','AVAILABLE',NULL,'C1'),(16,3,6,'Phòng C2','AVAILABLE',NULL,'C2'),(17,2,2,'Phòng A22','AVAILABLE',NULL,'A22'),(18,2,2,'Phòng A23','AVAILABLE','Phòng chăm sóc bệnh nhân nội trú','A23'),(19,1,1,'Phòng 106','OCCUPIED','','106');
+INSERT INTO `room` VALUES (1,1,1,'Phòng A1','AVAILABLE',NULL,'A1',NULL),(2,1,1,'Phòng A2','AVAILABLE',NULL,'A2',NULL),(3,2,1,'Phòng B1','AVAILABLE',NULL,'B1',NULL),(4,2,1,'Phòng B2','AVAILABLE',NULL,'B2',NULL),(5,2,8,'Phòng xét nghiệm 1','AVAILABLE',NULL,'BT1',NULL),(6,1,5,'Phòng A3','AVAILABLE',NULL,'A3',NULL),(7,1,5,'Phòng A4','AVAILABLE',NULL,'A4',NULL),(8,1,5,'Phòng A5','AVAILABLE',NULL,'A5',NULL),(9,1,5,'Phòng A6','AVAILABLE',NULL,'A6',NULL),(10,2,6,'Phòng B3','AVAILABLE',NULL,'B3',NULL),(11,2,6,'Phòng B4','AVAILABLE',NULL,'B4',NULL),(12,2,6,'Phòng B5','AVAILABLE',NULL,'B5',NULL),(13,2,6,'Phòng B6','AVAILABLE',NULL,'B6',NULL),(14,2,6,'Phòng B7','AVAILABLE',NULL,'B7',NULL),(15,3,6,'Phòng C1','AVAILABLE',NULL,'C1',NULL),(16,3,6,'Phòng C2','AVAILABLE',NULL,'C2',NULL),(17,2,2,'Phòng A22','AVAILABLE',NULL,'A22',NULL),(18,2,2,'Phòng A23','AVAILABLE','Phòng chăm sóc bệnh nhân nội trú','A23',NULL),(19,1,1,'Phòng 106','OCCUPIED','','106',NULL);
 /*!40000 ALTER TABLE `room` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1543,7 +1571,7 @@ CREATE TABLE `staff` (
   CONSTRAINT `staff_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `staff_ibfk_2` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
   CONSTRAINT `staff_ibfk_3` FOREIGN KEY (`position_id`) REFERENCES `staff_position` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1552,7 +1580,7 @@ CREATE TABLE `staff` (
 
 LOCK TABLES `staff` WRITE;
 /*!40000 ALTER TABLE `staff` DISABLE KEYS */;
-INSERT INTO `staff` VALUES (1,1,4,1),(2,1,5,1),(3,1,7,5),(4,1,8,2),(5,5,11,1),(6,1,14,1),(7,2,18,2),(8,3,19,1);
+INSERT INTO `staff` VALUES (1,1,4,1),(2,1,5,1),(3,1,7,5),(4,1,8,2),(5,5,11,1),(6,1,14,1),(7,2,18,2),(8,3,19,1),(10,4,21,9);
 /*!40000 ALTER TABLE `staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1577,7 +1605,7 @@ CREATE TABLE `staff_position` (
 
 LOCK TABLES `staff_position` WRITE;
 /*!40000 ALTER TABLE `staff_position` DISABLE KEYS */;
-INSERT INTO `staff_position` VALUES (6,'Cashier'),(1,'Doctor'),(3,'Lab Technician'),(2,'NURSE'),(7,'Patient Receptionist'),(5,'Pharmacist'),(4,'Radiology Technician');
+INSERT INTO `staff_position` VALUES (6,'Cashier'),(1,'Doctor'),(3,'Lab Technician'),(4,'Medical Imaging Technician'),(2,'Nurse '),(7,'Patient Receptionist'),(5,'Pharmacist');
 /*!40000 ALTER TABLE `staff_position` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1695,7 +1723,7 @@ CREATE TABLE `users` (
   KEY `idx_user_fullname` (`fullname`),
   KEY `idx_user_email` (`email`),
   KEY `idx_user_phone` (`phone_number`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1704,7 +1732,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Huỳnh Minh Hoàng','hoanghm4869@gmail.com','0337023824','2003-11-12',0,'TBH TDM','$2a$10$b6E2VmRKJ8pB25uky/vWN.1XnlYvFSOEwK3jtxPchw5nqbLmqQoPC',0,'2025-04-10 00:00:00',NULL),(3,'Nguyễn Văn A','nguyenvanA@example.com','0123456789','1995-05-20',0,'123 Đường Lê Lợi, Tdm, TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',1,'2025-04-10 04:48:35',NULL),(4,'Trần Văn C','tranvanc@hospital.com','0323456709','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$XiutYothZ4rma/P.J5c2leYOLb/hTj6V677Re5gy5hSWeB1yBe71y',2,'2025-04-10 08:28:32','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1747710399077.png'),(5,'Nguyễn Minh Thuận','Thuannm@example.com','0223456789','1985-06-20',0,'123 Nguyễn Trãi, TP.HCM','$2a$10$o/BAwrm8rlbRUtVKepG8iuhlFxvVMfn6LVhLyaaiLtmdvUAIkGLbC',2,'2025-04-16 08:06:58','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nam.png'),(7,'Nguyễn Hồng Yến','Yennh@example.com','0423456789','1995-06-20',1,'123 Lý Thái Tổ, TP.HCM','$2a$10$ZRb1sOPqiTR1NgDn7l9ryuU7JbBOT6QnX2.ai.skFTmg/VMVFNu5u',2,'2025-05-18 06:40:23','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(8,'Trần Thu Phương','Phuongtt20@example.com','0523456789','1994-08-20',1,'123 Phan Châu Trinh, TP.HCM','$2a$10$qFTu3C44lJEAz4.AEo/qIOnwihykzMMB5mYTqv0nKcnFePOhvBtxK',2,'2025-05-18 07:36:34','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(9,'Nguyễn Việt Trung','Truntnv@gmail.com','0336013824','2003-06-25',0,'Phú Hòa','$2a$10$kvsD41NR8tMs6ZFfth6wI.ksdSKpySwLVYW2Y/CT/0KoryGjrzxCq',1,'2025-05-19 00:13:09',''),(10,'Nguyễn Thanh Nam','Namnt@gmail.com','0723456789','2002-05-23',0,'Củ Chi','$2a$10$WYEA1.VFcVZYAR1tAqY8vO/Sr/C1Y3bVp6TDVwyKAbQIfPcTuBCQm',1,'2025-05-23 17:17:39',''),(11,'Hồ Ngọc Châu','Chaunh@gmail.com','0823456789','2000-06-24',1,'TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',2,'2025-05-24 16:47:19',NULL),(12,'Nguyễn Ngọc Hà','hann@gmail.com','038023564','2003-11-25',1,'phường Thủ Dầu Một','$2a$10$jtuaGLERzhkK9ScR63RZPO1VLcFgTratjYAmWhWZXz1.PHKX2p3XK',1,'2025-08-21 09:18:07',NULL),(13,'Nguyễn Thanh Thảo','thaont@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$Ru49ve58Uu1O0CXhf0.Lqu48tpwLWf32xZVJ32FS9VL91up0IulK6',1,'2025-08-21 16:05:53','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825874773.jpg'),(14,'Trần Văn C','Thuann1m@example.com','0323456789','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$iwcOFEhX3qKwdYfG/kQ6QuPxQUokKlxOENmeSJ/VYgu4918xbGLhq',2,'2025-08-22 01:23:35','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825850325.jpg'),(15,'Nguyễn Thanh Hằng','hangnt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$v4mss5YDekozGY9xkvRQIe/FdEjz8uFNx1U9u84TzjQkASAvkUdpO',1,'2025-08-22 01:26:01',NULL),(16,'Nguyễn Thanh Thu','nguyenvan123@example.com','0320156487','2002-05-14',0,'phường Chánh Hiệp','$2a$10$.cnH7Hx/jTUaCll79EDPk.q5zlRJ1ntCUmGtV9sQSULT8ybVYnCH6',1,'2025-08-22 01:26:52',NULL),(17,'Nguyễn Thanh Thuỷ','thuynt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$4iEmWwD6Ju6U/vamg5MbMOjWERSQ2PHCPA67uCq42eqQlKDxYlrtm',1,'2025-08-22 13:10:33',''),(18,'Nguyễn Thị Ngân','ngannt@gmail.com','0337033824','2000-09-28',0,'Chánh Hiệp','$2a$10$aOyLpSBFMRaj1n8MRk2.EOma7w1gsf/gIjKB4aMFkRd4Te./hMaAm',2,'2025-09-28 17:36:54','string'),(19,'Nguyễn Tiến Duy','duynt@gmail.com','0337043824','1999-10-28',1,'Phú Lợi','$2a$10$ixigocA1JDl.IF/Nu7vb4eh6.JAdWX7eZWGfX/J6C.8oDt5YPGtRO',2,'2025-09-28 17:39:05','');
+INSERT INTO `users` VALUES (1,'Huỳnh Minh Hoàng','hoanghm4869@gmail.com','0337023824','2003-11-12',0,'TBH TDM','$2a$10$b6E2VmRKJ8pB25uky/vWN.1XnlYvFSOEwK3jtxPchw5nqbLmqQoPC',0,'2025-04-10 00:00:00',NULL),(3,'Nguyễn Văn A','nguyenvanA@example.com','0123456789','1995-05-20',0,'123 Đường Lê Lợi, Tdm, TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',1,'2025-04-10 04:48:35',NULL),(4,'Trần Văn C','tranvanc@hospital.com','0323456709','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$XiutYothZ4rma/P.J5c2leYOLb/hTj6V677Re5gy5hSWeB1yBe71y',2,'2025-04-10 08:28:32','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1747710399077.png'),(5,'Nguyễn Minh Thuận','Thuannm@example.com','0223456789','1985-06-20',0,'123 Nguyễn Trãi, TP.HCM','$2a$10$o/BAwrm8rlbRUtVKepG8iuhlFxvVMfn6LVhLyaaiLtmdvUAIkGLbC',2,'2025-04-16 08:06:58','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nam.png'),(7,'Nguyễn Hồng Yến','Yennh@example.com','0423456789','1995-06-20',1,'123 Lý Thái Tổ, TP.HCM','$2a$10$ZRb1sOPqiTR1NgDn7l9ryuU7JbBOT6QnX2.ai.skFTmg/VMVFNu5u',2,'2025-05-18 06:40:23','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(8,'Trần Thu Phương','Phuongtt20@example.com','0523456789','1994-08-20',1,'123 Phan Châu Trinh, TP.HCM','$2a$10$qFTu3C44lJEAz4.AEo/qIOnwihykzMMB5mYTqv0nKcnFePOhvBtxK',2,'2025-05-18 07:36:34','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(9,'Nguyễn Việt Trung','Truntnv@gmail.com','0336013824','2003-06-25',0,'Phú Hòa','$2a$10$kvsD41NR8tMs6ZFfth6wI.ksdSKpySwLVYW2Y/CT/0KoryGjrzxCq',1,'2025-05-19 00:13:09',''),(10,'Nguyễn Thanh Nam','Namnt@gmail.com','0723456789','2002-05-23',0,'Củ Chi','$2a$10$WYEA1.VFcVZYAR1tAqY8vO/Sr/C1Y3bVp6TDVwyKAbQIfPcTuBCQm',1,'2025-05-23 17:17:39',''),(11,'Hồ Ngọc Châu','Chaunh@gmail.com','0823456789','2000-06-24',1,'TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',2,'2025-05-24 16:47:19',NULL),(12,'Nguyễn Ngọc Hà','hann@gmail.com','038023564','2003-11-25',1,'phường Thủ Dầu Một','$2a$10$jtuaGLERzhkK9ScR63RZPO1VLcFgTratjYAmWhWZXz1.PHKX2p3XK',1,'2025-08-21 09:18:07',NULL),(13,'Nguyễn Thanh Thảo','thaont@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$Ru49ve58Uu1O0CXhf0.Lqu48tpwLWf32xZVJ32FS9VL91up0IulK6',1,'2025-08-21 16:05:53','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825874773.jpg'),(14,'Trần Văn C','Thuann1m@example.com','0323456789','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$iwcOFEhX3qKwdYfG/kQ6QuPxQUokKlxOENmeSJ/VYgu4918xbGLhq',2,'2025-08-22 01:23:35','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825850325.jpg'),(15,'Nguyễn Thanh Hằng','hangnt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$v4mss5YDekozGY9xkvRQIe/FdEjz8uFNx1U9u84TzjQkASAvkUdpO',1,'2025-08-22 01:26:01',NULL),(16,'Nguyễn Thanh Thu','nguyenvan123@example.com','0320156487','2002-05-14',0,'phường Chánh Hiệp','$2a$10$.cnH7Hx/jTUaCll79EDPk.q5zlRJ1ntCUmGtV9sQSULT8ybVYnCH6',1,'2025-08-22 01:26:52',NULL),(17,'Nguyễn Thanh Thuỷ','thuynt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$4iEmWwD6Ju6U/vamg5MbMOjWERSQ2PHCPA67uCq42eqQlKDxYlrtm',1,'2025-08-22 13:10:33',''),(18,'Nguyễn Thị Ngân','ngannt@gmail.com','0337033824','2000-09-28',0,'Chánh Hiệp','$2a$10$aOyLpSBFMRaj1n8MRk2.EOma7w1gsf/gIjKB4aMFkRd4Te./hMaAm',2,'2025-09-28 17:36:54','string'),(19,'Nguyễn Tiến Duy','duynt@gmail.com','0337043824','1999-10-28',1,'Phú Lợi','$2a$10$ixigocA1JDl.IF/Nu7vb4eh6.JAdWX7eZWGfX/J6C.8oDt5YPGtRO',2,'2025-09-28 17:39:05',''),(21,'Trần Quốc Hưng','hungtq@gmail.com','0335021425','1998-10-24',0,'Chánh Hiệp','$2a$10$OqWuoiRwDumfhosnXeY89eQtU1aYl0KRh3YFIOENknGbMQoHL1mVe',2,'2025-10-24 15:36:57',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1837,7 +1865,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `v_staff_unified` AS select `d`.`id` AS `id`,'DOCTOR' AS `roleType`,`d`.`doctorcode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,`d`.`specialty_id` AS `specialtyId`,`sp`.`name` AS `specialty`,`d`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from (((((`doctors` `d` join `staff` `s` on((`d`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) left join `specialty` `sp` on((`d`.`specialty_id` = `sp`.`id`))) union all select `n`.`id` AS `id`,'NURSE' AS `roleType`,`n`.`nursecode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`n`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`nurses` `n` join `staff` `s` on((`n`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) union all select `l`.`id` AS `id`,'LAB' AS `roleType`,`l`.`labScode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`l`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`labstaffs` `l` join `staff` `s` on((`l`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) union all select `i`.`id` AS `id`,'IMAGING' AS `roleType`,`i`.`imgScode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`i`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`imagingstaff` `i` join `staff` `s` on((`i`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) union all select `p`.`id` AS `id`,'PHARMACY' AS `roleType`,`p`.`phaScode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`p`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`pharmacystaff` `p` join `staff` `s` on((`p`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) */;
+/*!50001 VIEW `v_staff_unified` AS select `d`.`id` AS `id`,'DOCTOR' AS `roleType`,`d`.`doctorcode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,`d`.`specialty_id` AS `specialtyId`,`sp`.`name` AS `specialty`,`d`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from (((((`doctors` `d` join `staff` `s` on((`d`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) left join `specialty` `sp` on((`d`.`specialty_id` = `sp`.`id`))) union all select `n`.`id` AS `id`,'NURSE' AS `roleType`,`n`.`nurse_code` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`n`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`nurses` `n` join `staff` `s` on((`n`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) union all select `l`.`id` AS `id`,'LAB' AS `roleType`,`l`.`lab_scode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`l`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`lab_staff` `l` join `staff` `s` on((`l`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) union all select `i`.`id` AS `id`,'IMAGING' AS `roleType`,`i`.`img_scode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`i`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`imaging_staff` `i` join `staff` `s` on((`i`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) union all select `p`.`id` AS `id`,'PHA' AS `roleType`,`p`.`pha_scode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`p`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`pharmacy_staff` `p` join `staff` `s` on((`p`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) union all select `r`.`id` AS `id`,'REC' AS `roleType`,`r`.`receptionist_code` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`r`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`receptionist` `r` join `staff` `s` on((`r`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) union all select `c`.`id` AS `id`,'CASHIER' AS `roleType`,`c`.`cas_scode` AS `code`,`s`.`department_id` AS `departmentId`,`dept`.`name` AS `department`,`s`.`position_id` AS `positionId`,`pos`.`position` AS `position`,NULL AS `specialtyId`,NULL AS `specialty`,`c`.`experience_years` AS `experienceYears`,`u`.`fullname` AS `fullname`,`u`.`email` AS `email`,`u`.`phone_number` AS `phoneNumber`,`u`.`date_of_birth` AS `dateOfBirth`,`u`.`gender` AS `gender`,`u`.`address` AS `address`,`u`.`avartar_url` AS `avatar_url`,`s`.`id` AS `staffId` from ((((`cashier` `c` join `staff` `s` on((`c`.`staff_id` = `s`.`id`))) join `users` `u` on((`s`.`user_id` = `u`.`id`))) left join `department` `dept` on((`s`.`department_id` = `dept`.`id`))) left join `staff_position` `pos` on((`s`.`position_id` = `pos`.`id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1851,4 +1879,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-22 23:24:12
+-- Dump completed on 2025-10-25 10:06:36

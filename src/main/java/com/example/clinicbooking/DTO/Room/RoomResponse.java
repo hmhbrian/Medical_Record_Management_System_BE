@@ -13,4 +13,5 @@ public class RoomResponse {
     private String departmentName;
     private int roomTypeId;
     private String roomTypeName;
+    private int roomCapacity;
 }

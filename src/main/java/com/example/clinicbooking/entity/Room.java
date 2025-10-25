@@ -34,5 +34,6 @@ public class Room {
     @Enumerated(EnumType.STRING) // Dùng Enum cho trạng thái để dễ quản lý
     @Column(nullable = false)
     private RoomStatus status;
+    private Integer capacity;
 }
 

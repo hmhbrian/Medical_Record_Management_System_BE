@@ -12,4 +12,5 @@ public class RoomUpdateRequest {
 
     private Integer departmentId;
     private Integer roomTypeId;
+    private Integer roomCapacity;
 }
