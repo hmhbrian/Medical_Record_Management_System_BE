@@ -45,6 +45,17 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
+    public List<RoomResponse> getRoomsByDepartment(int departmentId) {
+        Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+
+        List<Room> rooms = roomRepository.findByDepartmentId(departmentId);
+
+        return rooms.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
 //    public List<RoomResponse> getAllRooms() {
 //        return roomRepository.findAll().stream()
 //                .map(this::convertToResponse)

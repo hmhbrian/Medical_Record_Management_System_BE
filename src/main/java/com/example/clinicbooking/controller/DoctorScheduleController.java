@@ -54,11 +54,11 @@ public class DoctorScheduleController {
         return ResponseEntity.ok(scheduleService.getSchedulesOfDoctorAndWeek(startDate));
     }
 
-    @GetMapping("/doctor/{doctorId}")
-    public ResponseEntity<List<DoctorScheduleResponse>> getSchedulesByDoctor(@PathVariable int doctorId) {
-        List<DoctorScheduleResponse> schedules = scheduleService.getScheduleByDoctorId(doctorId);
-        return ResponseEntity.ok(schedules);
-    }
+//    @GetMapping("/doctor/{doctorId}")
+//    public ResponseEntity<List<DoctorScheduleResponse>> getSchedulesByDoctor(@PathVariable int doctorId) {
+//        List<DoctorScheduleResponse> schedules = scheduleService.getScheduleByDoctorId(doctorId);
+//        return ResponseEntity.ok(schedules);
+//    }
 
     //Lấy danh sách bệnh nhân trong ca làm việc(Doctor đăng nhập)
     @GetMapping("/{scheduleId}/patients")

@@ -17,4 +17,5 @@ public class StatusHistoryItemDTO {
     private LocalDateTime updateAt;
     private Integer updatedById;
     private String updatedByName;
+    private String updatedByRole;
 }

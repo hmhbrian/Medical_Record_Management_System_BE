@@ -1,8 +1,10 @@
 package com.example.clinicbooking.service;
 
+import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.Doctor.DoctorResponse;
 import com.example.clinicbooking.DTO.Staff.StaffRequest;
 import com.example.clinicbooking.DTO.Staff.StaffResponse;
+import com.example.clinicbooking.DTO.Staff.StaffSummary;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class StaffService implements IStaffService {
     private final PharmacyStaffRepository pharmacyStaffRepo;
     private final ReceptionistRepository receptionistRepo;
     private final LabTechnicianRepository labTechnicianRepo;
+    private final StaffPositionRepository staffPositionRepo;
     private final StaffCreationService staffCreationService;
     private final UnifiedStaffViewRepository unifiedRepo;
 
@@ -111,5 +114,19 @@ public class StaffService implements IStaffService {
                 (keyword == null || keyword.isBlank()) ? null : keyword,
                 pageable
         );
+    }
+
+    @Override
+    public ApiResponse<List<StaffSummary>> findStaffByPosition(int positionId) {
+        staff_position position = staffPositionRepo.findById(positionId)
+                .orElseThrow(() -> new RuntimeException("Position not found with id: " + positionId));
+        if(position == null) {
+            return new ApiResponse<>(false, "Chức vụ không tồn tại!", null);
+        }
+        List<StaffSummary> staffList = unifiedRepo.findByPositionId(positionId);
+        if(staffList.isEmpty()) {
+            return new ApiResponse<>(false, "Không có nhân viên nào thuộc chức vụ: " + position.getPosition(), null);
+        }
+        return new ApiResponse<>(true, "Lấy danh sách nhân viên theo chức vụ thành công!", staffList);
     }
 }

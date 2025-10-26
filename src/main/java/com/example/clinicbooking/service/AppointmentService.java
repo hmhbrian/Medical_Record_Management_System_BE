@@ -36,6 +36,7 @@ public class AppointmentService {
     private final ScheduleSlotRepository scheduleSlotRepo;
     private final DoctorRepository doctorRepository;
     private final UserRepository UserRepository;
+    private final StaffRepository StaffRepo;
 
     //đặt lịch khám mới của bệnh nhân
     public AppointmentDTO bookAppointment(AppointmentRequest request) {
@@ -327,10 +328,18 @@ public class AppointmentService {
                 dto.setStatusId(statusId);
             }
             case 3 -> {
-                dto.setStatus("Hoàn thành");
+                dto.setStatus("Chờ Khám");
                 dto.setStatusId(statusId);
             }
             case 4 -> {
+                dto.setStatus("Đang Khám");
+                dto.setStatusId(statusId);
+            }
+            case 5 -> {
+                dto.setStatus("Hoàn thành");
+                dto.setStatusId(statusId);
+            }
+            case 6 -> {
                 dto.setStatus("Hủy");
                 dto.setStatusId(statusId);
             }
@@ -362,14 +371,19 @@ public class AppointmentService {
         String statusName = switch (st.getStatus()) {
             case 1 -> "Chờ xác nhận";
             case 2 -> "Đã xác nhận";
-            case 3 -> "Hoàn thành";
-            case 4 -> "Hủy";
+            case 3 -> "Chờ Khám";
+            case 4 -> "Đang Khám";
+            case 5 -> "Hoàn thành";
+            case 6 -> "Hủy";
             default -> "Không xác định";
         };
         Integer updatedById = (st.getUpdate_by() != null) ? st.getUpdate_by().getId() : null;
-        String updatedByName = (st.getUpdate_by() != null)
-                ? roleName(st.getUpdate_by().getRole())
+        String updatedByRole = (st.getUpdate_by() != null)
+                ? roleName(st.getUpdate_by().getId(), st.getUpdate_by().getRole())
                 : null;
+        String updatedByName = (st.getUpdate_by() != null)
+                ? st.getUpdate_by().getFullname()
+                : "System";
 
         return new StatusHistoryItemDTO(
                 st.getStatus(),
@@ -377,16 +391,27 @@ public class AppointmentService {
                 st.getReason(),
                 st.getUpdateAt(),
                 updatedById,
-                updatedByName
+                updatedByName,
+                updatedByRole
         );
     }
 
-    private static String roleName(Integer role) {
+    private String roleName(Integer userId,Integer role) {
         if (role == null) return null;
         return switch (role) {
             case 0 -> "Admin";
             case 1 -> "Patient";
-            case 2 -> "Doctor";
+            case 2 -> {
+                Staff staff = StaffRepo.findByUserId(userId)
+                        .orElseThrow(() -> new RuntimeException("Staff not found for userId: " + userId));
+                if(staff.getStaff_position().getId() == 1) {
+                    yield "Doctor";
+                } else if (staff.getStaff_position().getId() == 7) {
+                    yield "Receptionist";
+                } else {
+                    yield "Staff";
+                }
+            }
             default -> "Unknown";
         };
     }

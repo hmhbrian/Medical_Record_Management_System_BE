@@ -1,6 +1,7 @@
 package com.example.clinicbooking.repository;
 
 import com.example.clinicbooking.DTO.Staff.StaffResponse;
+import com.example.clinicbooking.DTO.Staff.StaffSummary;
 import com.example.clinicbooking.entity.Staff;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,4 +57,19 @@ public interface UnifiedStaffViewRepository extends JpaRepository<Staff, Integer
             @Param("keyword") String keyword,
             Pageable pageable
     );
+
+
+    @Query(
+            value = """
+            SELECT * FROM v_staff_unified
+            WHERE (:positionId IS NULL OR positionId = :positionId)
+            ORDER BY fullname ASC
+            """,
+            countQuery = """
+            SELECT COUNT(*) FROM v_staff_unified
+            WHERE (:positionId IS NULL OR positionId = :positionId)
+            """,
+            nativeQuery = true
+    )
+    List<StaffSummary> findByPositionId(int positionId);
 }

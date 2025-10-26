@@ -58,7 +58,19 @@ public class RoomController {
     @GetMapping("/specialty/{specialtyId}")
     public ResponseEntity<ApiResponse<List<RoomResponse>>> getRoomsBySpecialty(@PathVariable int specialtyId) {
         List<RoomResponse> rooms = roomService.getRoomsBySpecialty(specialtyId);
+        if(rooms.isEmpty()){
+            return ResponseEntity.ok(new ApiResponse<>(false, "Không tìm thấy phòng nào trong chuyên khoa này", null));
+        }
         return ResponseEntity.ok(new ApiResponse<>(true, "Lấy danh sách phòng theo chuyên khoa thành công", rooms));
+    }
+
+    @GetMapping("/department/{departmentId}")
+    public ResponseEntity<ApiResponse<List<RoomResponse>>> getRoomsByDepartment(@PathVariable int departmentId) {
+        List<RoomResponse> rooms = roomService.getRoomsByDepartment(departmentId);
+        if(rooms.isEmpty()){
+            return ResponseEntity.ok(new ApiResponse<>(false, "Không tìm thấy phòng nào trong khoa này", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(true, "Lấy danh sách phòng theo khoa thành công", rooms));
     }
 
     @PutMapping("/{roomId}")

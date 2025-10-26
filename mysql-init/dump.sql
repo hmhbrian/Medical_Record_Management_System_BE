@@ -43,7 +43,7 @@ CREATE TABLE `appointment_status` (
 
 LOCK TABLES `appointment_status` WRITE;
 /*!40000 ALTER TABLE `appointment_status` DISABLE KEYS */;
-INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,6,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,6,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,6,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07'),(26,14,2,NULL,8,'2025-10-23 08:20:16'),(27,14,3,NULL,NULL,'2025-10-23 08:24:22'),(28,14,4,NULL,NULL,'2025-10-23 08:26:27');
+INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,6,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,6,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,6,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07'),(26,14,2,NULL,8,'2025-10-23 08:20:16'),(27,14,3,NULL,22,'2025-10-23 08:24:22'),(28,14,4,NULL,8,'2025-10-23 08:26:27');
 /*!40000 ALTER TABLE `appointment_status` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -759,7 +759,7 @@ CREATE TABLE `lab_staff` (
   PRIMARY KEY (`id`),
   KEY `idx_lab_staff_id` (`staff_id`),
   CONSTRAINT `lab_staff_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -768,7 +768,7 @@ CREATE TABLE `lab_staff` (
 
 LOCK TABLES `lab_staff` WRITE;
 /*!40000 ALTER TABLE `lab_staff` DISABLE KEYS */;
-INSERT INTO `lab_staff` VALUES (1,8,3,'LABS1');
+INSERT INTO `lab_staff` VALUES (1,8,3,'LABS1'),(2,12,2,'LABS2'),(3,13,3,'LABS3'),(4,14,2,'LABS4'),(5,15,3,'LABS5');
 /*!40000 ALTER TABLE `lab_staff` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1085,7 +1085,7 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_nurses` BEFORE INSERT ON `nurses` FOR EACH ROW BEGIN
     DECLARE new_code VARCHAR(20);
     SET new_code = CONCAT('NUR',  IFNULL((SELECT MAX(id) FROM nurses), 0) + 1);
-    SET NEW.nursecode = new_code;
+    SET NEW.nurse_code = new_code;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1337,7 +1337,7 @@ CREATE TABLE `receptionist` (
   PRIMARY KEY (`id`),
   KEY `idx_receptionist_staff_id` (`staff_id`),
   CONSTRAINT `receptionist_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1346,6 +1346,7 @@ CREATE TABLE `receptionist` (
 
 LOCK TABLES `receptionist` WRITE;
 /*!40000 ALTER TABLE `receptionist` DISABLE KEYS */;
+INSERT INTO `receptionist` VALUES (1,11,3,'PHA1');
 /*!40000 ALTER TABLE `receptionist` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1437,7 +1438,7 @@ CREATE TABLE `room` (
 
 LOCK TABLES `room` WRITE;
 /*!40000 ALTER TABLE `room` DISABLE KEYS */;
-INSERT INTO `room` VALUES (1,1,1,'Phòng A1','AVAILABLE',NULL,'A1',NULL),(2,1,1,'Phòng A2','AVAILABLE',NULL,'A2',NULL),(3,2,1,'Phòng B1','AVAILABLE',NULL,'B1',NULL),(4,2,1,'Phòng B2','AVAILABLE',NULL,'B2',NULL),(5,2,8,'Phòng xét nghiệm 1','AVAILABLE',NULL,'BT1',NULL),(6,1,5,'Phòng A3','AVAILABLE',NULL,'A3',NULL),(7,1,5,'Phòng A4','AVAILABLE',NULL,'A4',NULL),(8,1,5,'Phòng A5','AVAILABLE',NULL,'A5',NULL),(9,1,5,'Phòng A6','AVAILABLE',NULL,'A6',NULL),(10,2,6,'Phòng B3','AVAILABLE',NULL,'B3',NULL),(11,2,6,'Phòng B4','AVAILABLE',NULL,'B4',NULL),(12,2,6,'Phòng B5','AVAILABLE',NULL,'B5',NULL),(13,2,6,'Phòng B6','AVAILABLE',NULL,'B6',NULL),(14,2,6,'Phòng B7','AVAILABLE',NULL,'B7',NULL),(15,3,6,'Phòng C1','AVAILABLE',NULL,'C1',NULL),(16,3,6,'Phòng C2','AVAILABLE',NULL,'C2',NULL),(17,2,2,'Phòng A22','AVAILABLE',NULL,'A22',NULL),(18,2,2,'Phòng A23','AVAILABLE','Phòng chăm sóc bệnh nhân nội trú','A23',NULL),(19,1,1,'Phòng 106','OCCUPIED','','106',NULL);
+INSERT INTO `room` VALUES (1,1,1,'Phòng A1','AVAILABLE',NULL,'A1',1),(2,1,1,'Phòng A2','AVAILABLE',NULL,'A2',1),(3,2,1,'Phòng B1','AVAILABLE',NULL,'B1',1),(4,2,1,'Phòng B2','AVAILABLE',NULL,'B2',1),(5,8,8,'Phòng xét nghiệm 1','AVAILABLE',NULL,'BT1',4),(6,1,5,'Phòng A3','AVAILABLE',NULL,'A3',1),(7,1,5,'Phòng A4','AVAILABLE',NULL,'A4',1),(8,1,5,'Phòng A5','AVAILABLE',NULL,'A5',1),(9,1,5,'Phòng A6','AVAILABLE',NULL,'A6',1),(10,2,6,'Phòng B3','AVAILABLE',NULL,'B3',1),(11,2,6,'Phòng B4','AVAILABLE',NULL,'B4',1),(12,2,6,'Phòng B5','AVAILABLE',NULL,'B5',1),(13,2,6,'Phòng B6','AVAILABLE',NULL,'B6',1),(14,2,6,'Phòng B7','AVAILABLE',NULL,'B7',1),(15,3,6,'Phòng C1','AVAILABLE',NULL,'C1',1),(16,3,6,'Phòng C2','AVAILABLE',NULL,'C2',1),(17,2,2,'Phòng A22','AVAILABLE',NULL,'A22',1),(18,2,2,'Phòng A23','AVAILABLE','Phòng chăm sóc bệnh nhân nội trú','A23',1),(19,1,1,'Phòng 106','OCCUPIED','','106',1);
 /*!40000 ALTER TABLE `room` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1571,7 +1572,7 @@ CREATE TABLE `staff` (
   CONSTRAINT `staff_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `staff_ibfk_2` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
   CONSTRAINT `staff_ibfk_3` FOREIGN KEY (`position_id`) REFERENCES `staff_position` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1580,7 +1581,7 @@ CREATE TABLE `staff` (
 
 LOCK TABLES `staff` WRITE;
 /*!40000 ALTER TABLE `staff` DISABLE KEYS */;
-INSERT INTO `staff` VALUES (1,1,4,1),(2,1,5,1),(3,1,7,5),(4,1,8,2),(5,5,11,1),(6,1,14,1),(7,2,18,2),(8,3,19,1),(10,4,21,9);
+INSERT INTO `staff` VALUES (1,1,4,1),(2,1,5,1),(3,1,7,5),(4,1,8,2),(5,5,11,1),(6,1,14,1),(7,2,18,2),(8,3,19,1),(10,4,21,9),(11,7,22,10),(12,3,23,8),(13,3,24,8),(14,3,25,8),(15,3,26,8);
 /*!40000 ALTER TABLE `staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1622,7 +1623,7 @@ CREATE TABLE `staff_schedules` (
   `shift_type_id` int DEFAULT NULL,
   `room_id` int DEFAULT NULL,
   `date` date DEFAULT NULL,
-  `status` varchar(50) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `staff_id` (`staff_id`),
   KEY `shift_type_id` (`shift_type_id`),
@@ -1630,7 +1631,7 @@ CREATE TABLE `staff_schedules` (
   CONSTRAINT `staff_schedules_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`),
   CONSTRAINT `staff_schedules_ibfk_2` FOREIGN KEY (`shift_type_id`) REFERENCES `shift_type` (`id`),
   CONSTRAINT `staff_schedules_ibfk_3` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1639,6 +1640,7 @@ CREATE TABLE `staff_schedules` (
 
 LOCK TABLES `staff_schedules` WRITE;
 /*!40000 ALTER TABLE `staff_schedules` DISABLE KEYS */;
+INSERT INTO `staff_schedules` VALUES (1,8,1,5,'2025-10-26','ACTIVE'),(2,14,1,5,'2025-10-26','ACTIVE'),(3,15,1,5,'2025-10-26','ACTIVE');
 /*!40000 ALTER TABLE `staff_schedules` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1723,7 +1725,7 @@ CREATE TABLE `users` (
   KEY `idx_user_fullname` (`fullname`),
   KEY `idx_user_email` (`email`),
   KEY `idx_user_phone` (`phone_number`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1732,7 +1734,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Huỳnh Minh Hoàng','hoanghm4869@gmail.com','0337023824','2003-11-12',0,'TBH TDM','$2a$10$b6E2VmRKJ8pB25uky/vWN.1XnlYvFSOEwK3jtxPchw5nqbLmqQoPC',0,'2025-04-10 00:00:00',NULL),(3,'Nguyễn Văn A','nguyenvanA@example.com','0123456789','1995-05-20',0,'123 Đường Lê Lợi, Tdm, TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',1,'2025-04-10 04:48:35',NULL),(4,'Trần Văn C','tranvanc@hospital.com','0323456709','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$XiutYothZ4rma/P.J5c2leYOLb/hTj6V677Re5gy5hSWeB1yBe71y',2,'2025-04-10 08:28:32','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1747710399077.png'),(5,'Nguyễn Minh Thuận','Thuannm@example.com','0223456789','1985-06-20',0,'123 Nguyễn Trãi, TP.HCM','$2a$10$o/BAwrm8rlbRUtVKepG8iuhlFxvVMfn6LVhLyaaiLtmdvUAIkGLbC',2,'2025-04-16 08:06:58','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nam.png'),(7,'Nguyễn Hồng Yến','Yennh@example.com','0423456789','1995-06-20',1,'123 Lý Thái Tổ, TP.HCM','$2a$10$ZRb1sOPqiTR1NgDn7l9ryuU7JbBOT6QnX2.ai.skFTmg/VMVFNu5u',2,'2025-05-18 06:40:23','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(8,'Trần Thu Phương','Phuongtt20@example.com','0523456789','1994-08-20',1,'123 Phan Châu Trinh, TP.HCM','$2a$10$qFTu3C44lJEAz4.AEo/qIOnwihykzMMB5mYTqv0nKcnFePOhvBtxK',2,'2025-05-18 07:36:34','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(9,'Nguyễn Việt Trung','Truntnv@gmail.com','0336013824','2003-06-25',0,'Phú Hòa','$2a$10$kvsD41NR8tMs6ZFfth6wI.ksdSKpySwLVYW2Y/CT/0KoryGjrzxCq',1,'2025-05-19 00:13:09',''),(10,'Nguyễn Thanh Nam','Namnt@gmail.com','0723456789','2002-05-23',0,'Củ Chi','$2a$10$WYEA1.VFcVZYAR1tAqY8vO/Sr/C1Y3bVp6TDVwyKAbQIfPcTuBCQm',1,'2025-05-23 17:17:39',''),(11,'Hồ Ngọc Châu','Chaunh@gmail.com','0823456789','2000-06-24',1,'TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',2,'2025-05-24 16:47:19',NULL),(12,'Nguyễn Ngọc Hà','hann@gmail.com','038023564','2003-11-25',1,'phường Thủ Dầu Một','$2a$10$jtuaGLERzhkK9ScR63RZPO1VLcFgTratjYAmWhWZXz1.PHKX2p3XK',1,'2025-08-21 09:18:07',NULL),(13,'Nguyễn Thanh Thảo','thaont@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$Ru49ve58Uu1O0CXhf0.Lqu48tpwLWf32xZVJ32FS9VL91up0IulK6',1,'2025-08-21 16:05:53','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825874773.jpg'),(14,'Trần Văn C','Thuann1m@example.com','0323456789','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$iwcOFEhX3qKwdYfG/kQ6QuPxQUokKlxOENmeSJ/VYgu4918xbGLhq',2,'2025-08-22 01:23:35','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825850325.jpg'),(15,'Nguyễn Thanh Hằng','hangnt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$v4mss5YDekozGY9xkvRQIe/FdEjz8uFNx1U9u84TzjQkASAvkUdpO',1,'2025-08-22 01:26:01',NULL),(16,'Nguyễn Thanh Thu','nguyenvan123@example.com','0320156487','2002-05-14',0,'phường Chánh Hiệp','$2a$10$.cnH7Hx/jTUaCll79EDPk.q5zlRJ1ntCUmGtV9sQSULT8ybVYnCH6',1,'2025-08-22 01:26:52',NULL),(17,'Nguyễn Thanh Thuỷ','thuynt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$4iEmWwD6Ju6U/vamg5MbMOjWERSQ2PHCPA67uCq42eqQlKDxYlrtm',1,'2025-08-22 13:10:33',''),(18,'Nguyễn Thị Ngân','ngannt@gmail.com','0337033824','2000-09-28',0,'Chánh Hiệp','$2a$10$aOyLpSBFMRaj1n8MRk2.EOma7w1gsf/gIjKB4aMFkRd4Te./hMaAm',2,'2025-09-28 17:36:54','string'),(19,'Nguyễn Tiến Duy','duynt@gmail.com','0337043824','1999-10-28',1,'Phú Lợi','$2a$10$ixigocA1JDl.IF/Nu7vb4eh6.JAdWX7eZWGfX/J6C.8oDt5YPGtRO',2,'2025-09-28 17:39:05',''),(21,'Trần Quốc Hưng','hungtq@gmail.com','0335021425','1998-10-24',0,'Chánh Hiệp','$2a$10$OqWuoiRwDumfhosnXeY89eQtU1aYl0KRh3YFIOENknGbMQoHL1mVe',2,'2025-10-24 15:36:57',NULL);
+INSERT INTO `users` VALUES (1,'Huỳnh Minh Hoàng','hoanghm4869@gmail.com','0337023824','2003-11-12',0,'TBH TDM','$2a$10$b6E2VmRKJ8pB25uky/vWN.1XnlYvFSOEwK3jtxPchw5nqbLmqQoPC',0,'2025-04-10 00:00:00',NULL),(3,'Nguyễn Văn A','nguyenvanA@example.com','0123456789','1995-05-20',0,'123 Đường Lê Lợi, Tdm, TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',1,'2025-04-10 04:48:35',NULL),(4,'Trần Văn C','tranvanc@hospital.com','0323456709','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$XiutYothZ4rma/P.J5c2leYOLb/hTj6V677Re5gy5hSWeB1yBe71y',2,'2025-04-10 08:28:32','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1747710399077.png'),(5,'Nguyễn Minh Thuận','Thuannm@example.com','0223456789','1985-06-20',0,'123 Nguyễn Trãi, TP.HCM','$2a$10$o/BAwrm8rlbRUtVKepG8iuhlFxvVMfn6LVhLyaaiLtmdvUAIkGLbC',2,'2025-04-16 08:06:58','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nam.png'),(7,'Nguyễn Hồng Yến','Yennh@example.com','0423456789','1995-06-20',1,'123 Lý Thái Tổ, TP.HCM','$2a$10$ZRb1sOPqiTR1NgDn7l9ryuU7JbBOT6QnX2.ai.skFTmg/VMVFNu5u',2,'2025-05-18 06:40:23','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(8,'Trần Thu Phương','Phuongtt20@example.com','0523456789','1994-08-20',1,'123 Phan Châu Trinh, TP.HCM','$2a$10$qFTu3C44lJEAz4.AEo/qIOnwihykzMMB5mYTqv0nKcnFePOhvBtxK',2,'2025-05-18 07:36:34','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(9,'Nguyễn Việt Trung','Truntnv@gmail.com','0336013824','2003-06-25',0,'Phú Hòa','$2a$10$kvsD41NR8tMs6ZFfth6wI.ksdSKpySwLVYW2Y/CT/0KoryGjrzxCq',1,'2025-05-19 00:13:09',''),(10,'Nguyễn Thanh Nam','Namnt@gmail.com','0723456789','2002-05-23',0,'Củ Chi','$2a$10$WYEA1.VFcVZYAR1tAqY8vO/Sr/C1Y3bVp6TDVwyKAbQIfPcTuBCQm',1,'2025-05-23 17:17:39',''),(11,'Hồ Ngọc Châu','Chaunh@gmail.com','0823456789','2000-06-24',1,'TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',2,'2025-05-24 16:47:19',NULL),(12,'Nguyễn Ngọc Hà','hann@gmail.com','038023564','2003-11-25',1,'phường Thủ Dầu Một','$2a$10$jtuaGLERzhkK9ScR63RZPO1VLcFgTratjYAmWhWZXz1.PHKX2p3XK',1,'2025-08-21 09:18:07',NULL),(13,'Nguyễn Thanh Thảo','thaont@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$Ru49ve58Uu1O0CXhf0.Lqu48tpwLWf32xZVJ32FS9VL91up0IulK6',1,'2025-08-21 16:05:53','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825874773.jpg'),(14,'Trần Văn C','Thuann1m@example.com','0323456789','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$iwcOFEhX3qKwdYfG/kQ6QuPxQUokKlxOENmeSJ/VYgu4918xbGLhq',2,'2025-08-22 01:23:35','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825850325.jpg'),(15,'Nguyễn Thanh Hằng','hangnt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$v4mss5YDekozGY9xkvRQIe/FdEjz8uFNx1U9u84TzjQkASAvkUdpO',1,'2025-08-22 01:26:01',NULL),(16,'Nguyễn Thanh Thu','nguyenvan123@example.com','0320156487','2002-05-14',0,'phường Chánh Hiệp','$2a$10$.cnH7Hx/jTUaCll79EDPk.q5zlRJ1ntCUmGtV9sQSULT8ybVYnCH6',1,'2025-08-22 01:26:52',NULL),(17,'Nguyễn Thanh Thuỷ','thuynt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$4iEmWwD6Ju6U/vamg5MbMOjWERSQ2PHCPA67uCq42eqQlKDxYlrtm',1,'2025-08-22 13:10:33',''),(18,'Nguyễn Thị Ngân','ngannt@gmail.com','0337033824','2000-09-28',0,'Chánh Hiệp','$2a$10$aOyLpSBFMRaj1n8MRk2.EOma7w1gsf/gIjKB4aMFkRd4Te./hMaAm',2,'2025-09-28 17:36:54','string'),(19,'Nguyễn Tiến Duy','duynt@gmail.com','0337043824','1999-10-28',1,'Phú Lợi','$2a$10$ixigocA1JDl.IF/Nu7vb4eh6.JAdWX7eZWGfX/J6C.8oDt5YPGtRO',2,'2025-09-28 17:39:05',''),(21,'Trần Quốc Hưng','hungtq@gmail.com','0335021425','1998-10-24',0,'Chánh Hiệp','$2a$10$OqWuoiRwDumfhosnXeY89eQtU1aYl0KRh3YFIOENknGbMQoHL1mVe',2,'2025-10-24 15:36:57',NULL),(22,'Nguyễn Ngọc Hiền','hiennn@gmail.com','0331052674','1998-10-26',1,'Phú Thọ','$2a$10$TiRHyAvjV776S5vTqHkS5.P0MPdB53nPfCNRvdaWIyZjMl4SdYYRy',2,'2025-10-26 03:13:19',''),(23,'Lưu Đức Thịnh','thinhld@gmail.com','0334013754','2000-09-26',0,'Phường Sài Gòn','$2a$10$4UMopa1Mav7yU/cKqs77AuL4CNwQITdaxT/vlBPCODRnEbM5vrfQe',2,'2025-10-26 04:02:22',''),(24,'Trần Thanh Yến','yentt@gmail.com','0322063455','1999-09-02',1,'Phường Thuận An','$2a$10$vtO/28Wsx0xIl5J9c8Ev3ORYuv2.hDR4fnhUrCU34ss9Si0.zrYJW',2,'2025-10-26 04:03:47',''),(25,'Nguyễn Thanh Hoa','hoant@gmail.com','0935451060','1998-07-19',1,'Phường Thuận An','$2a$10$xpNbX//Nwwt/DQkBeJ9uOeFlH.tEJcEWdcVU4SVuhYjimpMhnHgw2',2,'2025-10-26 04:04:58',''),(26,'Nguyễn Thanh Phúc','phucnt@gmail.com','0925522406','1998-10-19',1,'Phường Hiệp An','$2a$10$uKMUKGbqsZKZkRl75cKskutuR6UmPG9Qh48.wQ6bg9b5lY8yihn7e',2,'2025-10-26 04:05:50','');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1879,4 +1881,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-25 10:06:36
+-- Dump completed on 2025-10-26 11:49:55

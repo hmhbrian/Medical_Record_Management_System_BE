@@ -34,4 +34,9 @@ public class StaffPositionService {
         return repo.findAll(Sort.by(Sort.Direction.ASC, "id")).stream()
                 .collect(Collectors.toList());
     }
+
+    public List<staff_position> getAllNoDoctor() {
+        return repo.findAllNoDoctor().stream()
+                .collect(Collectors.toList());
+    }
 }
