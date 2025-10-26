@@ -52,6 +52,8 @@ public class MedicalRecordService {
     private MedicalExaminationRepository medicalExaminationRepo;
     @Autowired
     private ResultExaminationRepository resultExaminationRepo;
+    @Autowired
+    private UserRepository userRepo;
 
     // Tạo mới hồ sơ ngoại trú
     public MedicalRecord CreateMedicalRecord(MedicalRecordRequest request) {
@@ -183,6 +185,12 @@ public class MedicalRecordService {
 
     // Cập nhật trạng thái hồ sơ ngoại trú
     public boolean UpdateMedicalRecordStatus(Integer recordId, String statusStr) {
+        //Lấy id doctor từ user đang đăng nhập
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+
         MedicalRecord record = recordRepo.findById(recordId)
                 .orElseThrow(() -> new RuntimeException("Medical record not found"));
 
@@ -203,10 +211,13 @@ public class MedicalRecordService {
         if(status == MedicalRecordStatus.IN_PROGRESS) {
             Appointment appointment = appointmentRepo.findById(record.getAppointment().getId())
                     .orElseThrow(() -> new RuntimeException("Appointment not found"));
+            User cudUser = userRepo.findById(cud.getId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
             AppointmentStatus appointmentStatus = new AppointmentStatus();
             appointmentStatus.setAppointment(appointment);
             appointmentStatus.setStatus(4); // Đang khám
             appointmentStatus.setUpdateAt(LocalDateTime.now());
+            appointmentStatus.setUpdate_by(cudUser);
             appointmentStatusRepository.save(appointmentStatus);
         }
 

@@ -163,12 +163,12 @@ public class DoctorScheduleService {
         scheduleRepo.deleteById(scheduleId);
     }
 
-    public List<DoctorScheduleResponse> getScheduleByDoctorId(int doctorId) {
-        List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdAndDateAfterOrderByDateAsc(doctorId, LocalDate.now());
-        return schedules.stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
-    }
+//    public List<DoctorScheduleResponse> getScheduleByDoctorId(int doctorId) {
+//        List<DoctorSchedules> schedules = scheduleRepo.findByDoctorIdAndDateAfterOrderByDateAsc(doctorId, LocalDate.now());
+//        return schedules.stream()
+//                .map(this::convertToResponse)
+//                .collect(Collectors.toList());
+//    }
 
     private DoctorScheduleResponse convertToResponse(DoctorSchedules schedule) {
         DoctorScheduleResponse response = new DoctorScheduleResponse();
