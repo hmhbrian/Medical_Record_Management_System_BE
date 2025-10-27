@@ -14,9 +14,9 @@ public class ImagingTypes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(unique = true, nullable = false)
+    @Column(name = "imaging_code", unique = true, nullable = false)
     private String imagingCode;
-    @Column(unique = true, nullable = false)
+    @Column(name = "imaging_name", unique = true, nullable = false)
     private String imagingName;
     private double price;
     private String description;

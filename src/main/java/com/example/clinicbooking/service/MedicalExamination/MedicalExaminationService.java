@@ -1,17 +1,11 @@
 package com.example.clinicbooking.service.MedicalExamination;
 
-import com.example.clinicbooking.DTO.MedicalExaminationResponse;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
-import com.example.clinicbooking.DTO.PaginatedResponseDTO;
-import com.example.clinicbooking.entity.MedicalRecord;
+import com.example.clinicbooking.DTO.Services.MedicalExaminationResponse;
 import com.example.clinicbooking.entity.Medical_Examination;
 import com.example.clinicbooking.repository.DoctorRepository;
 import com.example.clinicbooking.repository.MedicalExaminationRepository;
 import com.example.clinicbooking.security.CustomUserDetails;
-import com.example.clinicbooking.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

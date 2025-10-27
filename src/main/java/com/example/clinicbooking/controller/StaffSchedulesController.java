@@ -51,4 +51,17 @@ public class StaffSchedulesController {
 
         return ResponseEntity.ok(schedules);
     }
+
+    @GetMapping("/staff-login")
+    public ResponseEntity<List<StaffScheduleResponse>> getSchedulesOfStaffLogin(
+            @RequestParam("start_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate) {
+
+        List<StaffScheduleResponse> schedules = staffScheduleService.getSchedulesOfStaffLogin(startDate);
+
+        if (schedules.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(schedules);
+    }
 }

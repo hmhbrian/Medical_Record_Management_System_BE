@@ -1,7 +1,9 @@
 package com.example.clinicbooking.controller;
 
-import com.example.clinicbooking.DTO.Services.MedicalExaminationResponse;
-import com.example.clinicbooking.service.MedicalExamination.MedicalExaminationService;
+import com.example.clinicbooking.DTO.Services.ImagingTypeResponse;
+import com.example.clinicbooking.DTO.Services.TestTypeResponse;
+import com.example.clinicbooking.service.ImagingType.ImagingTypeService;
+import com.example.clinicbooking.service.TestType.TestTypeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,19 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "Medical Examination", description = "Quản lý danh mục khám bệnh")
+@Tag(name = "ImagingTypes", description = "Quản lý danh mục loại chẩn đoán hình ảnh")
 @RestController
-@RequestMapping("/api/medical-examinations")
-public class MedicalExaminationController {
+@RequestMapping("/api/ImagingTypes")
+public class ImagingTypeController {
     @Autowired
-    private MedicalExaminationService medicalExaminationService;
+    private ImagingTypeService imagingTypeService;
 
     //Endpoint tìm kiếm không phân trang (tùy chọn)
     @GetMapping
-    public ResponseEntity<List<MedicalExaminationResponse>> findAllExaminations(
+    public ResponseEntity<List<ImagingTypeResponse>> findAllExaminations(
             @RequestParam(name = "keyword", required = false) String keyword) {
 
-        List<MedicalExaminationResponse> results = medicalExaminationService.search(keyword);
+        List<ImagingTypeResponse> results = imagingTypeService.search(keyword);
         return ResponseEntity.ok(results);
     }
 }

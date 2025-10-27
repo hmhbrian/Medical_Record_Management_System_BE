@@ -9,7 +9,10 @@ import com.example.clinicbooking.repository.ShiftTypeRepository;
 import com.example.clinicbooking.repository.StaffRepository;
 import com.example.clinicbooking.repository.StaffSchedulesRepository;
 import com.example.clinicbooking.repository.roomRepository;
+import com.example.clinicbooking.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -161,6 +164,29 @@ public class StaffScheduleService {
 
         List<StaffSchedules> schedules = staffSchedulesRepo
                 .findByStaffIdAndDateBetweenOrderByDateAsc(staffId, startDate, endDate);
+
+        // Ánh xạ (Mapping) từ Entity sang DTO
+        return schedules.stream()
+                .map(this::convertToDetailDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<StaffScheduleResponse> getSchedulesOfStaffLogin(LocalDate startDate) {
+        LocalDate endDate = startDate.plusDays(6);
+
+        //Lấy id nhân viên từ user đang đăng nhập
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+
+        // Tìm nhân viên theo User ID
+        Staff staff = staffRepo.findByUserId(cud.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên với User ID: " + cud.getId()));
+
+        // Lấy lịch làm việc của nhân viên đang đăng nhập trong khoảng thời gian
+        List<StaffSchedules> schedules = staffSchedulesRepo
+                .findByStaffIdAndDateBetweenOrderByDateAsc(staff.getId(), startDate, endDate);
 
         // Ánh xạ (Mapping) từ Entity sang DTO
         return schedules.stream()

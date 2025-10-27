@@ -9,4 +9,5 @@ public class PatientResponse extends BaseUserResponse {
     public String patientCode;
     public String medicalHistory;
     public String insuranceNumber;
+    public Double insuranceRate;
 }

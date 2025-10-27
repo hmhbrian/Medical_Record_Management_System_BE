@@ -14,9 +14,9 @@ public class TestTypes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(unique = true, nullable = false)
+    @Column(name = "test_code",unique = true, nullable = false)
     private String testCode;
-    @Column(unique = true, nullable = false)
+    @Column(name = "test_name",unique = true, nullable = false)
     private String testName;
     private double price;
     private String description;
