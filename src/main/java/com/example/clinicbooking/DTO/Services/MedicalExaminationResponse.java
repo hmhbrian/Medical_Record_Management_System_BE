@@ -1,9 +1,5 @@
-package com.example.clinicbooking.DTO;
+package com.example.clinicbooking.DTO.Services;
 
-import com.example.clinicbooking.entity.Department;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Data

@@ -7,6 +7,7 @@ import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordMetricsResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
+import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceOrdersRequest;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.entity.MedicalRecord;
 import com.example.clinicbooking.entity.MedicalRecordStatus;
@@ -14,6 +15,7 @@ import com.example.clinicbooking.service.MedicalRecord.MedicalRecordService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -125,6 +127,22 @@ public class MedicalRecordController {
         }
 
         return ResponseEntity.ok(new ApiResponse<>(true, "Lấy dữ liệu khám & chânr đoán thành công", response));
+    }
+
+    //Tạo các chỉ định xét nghiệm/hình ảnh và phiếu thanh toán liên quan.
+    @PostMapping("/{recordId}/service-orders")
+    public ResponseEntity<ApiResponse<?>> createServiceOrders(
+            @PathVariable Integer recordId,
+            @RequestBody ServiceOrdersRequest dto) {
+
+        // Kiểm tra dữ liệu đầu vào cơ bản
+        if ((dto.getLabTestCatalogIds() == null || dto.getLabTestCatalogIds().isEmpty()) &&
+                (dto.getImagingTypeIds() == null || dto.getImagingTypeIds().isEmpty())) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Cần chỉ định ít nhất một dịch vụ.", null));
+        }
+
+        // Trả về 201 Created (hoặc 200 OK)
+        return new ResponseEntity<>(recordService.createServiceOrders(recordId, dto), HttpStatus.CREATED);
     }
 }
 

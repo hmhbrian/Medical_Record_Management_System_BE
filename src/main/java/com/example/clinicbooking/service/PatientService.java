@@ -47,6 +47,7 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
         patient.setUser(user);
         patient.setMedicalHistory(request.medicalHistory);
         patient.setInsuranceNumber(request.insuranceNumber);
+        patient.setInsuranceRate(request.insuranceRate);
 
         patientRepo.save(patient);
         return covertToResponse(patient);
@@ -103,6 +104,7 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
         // Update patient information
         patient.setMedicalHistory(request.medicalHistory);
         patient.setInsuranceNumber(request.insuranceNumber);
+        patient.setInsuranceRate(request.insuranceRate);
         patientRepo.save(patient);
 
         return covertToResponse(patient);
@@ -131,6 +133,7 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
         dto.setAvatar_url(patient.getUser().getAvatar_url());
         dto.setMedicalHistory(patient.getMedicalHistory());
         dto.setInsuranceNumber(patient.getInsuranceNumber());
+        dto.setInsuranceRate(patient.getInsuranceRate());
         return dto;
     }
 }

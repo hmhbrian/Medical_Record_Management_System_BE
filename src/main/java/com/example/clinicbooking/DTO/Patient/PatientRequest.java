@@ -8,4 +8,5 @@ public class PatientRequest extends BaseUserRequest {
     // patient
     public String medicalHistory;
     public String insuranceNumber;
+    public double insuranceRate;
 }

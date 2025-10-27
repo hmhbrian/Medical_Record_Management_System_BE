@@ -1,5 +1,6 @@
 package com.example.clinicbooking.service.MedicalRecord;
 
+import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisDataResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisUpdateRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10Response;
@@ -8,12 +9,17 @@ import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10Request;
+import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceDetail;
+import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceOrdersRequest;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.DTO.Patient.PatientSummary;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.repository.*;
 import com.example.clinicbooking.security.CustomUserDetails;
+import com.example.clinicbooking.service.MedicalExamination.MedicalExaminationService;
+import com.example.clinicbooking.service.PaymentService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +30,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -33,27 +42,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MedicalRecordService {
-    @Autowired
-    private MedicalRecordRepository recordRepo;
-    @Autowired
-    private PatientRepository patientRepo;
-    @Autowired
-    private DoctorRepository doctorRepo;
-    @Autowired
-    private AppointmentRepository appointmentRepo;
-    @Autowired
-    private AppointmentStatusRepository appointmentStatusRepository;
-    @Autowired
-    private MedicalRecordIcd10Repository medicalRecordIcd10Repository;
-    @Autowired
-    private Icd10Repository icd10Repository;
-    @Autowired
-    private MedicalExaminationRepository medicalExaminationRepo;
-    @Autowired
-    private ResultExaminationRepository resultExaminationRepo;
-    @Autowired
-    private UserRepository userRepo;
+    private final MedicalRecordRepository recordRepo;
+
+    private final UserRepository userRepo;
+    private final PatientRepository patientRepo;
+    private final DoctorRepository doctorRepo;
+
+    private final AppointmentRepository appointmentRepo;
+    private final AppointmentStatusRepository appointmentStatusRepository;
+
+    private final Icd10Repository icd10Repository;
+    private final MedicalRecordIcd10Repository medicalRecordIcd10Repository;
+
+    private final MedicalExaminationRepository medicalExaminationRepo;
+    private final ResultExaminationRepository resultExaminationRepo;
+    private final TestTypeRepository testTypeRepo;
+    private final LabTestsRepository labTestRepo;
+    private final ImagingTypeRepository imagingTypeRepo;
+    private final ImagingTestsRepository imagingTestRepo;
+
+    private final PaymentRepository paymentRepo;
+    private final PaymentDetailRepository paymentDetailRepo;
+    private final PaymentService paymentService;
 
     // Tạo mới hồ sơ ngoại trú
     public MedicalRecord CreateMedicalRecord(MedicalRecordRequest request) {
@@ -224,6 +236,7 @@ public class MedicalRecordService {
         return true;
     }
 
+    // Cập nhật chẩn đoán cho hồ sơ ngoại trú
     @Transactional // Đảm bảo tất cả các bước (Update, Delete, Save) là một giao dịch duy nhất
     public void updateDiagnosis(Integer recordId, DiagnosisUpdateRequest dto) {
 
@@ -252,8 +265,62 @@ public class MedicalRecordService {
             newExamination.setRequestedDate(LocalDateTime.now());
             newExamination.setStatus("PENDING_PAYMENT"); // Trạng thái: Chờ thanh toán
 
-            resultExaminationRepo.save(newExamination);
+            newExamination = resultExaminationRepo.save(newExamination);
+
+            //Tạo payment
+            List<ServiceDetail> serviceItems = List.of(
+                    new ServiceDetail("EXAMINATION", newExamination.getId(), examination.getExaminationName(), examination.getPrice())
+            );
+            paymentService.handlePayment(record, serviceItems);
+//            BigDecimal servicePrice = new BigDecimal(String.valueOf(examination.getPrice()));
+//
+//            double insuranceRateService = 0.8; // Giả định tỷ lệ hỗ trợ BHYT
+//            double insuranceRatePatient = record.getPatient().getInsuranceRate(); // Lấy tỷ lệ BHYT của bệnh nhân
+//
+//            // Lấy tỷ lệ hỗ trợ BHYT áp dụng thấp hơn giữa dịch vụ và bệnh nhân
+//            double finalRateDouble = Math.min(insuranceRateService, insuranceRatePatient);
+//
+//            //Dùng BigDecimal để tính toán chính xác tiền tệ
+//            BigDecimal insuranceRate = new BigDecimal(finalRateDouble);
+//
+//            //Đặt scale cho tiền tệ: scale = 0 (cho VND), 2 (cho USD/EUR)
+//            int scale = 0;
+//            RoundingMode roundingMode = RoundingMode.HALF_UP;
+//
+//            // Tính số tiền BHYT chi trả
+//            BigDecimal insuranceCovered = servicePrice
+//                    .multiply(insuranceRate)
+//                    .setScale(scale, roundingMode); // Áp dụng làm tròn
+//
+//            // Tính số tiền bệnh nhân phải trả
+//            BigDecimal patientOwed = servicePrice.subtract(insuranceCovered);
+//
+//            //Tạo bản ghi Payment
+//            Payment payment = new Payment();
+//            payment.setRecord(record);
+//            payment.setTotalAmount(servicePrice);
+//            payment.setInsuranceCoverage(insuranceCovered); // Gán tổng tiền BHYT ước tính
+//            payment.setPatientPayment(patientOwed);       // Gán tổng tiền bệnh nhân phải trả ước tính
+//            payment.setStatus("PENDING_PAYMENT");
+//            payment.setCreatedAt(LocalDateTime.now());
+//
+//            payment = paymentRepo.save(payment);
+//
+//            //Tạo bản ghi PaymentDetail
+//            PaymentDetail detail = new PaymentDetail();
+//            detail.setPayment(payment);
+//            detail.setServiceType("EXAMINATION");
+//            detail.setServiceId(newExamination.getId());
+//            detail.setDescription(examination.getExaminationName());
+//            detail.setTotalAmount(servicePrice);
+//            detail.setCreatedAt(LocalDateTime.now());
+//
+//            // Gán chi tiết tiền BHYT và bệnh nhân phải trả cho từng mục
+//            detail.setInsuranceCoveredAmount(insuranceCovered);
+//            detail.setPatientPaidAmount(patientOwed);
+//            paymentDetailRepo.save(detail);
         }
+
 
         // 4. Đồng bộ hóa Mã ICD-10
 
@@ -358,6 +425,72 @@ public class MedicalRecordService {
         return dto;
     }
 
+    @Transactional
+    public ApiResponse<?> createServiceOrders(Integer recordId, ServiceOrdersRequest dto) {
+
+        MedicalRecord record = recordRepo.findById(recordId)
+                .orElseThrow(() -> new RuntimeException("Hồ sơ bệnh án không tồn tại."));
+
+        // Danh sách các ID dịch vụ (Service ID) cần thanh toán
+        List<ServiceDetail> serviceItems = new ArrayList<>();
+
+        // --- 1. XỬ LÝ CHỈ ĐỊNH XÉT NGHIỆM (LAB TESTS) ---
+        if (dto.getLabTestCatalogIds() != null && !dto.getLabTestCatalogIds().isEmpty()) {
+            for (Integer catalogId : dto.getLabTestCatalogIds()) {
+                TestTypes testTypes = testTypeRepo.findById(catalogId)
+                        .orElseThrow(() -> new RuntimeException("Mã xét nghiệm không hợp lệ: " + catalogId));
+
+                // A. Tạo bản ghi LabTest
+                LabTests labTest = new LabTests();
+                labTest.setRecord(record);
+                labTest.setDoctor(record.getDoctor());
+                labTest.setTestTypes(testTypes); // Liên kết tới loại xét nghiệm
+                labTest.setRequestedDate(LocalDateTime.now());
+                labTest.setStatus("PENDING_PAYMENT"); // Trạng thái ban đầu
+
+                labTest = labTestRepo.save(labTest);
+
+                // B. Thêm vào danh sách thanh toán
+                serviceItems.add(new ServiceDetail("LAB_TEST", labTest.getId(), testTypes.getTestName(), testTypes.getPrice()));
+           }
+        }
+
+        // --- 2. XỬ LÝ CHỈ ĐỊNH CHẨN ĐOÁN HÌNH ẢNH (IMAGING) ---
+        if (dto.getImagingTypeIds() != null && !dto.getImagingTypeIds().isEmpty()) {
+            for (Integer typeId : dto.getImagingTypeIds()) {
+                ImagingTypes imagingType = imagingTypeRepo.findById(typeId)
+                        .orElseThrow(() -> new RuntimeException("Id loại chẩn đooán hình ảnh không hợp lệ: " + typeId));
+
+                // A. Tạo bản ghi ImagingTest
+                ImagingTests imagingTest = new ImagingTests();
+                imagingTest.setRecord(record);
+                imagingTest.setDoctor(record.getDoctor());
+                imagingTest.setImagingTypes(imagingType); // Liên kết tới loại hình ảnh
+                imagingTest.setRequestedDate(LocalDateTime.now());
+                imagingTest.setStatus("PENDING_PAYMENT");
+
+                imagingTest = imagingTestRepo.save(imagingTest);
+
+                // B. Thêm vào danh sách thanh toán
+                serviceItems.add(new ServiceDetail("IMAGING_TEST", imagingTest.getId(), imagingType.getImagingName(), imagingType.getPrice()));
+            }
+        }
+
+        // --- 3. TẠO PHIẾU THANH TOÁN (PAYMENTS) ---
+        if (serviceItems.isEmpty()) {
+            // Trường hợp không có chỉ định nào được gửi
+            return new ApiResponse<>(false, "Không có dịch vụ nào được chỉ định.", null);
+        }
+
+        paymentService.handlePayment(record, serviceItems);
+
+        // Cập nhật trạng thái hồ sơ (Ví dụ: Chuyển từ IN_PROGRESS sang PENDING_PAYMENT_SERVICE)
+        record.setStatus(MedicalRecordStatus.PENDING_RESULTS);
+        recordRepo.save(record);
+
+        return new ApiResponse<>(true, "Chỉ định đã được gửi thành công và chuyển sang thanh toán.",null);
+    }
+
     // Chuyển đổi từ Entity sang DTO Response
     private MedicalRecordResponse covertToResponse(MedicalRecord medicalRecord) {
         PatientSummary patientSummary = new PatientSummary();
@@ -378,5 +511,6 @@ public class MedicalRecordService {
         dto.setStatus(medicalRecord.getStatus().name());
         return dto;
     }
+
 }
 

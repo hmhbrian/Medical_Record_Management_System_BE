@@ -610,45 +610,46 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Table structure for table `imagingtests`
+-- Table structure for table `imaging_tests`
 --
 
-DROP TABLE IF EXISTS `imagingtests`;
+DROP TABLE IF EXISTS `imaging_tests`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `imagingtests` (
+CREATE TABLE `imaging_tests` (
   `id` int NOT NULL AUTO_INCREMENT,
   `record_id` int DEFAULT NULL,
   `inpatient_record_id` int DEFAULT NULL,
   `doctor_id` int DEFAULT NULL,
-  `imagingStaff_id` int DEFAULT NULL,
-  `imageType_id` int DEFAULT NULL,
-  `requestDate` date DEFAULT NULL,
-  `resultDate` date DEFAULT NULL,
+  `imaging_staff_id` int DEFAULT NULL,
+  `image_type_id` int DEFAULT NULL,
+  `requested_date` datetime DEFAULT NULL,
+  `result_date` datetime DEFAULT NULL,
   `image_url` text,
   `result` text,
-  `status` varchar(50) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`),
   KEY `inpatient_record_id` (`inpatient_record_id`),
   KEY `doctor_id` (`doctor_id`),
-  KEY `imageType_id` (`imageType_id`),
-  KEY `imagingtests_ibfk_6` (`imagingStaff_id`),
-  CONSTRAINT `imagingtests_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
-  CONSTRAINT `imagingtests_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
-  CONSTRAINT `imagingtests_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
-  CONSTRAINT `imagingtests_ibfk_5` FOREIGN KEY (`imageType_id`) REFERENCES `imagingtypes` (`id`),
-  CONSTRAINT `imagingtests_ibfk_6` FOREIGN KEY (`imagingStaff_id`) REFERENCES `imaging_staff` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `imageType_id` (`image_type_id`),
+  KEY `imagingtests_ibfk_6` (`imaging_staff_id`),
+  CONSTRAINT `imaging_tests_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
+  CONSTRAINT `imaging_tests_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
+  CONSTRAINT `imaging_tests_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
+  CONSTRAINT `imaging_tests_ibfk_5` FOREIGN KEY (`image_type_id`) REFERENCES `imagingtypes` (`id`),
+  CONSTRAINT `imaging_tests_ibfk_6` FOREIGN KEY (`imaging_staff_id`) REFERENCES `imaging_staff` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `imagingtests`
+-- Dumping data for table `imaging_tests`
 --
 
-LOCK TABLES `imagingtests` WRITE;
-/*!40000 ALTER TABLE `imagingtests` DISABLE KEYS */;
-/*!40000 ALTER TABLE `imagingtests` ENABLE KEYS */;
+LOCK TABLES `imaging_tests` WRITE;
+/*!40000 ALTER TABLE `imaging_tests` DISABLE KEYS */;
+INSERT INTO `imaging_tests` VALUES (1,4,NULL,4,NULL,7,'2025-10-27 09:40:59',NULL,NULL,NULL,'PENDING_PAYMENT'),(2,4,NULL,4,NULL,7,'2025-10-27 09:54:16',NULL,NULL,NULL,'PENDING_PAYMENT');
+/*!40000 ALTER TABLE `imaging_tests` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -669,7 +670,7 @@ CREATE TABLE `imagingtypes` (
   PRIMARY KEY (`id`),
   KEY `FK_it_d` (`department_id`),
   CONSTRAINT `FK_it_d` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -678,7 +679,7 @@ CREATE TABLE `imagingtypes` (
 
 LOCK TABLES `imagingtypes` WRITE;
 /*!40000 ALTER TABLE `imagingtypes` DISABLE KEYS */;
-INSERT INTO `imagingtypes` VALUES (1,'X-quang ngực thẳng',300000,'Chẩn đoán các bệnh lý phổi và tim mạch',1,'IMG1',1),(2,'Siêu âm ổ bụng',350000,'Đánh giá các cơ quan trong ổ bụng',1,'IMG2',1),(3,'CT Scanner vùng bụng',1200000,'Chẩn đoán chi tiết trước phẫu thuật ngoại khoa',2,'IMG3',1),(4,'Siêu âm tim',400000,'Đánh giá bệnh lý tim mạch ở trẻ em',3,'IMG4',1),(5,'Siêu âm thai',300000,'Theo dõi sự phát triển của thai nhi',5,'IMG5',1),(6,'Siêu âm sản phụ khoa',350000,'Đánh giá sức khỏe sinh sản',5,'IMG6',1);
+INSERT INTO `imagingtypes` VALUES (1,'X-quang ngực thẳng',300000,'Chẩn đoán các bệnh lý phổi và tim mạch',1,'IMG1',1),(2,'Siêu âm ổ bụng',350000,'Đánh giá các cơ quan trong ổ bụng',1,'IMG2',1),(3,'CT Scanner vùng bụng',1200000,'Chẩn đoán chi tiết trước phẫu thuật ngoại khoa',2,'IMG3',1),(4,'Siêu âm tim',400000,'Đánh giá bệnh lý tim mạch ở trẻ em',3,'IMG4',1),(5,'Siêu âm thai',300000,'Theo dõi sự phát triển của thai nhi',5,'IMG5',1),(6,'Siêu âm sản phụ khoa',350000,'Đánh giá sức khỏe sinh sản',5,'IMG6',1),(7,'X-quang răng',200000,'Đánh giá bệnh lý trong răng',5,'IMG7',1);
 /*!40000 ALTER TABLE `imagingtypes` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -792,44 +793,44 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Table structure for table `labtests`
+-- Table structure for table `lab_tests`
 --
 
-DROP TABLE IF EXISTS `labtests`;
+DROP TABLE IF EXISTS `lab_tests`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `labtests` (
+CREATE TABLE `lab_tests` (
   `id` int NOT NULL AUTO_INCREMENT,
   `record_id` int DEFAULT NULL,
   `inpatient_record_id` int DEFAULT NULL,
   `doctor_id` int DEFAULT NULL,
-  `labStaff_id` int DEFAULT NULL,
-  `testType_id` int DEFAULT NULL,
-  `requestDate` date DEFAULT NULL,
-  `resultDate` date DEFAULT NULL,
-  `result_text` text,
-  `status` varchar(50) DEFAULT NULL,
+  `lab_staff_id` int DEFAULT NULL,
+  `test_type_id` int DEFAULT NULL,
+  `requested_date` datetime DEFAULT NULL,
+  `result_date` datetime DEFAULT NULL,
+  `result` text,
+  `status` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`),
   KEY `inpatient_record_id` (`inpatient_record_id`),
   KEY `doctor_id` (`doctor_id`),
-  KEY `labStaff_id` (`labStaff_id`),
-  KEY `testType_id` (`testType_id`),
-  CONSTRAINT `labtests_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
-  CONSTRAINT `labtests_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
-  CONSTRAINT `labtests_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
-  CONSTRAINT `labtests_ibfk_4` FOREIGN KEY (`labStaff_id`) REFERENCES `lab_staff` (`id`),
-  CONSTRAINT `labtests_ibfk_5` FOREIGN KEY (`testType_id`) REFERENCES `testtypes` (`id`)
+  KEY `labStaff_id` (`lab_staff_id`),
+  KEY `testType_id` (`test_type_id`),
+  CONSTRAINT `lab_tests_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
+  CONSTRAINT `lab_tests_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
+  CONSTRAINT `lab_tests_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
+  CONSTRAINT `lab_tests_ibfk_4` FOREIGN KEY (`lab_staff_id`) REFERENCES `lab_staff` (`id`),
+  CONSTRAINT `lab_tests_ibfk_5` FOREIGN KEY (`test_type_id`) REFERENCES `testtypes` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `labtests`
+-- Dumping data for table `lab_tests`
 --
 
-LOCK TABLES `labtests` WRITE;
-/*!40000 ALTER TABLE `labtests` DISABLE KEYS */;
-/*!40000 ALTER TABLE `labtests` ENABLE KEYS */;
+LOCK TABLES `lab_tests` WRITE;
+/*!40000 ALTER TABLE `lab_tests` DISABLE KEYS */;
+/*!40000 ALTER TABLE `lab_tests` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -850,7 +851,7 @@ CREATE TABLE `medical_record_icd10` (
   KEY `icd10_catalog_id` (`icd10_catalog_id`),
   CONSTRAINT `medical_record_icd10_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`) ON DELETE CASCADE,
   CONSTRAINT `medical_record_icd10_ibfk_2` FOREIGN KEY (`icd10_catalog_id`) REFERENCES `icd10_catalog` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Liên kết chẩn đoán ICD-10 với hồ sơ bệnh án';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Liên kết chẩn đoán ICD-10 với hồ sơ bệnh án';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -859,7 +860,7 @@ CREATE TABLE `medical_record_icd10` (
 
 LOCK TABLES `medical_record_icd10` WRITE;
 /*!40000 ALTER TABLE `medical_record_icd10` DISABLE KEYS */;
-INSERT INTO `medical_record_icd10` VALUES (1,4,44,1,0),(2,4,45,0,1);
+INSERT INTO `medical_record_icd10` VALUES (5,4,44,1,0),(6,4,45,0,1);
 /*!40000 ALTER TABLE `medical_record_icd10` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -898,7 +899,7 @@ CREATE TABLE `medical_records` (
 
 LOCK TABLES `medical_records` WRITE;
 /*!40000 ALTER TABLE `medical_records` DISABLE KEYS */;
-INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3'),(4,1,4,'2025-10-23',1,'đau răng do sâu',14,'Đau răng hàm','Đau răng do sâu','IN_PROGRESS','MR4');
+INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3'),(4,1,4,'2025-10-23',1,'đau răng do sâu',14,'Đau răng hàm','Đau răng do sâu','PENDING_RESULTS','MR4');
 /*!40000 ALTER TABLE `medical_records` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1106,6 +1107,7 @@ CREATE TABLE `patients` (
   `patientcode` varchar(255) DEFAULT NULL,
   `medical_history` varchar(255) DEFAULT NULL,
   `insurance_number` varchar(255) DEFAULT NULL,
+  `insurance_rate` double DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `patients_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
@@ -1118,7 +1120,7 @@ CREATE TABLE `patients` (
 
 LOCK TABLES `patients` WRITE;
 /*!40000 ALTER TABLE `patients` DISABLE KEYS */;
-INSERT INTO `patients` VALUES (1,3,'PAT1','Tiền sử cao huyết áp','BH123456789'),(3,9,'PAT2','Bệnh tim bẩm sinh','SV1234567'),(4,10,'PAT4','',''),(5,12,'PAT5','Phổi yếu','SV1526425888'),(6,13,'PAT6','',''),(7,15,'PAT7','',''),(8,16,'PAT8','',''),(9,17,'PAT9','','');
+INSERT INTO `patients` VALUES (1,3,'PAT1','Tiền sử cao huyết áp','BH123456789',0.7),(3,9,'PAT2','Bệnh tim bẩm sinh','SV1234567',0.8),(4,10,'PAT4','','',0),(5,12,'PAT5','Phổi yếu','SV1526425888',0.8),(6,13,'PAT6','','',0),(7,15,'PAT7','','',0),(8,16,'PAT8','','',0),(9,17,'PAT9','','',0);
 /*!40000 ALTER TABLE `patients` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1151,16 +1153,17 @@ DROP TABLE IF EXISTS `paymentdetails`;
 CREATE TABLE `paymentdetails` (
   `id` int NOT NULL AUTO_INCREMENT,
   `payment_id` int DEFAULT NULL,
-  `ServiceType` enum('Examination','LabTest','ImagingTest','Medicine','Bed','Other') DEFAULT NULL,
+  `service_type` varchar(50) DEFAULT NULL,
   `service_id` int DEFAULT NULL,
   `description` text,
-  `amount` decimal(10,2) DEFAULT NULL,
-  `InsuranceCoveredAmount` decimal(10,2) DEFAULT NULL,
-  `PatientPaidAmount` decimal(10,2) DEFAULT NULL,
+  `amount` decimal(38,2) DEFAULT NULL,
+  `insurance_covered_amount` decimal(38,2) DEFAULT NULL,
+  `patient_paid_amount` decimal(38,2) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `payment_id` (`payment_id`),
   CONSTRAINT `paymentdetails_ibfk_1` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1169,6 +1172,7 @@ CREATE TABLE `paymentdetails` (
 
 LOCK TABLES `paymentdetails` WRITE;
 /*!40000 ALTER TABLE `paymentdetails` DISABLE KEYS */;
+INSERT INTO `paymentdetails` VALUES (2,2,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-27 09:35:54'),(4,2,'IMAGING_TEST',2,'X-quang răng',200000.00,140000.00,60000.00,'2025-10-27 09:54:16');
 /*!40000 ALTER TABLE `paymentdetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1183,18 +1187,19 @@ CREATE TABLE `payments` (
   `id` int NOT NULL AUTO_INCREMENT,
   `record_id` int DEFAULT NULL,
   `cashier_id` int DEFAULT NULL,
-  `total` decimal(10,2) DEFAULT NULL,
-  `paymentDate` date DEFAULT NULL,
+  `total` decimal(38,2) DEFAULT NULL,
+  `payment_date` datetime DEFAULT NULL,
   `payment_method` varchar(50) DEFAULT NULL,
-  `insuranceCoverage` decimal(10,2) DEFAULT NULL,
-  `patientPayment` decimal(10,2) DEFAULT NULL,
+  `insurance_coverage` decimal(38,2) DEFAULT NULL,
+  `patient_payment` decimal(38,2) DEFAULT NULL,
   `status` varchar(50) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`),
   KEY `cashier_id` (`cashier_id`),
   CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
   CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`cashier_id`) REFERENCES `cashier` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1203,6 +1208,7 @@ CREATE TABLE `payments` (
 
 LOCK TABLES `payments` WRITE;
 /*!40000 ALTER TABLE `payments` DISABLE KEYS */;
+INSERT INTO `payments` VALUES (2,4,NULL,450000.00,NULL,NULL,315000.00,135000.00,'PENDING_PAYMENT','2025-10-27 09:35:54');
 /*!40000 ALTER TABLE `payments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1395,7 +1401,7 @@ CREATE TABLE `resultexamination` (
   CONSTRAINT `resultexamination_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
   CONSTRAINT `resultexamination_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
   CONSTRAINT `resultexamination_ibfk_4` FOREIGN KEY (`examination_id`) REFERENCES `medicalexamination` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1404,7 +1410,7 @@ CREATE TABLE `resultexamination` (
 
 LOCK TABLES `resultexamination` WRITE;
 /*!40000 ALTER TABLE `resultexamination` DISABLE KEYS */;
-INSERT INTO `resultexamination` VALUES (2,4,NULL,4,2,NULL,'PENDING_PAYMENT','2025-10-23 08:40:58.550920',NULL);
+INSERT INTO `resultexamination` VALUES (4,4,NULL,4,2,NULL,'PENDING_PAYMENT','2025-10-27 09:35:53.888805',NULL);
 /*!40000 ALTER TABLE `resultexamination` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1881,4 +1887,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-26 11:49:55
+-- Dump completed on 2025-10-27 17:08:42

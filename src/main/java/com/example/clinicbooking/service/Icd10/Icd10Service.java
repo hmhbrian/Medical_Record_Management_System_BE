@@ -3,11 +3,8 @@ package com.example.clinicbooking.service.Icd10;
 import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.Icd10.Icd10Reponse;
 import com.example.clinicbooking.DTO.Icd10.Icd10Request;
-import com.example.clinicbooking.DTO.MedicalExaminationResponse;
 import com.example.clinicbooking.entity.Icd10;
-import com.example.clinicbooking.entity.Medical_Examination;
 import com.example.clinicbooking.repository.Icd10Repository;
-import com.example.clinicbooking.service.MedicalExamination.MedicalExaminationSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

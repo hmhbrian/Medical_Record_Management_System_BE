@@ -23,4 +23,6 @@ public class Patient {
     private String medicalHistory;
     @Column(name = "insurance_number")
     private String insuranceNumber;
+    @Column(name = "insurance_rate")
+    private Double insuranceRate;
 }
