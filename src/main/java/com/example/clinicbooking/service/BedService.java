@@ -8,6 +8,7 @@ import com.example.clinicbooking.entity.Bed;
 import com.example.clinicbooking.entity.Department;
 import com.example.clinicbooking.entity.Room;
 import com.example.clinicbooking.entity.RoomTypes;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.BedRepository;
 import com.example.clinicbooking.repository.roomRepository;
 import jakarta.persistence.criteria.Join;
@@ -85,7 +86,7 @@ public class BedService {
     // Tạo mới Bed
     public BedResponse createBed(BedRequest req) {
         Room room = roomRepo.findById(req.getRoom_id())
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new InvalidInputException("Room not found"));
 
         Bed bed = new Bed();
         bed.setRoom(room);

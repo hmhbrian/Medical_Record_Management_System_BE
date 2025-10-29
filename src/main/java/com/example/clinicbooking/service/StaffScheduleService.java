@@ -5,6 +5,7 @@ import com.example.clinicbooking.DTO.StaffSchedule.StaffScheduleRequest;
 import com.example.clinicbooking.DTO.StaffSchedule.StaffScheduleResponse;
 import com.example.clinicbooking.DTO.StaffSchedule.StaffsScheduleRequest;
 import com.example.clinicbooking.entity.*;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.ShiftTypeRepository;
 import com.example.clinicbooking.repository.StaffRepository;
 import com.example.clinicbooking.repository.StaffSchedulesRepository;
@@ -48,7 +49,7 @@ public class StaffScheduleService {
 
         // 2. Kiểm tra Công suất Phòng
         Room room = roomRepo.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng với ID: " + roomId));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy phòng với ID: " + roomId));
 
         int capacity = room.getCapacity();
 
@@ -63,9 +64,9 @@ public class StaffScheduleService {
 
         // Lấy thông tin liên quan đến ca làm việc
         Shift_type shiftType = shiftTypeRepo.findById(shiftTypeId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ca làm việc với ID: " + shiftTypeId));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy ca làm việc với ID: " + shiftTypeId));
         Staff staff = staffRepo.findById(staffId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên với ID: " + staffId));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy nhân viên với ID: " + staffId));
 
         // 3. Thêm Lịch
         StaffSchedules newSchedule = new StaffSchedules();
@@ -97,7 +98,7 @@ public class StaffScheduleService {
 
         // 1. Kiểm tra Công suất Phòng
         Room room = roomRepo.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng với ID: " + roomId));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy phòng với ID: " + roomId));
 
         int capacity = room.getCapacity();
 
@@ -124,9 +125,9 @@ public class StaffScheduleService {
             else {
                 // Lấy thông tin liên quan đến ca làm việc
                 Shift_type shiftType = shiftTypeRepo.findById(shiftTypeId)
-                        .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy ca làm việc với ID: " + shiftTypeId));
+                        .orElseThrow(() -> new InvalidInputException("Không tìm thấy ca làm việc với ID: " + shiftTypeId));
                 Staff staff = staffRepo.findById(staffId)
-                        .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên với ID: " + staffId));
+                        .orElseThrow(() -> new InvalidInputException("Không tìm thấy nhân viên với ID: " + staffId));
 
                 // 3. Thêm Lịch
                 StaffSchedules newSchedule = new StaffSchedules();
@@ -147,7 +148,7 @@ public class StaffScheduleService {
             for (Integer staffId : failedStaffIds) {
                 message += "\n";
                 User user = staffRepo.findById(staffId)
-                        .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên với ID: " + staffId))
+                        .orElseThrow(() -> new InvalidInputException("Không tìm thấy nhân viên với ID: " + staffId))
                         .getUser();
                 message += " Nhân viên " + user.getFullname() + " đã có lịch trong ca này.";
             }
@@ -182,7 +183,7 @@ public class StaffScheduleService {
 
         // Tìm nhân viên theo User ID
         Staff staff = staffRepo.findByUserId(cud.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên với User ID: " + cud.getId()));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy nhân viên với User ID: " + cud.getId()));
 
         // Lấy lịch làm việc của nhân viên đang đăng nhập trong khoảng thời gian
         List<StaffSchedules> schedules = staffSchedulesRepo

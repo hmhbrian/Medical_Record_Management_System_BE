@@ -2,6 +2,7 @@ package com.example.clinicbooking.service;
 
 import com.example.clinicbooking.entity.Staff;
 import com.example.clinicbooking.entity.staff_position;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.StaffPositionRepository;
 import com.example.clinicbooking.repository.StaffRepository;
 import org.springframework.data.domain.Sort;
@@ -22,10 +23,10 @@ public class StaffPositionService {
 
     public static String getPositionByUserId(int userId) {
         Staff staff = staffRepo.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Position not found for user ID: " + userId));
+                .orElseThrow(() -> new InvalidInputException("Position not found for user ID: " + userId));
         String NamePosition = staff.getStaff_position().getPosition();
         if (NamePosition == null || NamePosition.isEmpty()) {
-            throw new RuntimeException("Position name is empty for user ID: " + userId);
+            throw new InvalidInputException("Position name is empty for user ID: " + userId);
         }
         return NamePosition;
     }

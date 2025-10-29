@@ -9,11 +9,11 @@ import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10Request;
-import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceDetail;
-import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceOrdersRequest;
+import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.*;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.DTO.Patient.PatientSummary;
 import com.example.clinicbooking.entity.*;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.MedicalExamination.MedicalExaminationService;
@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -63,8 +64,6 @@ public class MedicalRecordService {
     private final ImagingTypeRepository imagingTypeRepo;
     private final ImagingTestsRepository imagingTestRepo;
 
-    private final PaymentRepository paymentRepo;
-    private final PaymentDetailRepository paymentDetailRepo;
     private final PaymentService paymentService;
 
     // Tạo mới hồ sơ ngoại trú
@@ -102,6 +101,9 @@ public class MedicalRecordService {
 
     // Lấy tất cả hồ sơ ngoại trú theo id bệnh nhân
     public List<MedicalRecordResponse> getRecordsByPatientId(Integer patientId) {
+        Patient patient = patientRepo.findById(patientId)
+                .orElseThrow(() -> new InvalidInputException("Patient not found with ID: " + patientId));
+
         return recordRepo.findByPatientId(patientId)
                 .stream()
                 .map(this::covertToResponse)
@@ -110,6 +112,9 @@ public class MedicalRecordService {
 
     // Lấy tất cả hồ sơ ngoại trú theo id bác sĩ
     public List<MedicalRecordResponse> getRecordsByDoctorId(Integer doctorId) {
+        Doctor doctor = doctorRepo.findById(doctorId)
+                .orElseThrow(() -> new InvalidInputException("Doctor not found with ID: " + doctorId));
+
         return recordRepo.findByDoctorId(doctorId)
                 .stream()
                 .map(this :: covertToResponse)
@@ -123,6 +128,9 @@ public class MedicalRecordService {
 
     // Lấy hồ sơ ngoại trú theo ID
     public Optional<MedicalRecord> getRecordById(Integer id) {
+        MedicalRecord record = recordRepo.findById(id)
+                .orElseThrow(() -> new InvalidInputException("Medical record not found with ID: " + id));
+
         return recordRepo.findById(id);
     }
 
@@ -204,14 +212,14 @@ public class MedicalRecordService {
         }
 
         MedicalRecord record = recordRepo.findById(recordId)
-                .orElseThrow(() -> new RuntimeException("Medical record not found"));
+                .orElseThrow(() -> new InvalidInputException("Medical record not found with ID: " + recordId));
 
         // Cập nhật trạng thái hồ sơ ngoại trú -> đang khám
         MedicalRecordStatus status;
         try {
             status = MedicalRecordStatus.valueOf(statusStr.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid status value: " + statusStr);
+            throw new InvalidInputException("Invalid status value: " + statusStr);
         }
         if(record.getStatus() == status || record.getStatus().ordinal() > status.ordinal()) {
             return false; // No update needed
@@ -222,9 +230,9 @@ public class MedicalRecordService {
         // Cập nhật trạng thái cuộc hẹn -> đang khám
         if(status == MedicalRecordStatus.IN_PROGRESS) {
             Appointment appointment = appointmentRepo.findById(record.getAppointment().getId())
-                    .orElseThrow(() -> new RuntimeException("Appointment not found"));
+                    .orElseThrow(() -> new InvalidInputException("Appointment not found with ID: " + record.getAppointment().getId()));
             User cudUser = userRepo.findById(cud.getId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new InvalidInputException("User not found with ID: " + cud.getId()));
             AppointmentStatus appointmentStatus = new AppointmentStatus();
             appointmentStatus.setAppointment(appointment);
             appointmentStatus.setStatus(4); // Đang khám
@@ -242,7 +250,7 @@ public class MedicalRecordService {
 
         // 1. Tìm Hồ sơ Bệnh án hiện tại
         MedicalRecord record = recordRepo.findById(recordId)
-                .orElseThrow(() -> new RuntimeException("Hồ sơ bệnh án không tồn tại."));
+                .orElseThrow(() -> new InvalidInputException("Hồ sơ bệnh án không tồn tại."));
 
         // 2. Cập nhật các trường cơ bản (Chẩn đoán văn bản, Ghi chú)
         record.setDiagnosis(dto.getDiagnosis());
@@ -255,7 +263,7 @@ public class MedicalRecordService {
         if (dto.getExaminationServiceId() != null) {
             // Kiểm tra dịch vụ có tồn tại không
             Medical_Examination examination = medicalExaminationRepo.findById(dto.getExaminationServiceId())
-                    .orElseThrow(() -> new RuntimeException("Dịch vụ khám không tồn tại."));
+                    .orElseThrow(() -> new InvalidInputException("Dịch vụ khám không tồn tại."));
 
             //Tạo bản ghi mới trong bảng 'resultexamination'
             ResultExamination newExamination = new ResultExamination();
@@ -344,7 +352,7 @@ public class MedicalRecordService {
 
                         // Tìm icd10 Entity từ icd10CatalogId
                         Icd10 icd10 = icd10Repository.findById(icd10Dto.getIcd10CatalogId())
-                                .orElseThrow(() -> new RuntimeException("ICD-10 not found with ID: " + icd10Dto.getIcd10CatalogId()));
+                                .orElseThrow(() -> new InvalidInputException("ICD-10 not found with ID: " + icd10Dto.getIcd10CatalogId()));
                         entity.setIcd10(icd10); // Tạm thời dùng ID
                         entity.setPrincipal(icd10Dto.isPrincipal());
                         entity.setDiagnosisOrder(orderCounter.getAndIncrement());
@@ -364,7 +372,9 @@ public class MedicalRecordService {
 
         // 1. Lấy Medical Record, Patient và User (tối ưu bằng JOIN)
         MedicalRecord record = recordRepo.findByIdWithPatientAndUser(recordId)
-                .orElseThrow(() -> new RuntimeException("Hồ sơ bệnh án không tồn tại."));
+                .orElseThrow(() -> new InvalidInputException(
+                        "Hồ sơ bệnh án có ID " + recordId + " không tồn tại. (Lỗi 404)"
+                ));
 
         Patient patient = record.getPatient();
         User user = patient.getUser();
@@ -374,8 +384,9 @@ public class MedicalRecordService {
 
         // 3. Xử lý Dịch vụ Khám (Kiểm tra xem đã chỉ định dịch vụ khám chưa)
         ResultExamination examResult = resultExaminationRepo.findByRecord(record)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy dịch vụ khám cho hồ sơ này."));
-
+                .orElseThrow(() -> new InvalidInputException(
+                        "Hồ sơ bệnh án có ID " + recordId + " chưa có dịch vụ khám được chỉ định. (Lỗi 404)"
+                ));
         Integer examinationServiceId = null;
         String examinationServiceName = null;
         if(examResult != null) {
@@ -489,6 +500,68 @@ public class MedicalRecordService {
         recordRepo.save(record);
 
         return new ApiResponse<>(true, "Chỉ định đã được gửi thành công và chuyển sang thanh toán.",null);
+    }
+
+    public List<ServiceOrderResponse> getServiceOrders(Integer recordId) {
+        MedicalRecord record = recordRepo.findById(recordId)
+                .orElseThrow(() -> new RuntimeException("Hồ sơ bệnh án không tồn tại."));
+
+        // 1. Lấy danh sách Chỉ định Xét nghiệm
+        List<LabTests> labTests = labTestRepo.findAllByRecord(record);
+
+        // 2. Lấy danh sách Chỉ định Hình ảnh
+        List<ImagingTests> imagingTests = imagingTestRepo.findAllByRecord(record);
+
+        // 3. Ánh xạ sang DTO
+        Stream<ServiceOrderResponse> labTestDtos = labTests.stream()
+                .map(this::mapLabTestToUnifiedDTO);
+
+        Stream<ServiceOrderResponse> imagingTestDtos = imagingTests.stream()
+                .map(this::mapImagingTestToUnifiedDTO);
+
+        // 4. Hợp nhất hai Stream và sắp xếp theo ngày yêu cầu
+        return Stream.concat(labTestDtos, imagingTestDtos)
+                .sorted(Comparator.comparing(ServiceOrderResponse::getRequestDate).reversed())
+                .collect(Collectors.toList());
+    }
+
+    // Hàm ánh xạ LabTest Entity sang DTO
+    private ServiceOrderResponse mapLabTestToUnifiedDTO(LabTests lt) {
+        ServiceOrderResponse dto = new ServiceOrderResponse();
+        dto.setOrderId(lt.getId());
+        dto.setOrderType("LAB_TEST");
+        dto.setCode(lt.getTestTypes().getTestCode());
+        dto.setName(lt.getTestTypes().getTestName());
+        dto.setRequestDate(lt.getRequestedDate());
+        dto.setStatus(lt.getStatus());
+
+        // Tên nhân viên phụ trách
+        if (lt.getLabTechnician() != null && lt.getLabTechnician().getStaff().getUser() != null) {
+            dto.setAssignedStaffName(lt.getLabTechnician().getStaff().getUser().getFullname());
+        } else {
+            dto.setAssignedStaffName("Chưa phân công");
+        }
+
+        return dto;
+    }
+
+    // Hàm ánh xạ ImagingTest Entity sang DTO (Tương tự LabTest)
+    private ServiceOrderResponse mapImagingTestToUnifiedDTO(ImagingTests it) {
+        ServiceOrderResponse dto = new ServiceOrderResponse();
+        dto.setOrderId(it.getId());
+        dto.setOrderType("IMAGING_TEST");
+        dto.setCode(it.getImagingTypes().getImagingCode());
+        dto.setName(it.getImagingTypes().getImagingName());
+        dto.setRequestDate(it.getRequestedDate());
+        dto.setStatus(it.getStatus());
+
+        // Tên nhân viên phụ trách
+        if (it.getImagingStaff() != null && it.getImagingStaff().getStaff().getUser() != null) {
+            dto.setAssignedStaffName(it.getImagingStaff().getStaff().getUser().getFullname());
+        } else {
+            dto.setAssignedStaffName("Chưa phân công");
+        }
+        return dto;
     }
 
     // Chuyển đổi từ Entity sang DTO Response

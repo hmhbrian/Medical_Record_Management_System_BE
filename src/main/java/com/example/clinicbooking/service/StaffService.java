@@ -6,6 +6,7 @@ import com.example.clinicbooking.DTO.Staff.StaffRequest;
 import com.example.clinicbooking.DTO.Staff.StaffResponse;
 import com.example.clinicbooking.DTO.Staff.StaffSummary;
 import com.example.clinicbooking.entity.*;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -119,7 +120,7 @@ public class StaffService implements IStaffService {
     @Override
     public ApiResponse<List<StaffSummary>> findStaffByPosition(int positionId) {
         staff_position position = staffPositionRepo.findById(positionId)
-                .orElseThrow(() -> new RuntimeException("Position not found with id: " + positionId));
+                .orElseThrow(() -> new InvalidInputException("Position not found with id: " + positionId));
         if(position == null) {
             return new ApiResponse<>(false, "Chức vụ không tồn tại!", null);
         }

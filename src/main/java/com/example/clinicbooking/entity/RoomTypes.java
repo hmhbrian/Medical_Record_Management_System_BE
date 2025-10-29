@@ -16,4 +16,6 @@ public class RoomTypes {
     private int id;
     @Column(unique = true, nullable = false)
     private String name;
+    @Column(unique = true, nullable = false)
+    private String code;
 }

@@ -2,6 +2,7 @@ package com.example.clinicbooking.service.MedicalExamination;
 
 import com.example.clinicbooking.DTO.Services.MedicalExaminationResponse;
 import com.example.clinicbooking.entity.Medical_Examination;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.DoctorRepository;
 import com.example.clinicbooking.repository.MedicalExaminationRepository;
 import com.example.clinicbooking.security.CustomUserDetails;

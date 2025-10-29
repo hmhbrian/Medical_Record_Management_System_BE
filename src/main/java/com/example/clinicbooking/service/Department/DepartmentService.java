@@ -6,6 +6,7 @@ import com.example.clinicbooking.DTO.Department.DepartmentRpDetail;
 import com.example.clinicbooking.Mapper.DepartmentMapper;
 import com.example.clinicbooking.entity.Department;
 import com.example.clinicbooking.entity.Doctor;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.DepartmentRepository;
 import com.example.clinicbooking.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class DepartmentService {
         // Chỉ tìm và gán headDoctor nếu có id hợp lệ
         if (deptRq.getHead_doctor_id() != 0) {
             Doctor headDoctor = doctorRepo.findById(deptRq.getHead_doctor_id())
-                    .orElseThrow(() -> new IllegalArgumentException(
+                    .orElseThrow(() -> new InvalidInputException(
                             "Head doctor not found with id: " + deptRq.getHead_doctor_id()));
             dept.setHeadDoctor(headDoctor);
         } else {
@@ -58,12 +59,12 @@ public class DepartmentService {
 
     public Department update(int id, DepartmentRequest deptRq) {
         Department dept = repo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Department not found with id: " + id));
+                .orElseThrow(() -> new InvalidInputException("Department not found with id: " + id));
 
         // Nếu request có headDoctorId thì lấy ra Doctor
         if (deptRq.getHead_doctor_id() > 0) {
             Doctor headDoctor = doctorRepo.findById(deptRq.getHead_doctor_id())
-                    .orElseThrow(() -> new IllegalArgumentException("Head doctor not found with id: " + deptRq.getHead_doctor_id()));
+                    .orElseThrow(() -> new InvalidInputException("Head doctor not found with id: " + deptRq.getHead_doctor_id()));
             dept.setHeadDoctor(headDoctor);
         }
 
@@ -78,6 +79,8 @@ public class DepartmentService {
     }
 
     public void delete(int id) {
+        Department dept = repo.findById(id)
+                .orElseThrow(() -> new InvalidInputException("Department not found with id: " + id));
         repo.deleteById(id);
     }
 }

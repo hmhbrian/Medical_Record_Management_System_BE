@@ -6,6 +6,7 @@ import com.example.clinicbooking.DTO.Doctor.DrScheduleSummaryRp;
 import com.example.clinicbooking.DTO.PatientInScheduleResponse;
 import com.example.clinicbooking.entity.Doctor;
 import com.example.clinicbooking.entity.DoctorSchedules;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import com.example.clinicbooking.security.CustomUserDetails;
 import jakarta.transaction.Transactional;
@@ -34,31 +35,31 @@ public class DoctorScheduleService {
     public DoctorSchedules assignSchedule(DoctorScheduleRequest request) {
         // Kiểm tra bác sĩ đã có lịch làm việc trong cùng ca chưa
         boolean doctorConflict = scheduleRepo.existsByDoctorAndDateAndShiftType(
-                doctorRepo.findById(request.getDoctorId()).orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ")),
+                doctorRepo.findById(request.getDoctorId()).orElseThrow(() -> new InvalidInputException("Không tìm thấy bác sĩ")),
                 request.getDate(),
-                shiftTypeRepo.findById(request.getShiftTypeId()).orElseThrow(() -> new RuntimeException("Không tìm thấy ca làm việc"))
+                shiftTypeRepo.findById(request.getShiftTypeId()).orElseThrow(() -> new InvalidInputException("Không tìm thấy ca làm việc"))
         );
         if (doctorConflict) {
-            throw new RuntimeException("Bác sĩ đã có lịch làm việc vào ca này.");
+            throw new InvalidInputException("Bác sĩ đã có lịch làm việc vào ca này.");
         }
 
         // Kiểm tra phòng đã được phân cho bác sĩ khác trong ca này chưa
         boolean roomConflict = scheduleRepo.existsByRoomAndDateAndShiftType(
-                roomRepo.findById(request.getRoomId()).orElseThrow(() -> new RuntimeException("Không tìm thấy phòng")),
+                roomRepo.findById(request.getRoomId()).orElseThrow(() -> new InvalidInputException("Không tìm thấy phòng")),
                 request.getDate(),
-                shiftTypeRepo.findById(request.getShiftTypeId()).orElseThrow(() -> new RuntimeException("Không tìm thấy ca làm việc"))
+                shiftTypeRepo.findById(request.getShiftTypeId()).orElseThrow(() -> new InvalidInputException("Không tìm thấy ca làm việc"))
         );
         if (roomConflict) {
-            throw new RuntimeException("Phòng này đã được phân cho bác sĩ khác trong ca này.");
+            throw new InvalidInputException("Phòng này đã được phân cho bác sĩ khác trong ca này.");
         }
 
         DoctorSchedules schedule = new DoctorSchedules();
         schedule.setDoctor(doctorRepo.findById(request.getDoctorId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ")));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy bác sĩ")));
         schedule.setShiftType(shiftTypeRepo.findById(request.getShiftTypeId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy ca làm việc")));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy ca làm việc")));
         schedule.setRoom(roomRepo.findById(request.getRoomId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng")));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy phòng")));
         schedule.setDate(request.getDate());
         schedule.setStatus(request.getStatus());
         schedule.setMaxPatients(request.getMaxPatients());
@@ -70,7 +71,7 @@ public class DoctorScheduleService {
         LocalDate today = LocalDate.now();
         List<Doctor> doctors = doctorRepo.findBySpecialtyId(specialtyId);
         if (doctors.isEmpty()) {
-            throw new RuntimeException("No doctors found for this specialty");
+            throw new InvalidInputException("No doctors found for this specialty");
         }
 
         // Lấy tất cả lịch làm việc của các bác sĩ trong chuyên khoa
@@ -146,11 +147,11 @@ public class DoctorScheduleService {
         }
         Integer doctorid = doctorRepo.findIdByUserId(cud.getId());
         if (doctorid == null) {
-            throw new RuntimeException("Không tìm thấy bác sĩ. Vui lòng kiểm tra lại thông tin đăng nhập.");
+            throw new InvalidInputException("Không tìm thấy bác sĩ. Vui lòng kiểm tra lại thông tin đăng nhập.");
         }
         boolean owned = scheduleRepo.existsByIdAndDoctorId(scheduleId, doctorid);
         if (!owned) {
-            throw new AccessDeniedException("Bạn không có quyền xem lịch này");
+            throw new InvalidInputException("Bạn không có quyền xem lịch này");
         }
 
         return appointmentRepo.findPatientByDoctorScheduleId(scheduleId);
@@ -158,7 +159,7 @@ public class DoctorScheduleService {
 
     public void deleteSchedule(int scheduleId) {
         if(!scheduleRepo.findById(scheduleId).isPresent()) {
-            throw new RuntimeException("Không tìm thấy lịch làm việc");
+            throw new InvalidInputException("Không tìm thấy lịch làm việc");
         }
         scheduleRepo.deleteById(scheduleId);
     }

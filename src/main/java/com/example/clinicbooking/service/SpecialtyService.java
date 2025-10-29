@@ -7,6 +7,7 @@ import com.example.clinicbooking.entity.Department;
 import com.example.clinicbooking.entity.Doctor;
 import com.example.clinicbooking.entity.Medicine;
 import com.example.clinicbooking.entity.Specialty;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.DepartmentRepository;
 import com.example.clinicbooking.repository.DoctorRepository;
 import com.example.clinicbooking.repository.SpecialtyRepository;
@@ -45,7 +46,7 @@ public class SpecialtyService {
 
     public Specialty getSpecialtyById(int id) {
         Specialty specialty = specialtyRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("Không tìm thấy chuyên khoa"));
+                -> new InvalidInputException("Không tìm thấy chuyên khoa"));
         return specialty;
     }
 
@@ -55,7 +56,7 @@ public class SpecialtyService {
 
     public Specialty save(SpecialtyRequest specialtyRq) {
         Department dept = departmentRepo.findById(specialtyRq.getDepartmentId())
-                .orElseThrow(() -> new IllegalArgumentException("Department not found with id: " + specialtyRq.getDepartmentId()));
+                .orElseThrow(() -> new InvalidInputException("Department not found with id: " + specialtyRq.getDepartmentId()));
 
         Specialty specialty = new Specialty();
         specialty.setName(specialtyRq.getName());
@@ -67,12 +68,12 @@ public class SpecialtyService {
 
     public Specialty update(int id, SpecialtyRequest specialtyRq) {
         Specialty specialty = specialtyRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Specialty not found with id: " + id));
+                .orElseThrow(() -> new InvalidInputException("Specialty not found with id: " + id));
 
         // Nếu request có departmentId thì lấy ra department
         if (specialtyRq.getDepartmentId() > 0) {
             Department department = departmentRepo.findById(specialtyRq.getDepartmentId())
-                    .orElseThrow(() -> new IllegalArgumentException("Department not found with id: " + specialtyRq.getDepartmentId()));
+                    .orElseThrow(() -> new InvalidInputException("Department not found with id: " + specialtyRq.getDepartmentId()));
             specialty.setDepartment(department);
         }
 

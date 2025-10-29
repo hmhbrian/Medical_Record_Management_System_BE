@@ -65,8 +65,8 @@ public class RoomController {
     }
 
     @GetMapping("/department/{departmentId}")
-    public ResponseEntity<ApiResponse<List<RoomResponse>>> getRoomsByDepartment(@PathVariable int departmentId) {
-        List<RoomResponse> rooms = roomService.getRoomsByDepartment(departmentId);
+    public ResponseEntity<ApiResponse<List<RoomResponse>>> getRoomsByDepartment(@PathVariable int departmentId, @RequestParam String StaffPosition) {
+        List<RoomResponse> rooms = roomService.getRoomsByDepartment(departmentId,StaffPosition);
         if(rooms.isEmpty()){
             return ResponseEntity.ok(new ApiResponse<>(false, "Không tìm thấy phòng nào trong khoa này", null));
         }

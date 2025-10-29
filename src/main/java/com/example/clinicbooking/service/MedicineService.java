@@ -5,6 +5,7 @@ import com.example.clinicbooking.DTO.Medicine.MedicineResponse;
 import com.example.clinicbooking.entity.DrugType;
 import com.example.clinicbooking.entity.Medicine;
 import com.example.clinicbooking.entity.Specialty;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.DrugTypeRepository;
 import com.example.clinicbooking.repository.MedicineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class MedicineService {
 
     private void applyRequestToEntity(MedicineRequest req, Medicine m) {
         DrugType drugType = drugTypeRepo.findById(req.getDrugtype_id())
-                .orElseThrow(() -> new IllegalArgumentException("DrugType not found with id: " + req.getDrugtype_id()));
+                .orElseThrow(() -> new InvalidInputException("DrugType not found with id: " + req.getDrugtype_id()));
 
         m.setMedicineName(req.getMedicineName());
         m.setUnit(req.getUnit());
@@ -53,19 +54,19 @@ public class MedicineService {
     }
 
     public MedicineResponse getById(Integer id) {
-        Medicine m = repo.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy thuốc"));
+        Medicine m = repo.findById(id).orElseThrow(() -> new InvalidInputException("Không tìm thấy thuốc"));
         return MedicineResponse.fromEntity(m);
     }
 
     public MedicineResponse update(Integer id, MedicineRequest req) {
-        Medicine m = repo.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy thuốc"));
+        Medicine m = repo.findById(id).orElseThrow(() -> new InvalidInputException("Không tìm thấy thuốc"));
         applyRequestToEntity(req, m);
         repo.save(m);
         return MedicineResponse.fromEntity(m);
     }
 
     public void delete(Integer id) {
-        Medicine m = repo.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy thuốc"));
+        Medicine m = repo.findById(id).orElseThrow(() -> new InvalidInputException("Không tìm thấy thuốc"));
         repo.delete(m);
     }
 
