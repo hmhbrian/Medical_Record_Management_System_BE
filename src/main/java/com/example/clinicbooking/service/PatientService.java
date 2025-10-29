@@ -4,6 +4,7 @@ import com.example.clinicbooking.DTO.Patient.PatientRequest;
 import com.example.clinicbooking.DTO.Patient.PatientResponse;
 import com.example.clinicbooking.entity.Patient;
 import com.example.clinicbooking.entity.User;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +29,7 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
     @Transactional
     public PatientResponse create(PatientRequest request) {
         if(userRepo.findByEmail(request.email).isPresent()) {
-            throw new RuntimeException("Email đã được sử dụng");
+            throw new InvalidInputException("Email đã được sử dụng");
         }
 
         User user = new User();
@@ -64,13 +65,13 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
     @Transactional
     public PatientResponse getbyUserId(Integer userId) {
         if (userId == null) {
-            throw new IllegalArgumentException("User ID cannot be null");
+            throw new InvalidInputException("User ID cannot be null");
         }
 
         try {
             // Use Optional directly instead of stream
             Patient patient = patientRepo.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("Patient not found!"));
+                    .orElseThrow(() -> new InvalidInputException("Patient not found!"));
             return covertToResponse(patient);
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,7 +82,7 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
     @Transactional
     public PatientResponse update(Integer id, PatientRequest request) {
         Patient patient = patientRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bệnh nhân"));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy bệnh nhân"));
 
         User user = patient.getUser();
 
@@ -113,7 +114,7 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
     @Transactional
     public void delete(Integer id) {
         Patient patient = patientRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bệnh nhân"));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy bệnh nhân"));
 
         User user = patient.getUser();
         patientRepo.delete(patient);

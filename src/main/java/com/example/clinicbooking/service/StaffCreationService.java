@@ -5,6 +5,7 @@ import com.example.clinicbooking.entity.Department;
 import com.example.clinicbooking.entity.Staff;
 import com.example.clinicbooking.entity.User;
 import com.example.clinicbooking.entity.staff_position;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class StaffCreationService {
 
     public User createUser(BaseUserRequest request) {
         if (userRepo.findByEmail(request.email).isPresent()) {
-            throw new RuntimeException("Email đã tồn tại");
+            throw new InvalidInputException("Email đã tồn tại");
         }
 
         User user = new User();
@@ -50,9 +51,9 @@ public class StaffCreationService {
 
     public Staff createStaff(User user, int departmentId, int positionId) {
         Department dept = departmentRepo.findById(departmentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khoa"));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy khoa"));
         staff_position pos = staffPositionRepo.findById(positionId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy vị trí"));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy vị trí"));
 
         Staff staff = new Staff();
         staff.setUser(user);
@@ -74,9 +75,9 @@ public class StaffCreationService {
 
         // Cập nhật Staff
         staff.setStaff_position(staffPositionRepo.findById(positionId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy vị trí")));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy vị trí")));
         staff.setDepartment(departmentRepo.findById(departmentId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khoa")));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy khoa")));
         staffRepo.save(staff);
     }
 

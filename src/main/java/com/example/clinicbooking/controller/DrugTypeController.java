@@ -1,11 +1,8 @@
 package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.entity.DrugType;
-import com.example.clinicbooking.entity.RoomTypes;
 import com.example.clinicbooking.service.DrugTypeService;
-import com.example.clinicbooking.service.RoomTypeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

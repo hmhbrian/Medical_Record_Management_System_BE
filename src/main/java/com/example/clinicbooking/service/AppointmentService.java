@@ -5,6 +5,7 @@ import com.example.clinicbooking.DTO.Appointment.AppointmentRequest;
 import com.example.clinicbooking.DTO.Appointment.AppointmentSearchRequest;
 import com.example.clinicbooking.DTO.Appointment.StatusHistoryItemDTO;
 import com.example.clinicbooking.entity.*;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import com.example.clinicbooking.security.CustomUserDetails;
 import jakarta.persistence.criteria.Join;
@@ -41,16 +42,16 @@ public class AppointmentService {
     //đặt lịch khám mới của bệnh nhân
     public AppointmentDTO bookAppointment(AppointmentRequest request) {
         Patient patient = patientRepository.findById(request.getPatientId())
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+                .orElseThrow(() -> new InvalidInputException("Patient not found with id: " + request.getPatientId()));
         DoctorSchedules schedule = doctorScheduleRepository.findById(request.getDoctorScheduleId())
-                .orElseThrow(() -> new RuntimeException("Schedule not found"));
+                .orElseThrow(() -> new InvalidInputException("Schedule not found with id: " + request.getDoctorScheduleId()));
         Doctor doctor = doctorRepository.findById(request.getDoctorId())
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+                .orElseThrow(() -> new InvalidInputException("Doctor not found with id: " + request.getDoctorId()));
         ScheduleSlot slot = scheduleSlotRepo.findById(request.getScheduleSlotId())
-                .orElseThrow(() -> new RuntimeException("Schedule slot not found"));
+                .orElseThrow(() -> new InvalidInputException("Schedule slot not found with id: " + request.getScheduleSlotId()));
 
         if (schedule.getBookedPatients() >= schedule.getMaxPatients()) {
-            throw new RuntimeException("No available slots");
+            throw new InvalidInputException("No available slots for the selected schedule.");
         }
 
         Appointment appointment = new Appointment();
@@ -84,7 +85,7 @@ public class AppointmentService {
     //Xác nhận lịch hẹn
     public void ConfirmAppointment(int appointmentId, int updatedByUserId) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+                .orElseThrow(() -> new InvalidInputException("Appointment not found with id: " + appointmentId));
 
         // Tạo mới trạng thái
         AppointmentStatus status = new AppointmentStatus();
@@ -93,7 +94,7 @@ public class AppointmentService {
         status.setUpdateAt(LocalDateTime.now());
 
         User updatedBy = UserRepository.findById(updatedByUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new InvalidInputException("User not found with id: " + updatedByUserId));
         status.setUpdate_by(updatedBy);
 
         appointmentStatusRepository.save(status);
@@ -102,7 +103,7 @@ public class AppointmentService {
     //Hủy lịch hẹn
     public void DeleteAppointment(int appointmentId, int updatedByUserId, String reason) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+                .orElseThrow(() -> new InvalidInputException("Appointment not found"));
 
         // Tạo mới trạng thái
         AppointmentStatus status = new AppointmentStatus();
@@ -112,7 +113,7 @@ public class AppointmentService {
         status.setUpdateAt(LocalDateTime.now());
 
         User updatedBy = UserRepository.findById(updatedByUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new InvalidInputException("User not found"));
         status.setUpdate_by(updatedBy);
 
         //Giảm số bệnh nhân đã đặt trong DoctorSchedules
@@ -403,7 +404,7 @@ public class AppointmentService {
             case 1 -> "Patient";
             case 2 -> {
                 Staff staff = StaffRepo.findByUserId(userId)
-                        .orElseThrow(() -> new RuntimeException("Staff not found for userId: " + userId));
+                        .orElseThrow(() -> new InvalidInputException("Staff not found for userId: " + userId));
                 if(staff.getStaff_position().getId() == 1) {
                     yield "Doctor";
                 } else if (staff.getStaff_position().getId() == 7) {

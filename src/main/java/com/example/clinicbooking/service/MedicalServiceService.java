@@ -4,6 +4,7 @@ import com.example.clinicbooking.DTO.MedicalService.*;
 import com.example.clinicbooking.entity.ImagingTypes;
 import com.example.clinicbooking.entity.Medical_Examination;
 import com.example.clinicbooking.entity.TestTypes;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,7 @@ public class MedicalServiceService {
     @Transactional
     public boolean create(MedicalServiceRequest req) {
         var dept = departmentRepo.findById(req.getDepartment_id())
-                .orElseThrow(() -> new IllegalArgumentException("Department not found: " + req.getDepartment_id()));
+                .orElseThrow(() -> new InvalidInputException("Department not found: " + req.getDepartment_id()));
 
         try {
             switch (req.getMedicalService()) {
@@ -235,7 +236,7 @@ public class MedicalServiceService {
         if (r.getStatus() != null) e.setStatus(r.getStatus()); // int 0/1 (nếu boolean -> e.setStatus(r.getStatus()))
         if (r.getDepartment_id() != null) {
             var dept = departmentRepo.findById(r.getDepartment_id())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Department không tồn tại: " + r.getDepartment_id()));
+                    .orElseThrow(() -> new InvalidInputException("Department không tồn tại: " + r.getDepartment_id()));
             e.setDepartment(dept);
         }
     }
@@ -248,7 +249,7 @@ public class MedicalServiceService {
         if (r.getStatus() != null) e.setStatus(r.getStatus());
         if (r.getDepartment_id() != null) {
             var dept = departmentRepo.findById(r.getDepartment_id())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Department không tồn tại: " + r.getDepartment_id()));
+                    .orElseThrow(() -> new InvalidInputException( "Department không tồn tại: " + r.getDepartment_id()));
             e.setDepartment(dept);
         }
     }
@@ -261,14 +262,14 @@ public class MedicalServiceService {
         if (r.getStatus() != null) e.setStatus(r.getStatus());
         if (r.getDepartment_id() != null) {
             var dept = departmentRepo.findById(r.getDepartment_id())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Department không tồn tại: " + r.getDepartment_id()));
+                    .orElseThrow(() -> new InvalidInputException("Department không tồn tại: " + r.getDepartment_id()));
             e.setDepartment(dept);
         }
     }
 
     // ====== helpers ======
-    private ResponseStatusException notFound(String entity, int id) {
-        return new ResponseStatusException(HttpStatus.NOT_FOUND, entity + " id=" + id + " không tồn tại");
+    private InvalidInputException notFound(String entity, int id) {
+        return new InvalidInputException(entity + " id=" + id + " không tồn tại");
     }
 
     private void conflict(String message) {

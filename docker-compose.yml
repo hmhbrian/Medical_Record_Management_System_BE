@@ -14,7 +14,7 @@ services:
       - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
-      - ./mysql-init:/docker-entrypoint-initdb.
+      - ./mysql-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL","mysqladmin ping -h localhost -uroot -proot | grep 'mysqld is alive'"]
       interval: 20s
@@ -22,6 +22,9 @@ services:
       retries: 10
 
   api:
+    build: # <== thêm block build
+      context: .
+      dockerfile: Dockerfile
     image: clinic-booking:staging
     depends_on:
       db:

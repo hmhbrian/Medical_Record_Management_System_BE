@@ -4,7 +4,9 @@ import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.Room.RoomRequest;
 import com.example.clinicbooking.DTO.Room.RoomResponse;
 import com.example.clinicbooking.DTO.Room.RoomUpdateRequest;
+import com.example.clinicbooking.Utils.TextUtils;
 import com.example.clinicbooking.entity.*;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.DepartmentRepository;
 import com.example.clinicbooking.repository.RoomTypesRepository;
 import com.example.clinicbooking.repository.SpecialtyRepository;
@@ -31,13 +33,13 @@ public class RoomService {
 
     public List<RoomResponse> getRoomsBySpecialty(int specialtyId) {
         Specialty specialty = specialtyRepository.findById(specialtyId)
-                .orElseThrow(() -> new RuntimeException("Specialty not found"));
+                .orElseThrow(() -> new InvalidInputException("Specialty not found"));
 
         int departmentId = specialty.getDepartment().getId();
 
         List<Room> rooms = roomRepository.findByDepartmentId(departmentId);
         if (rooms.isEmpty()) {
-            throw new RuntimeException("No rooms found for this specialty's department");
+            throw new InvalidInputException("No rooms found for this specialty's department");
         }
 
         return rooms.stream()
@@ -45,15 +47,64 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
-    public List<RoomResponse> getRoomsByDepartment(int departmentId) {
+    public List<RoomResponse> getRoomsByDepartment(int departmentId, String StaffPosition) {
         Department department = departmentRepository.findById(departmentId)
-                .orElseThrow(() -> new RuntimeException("Department not found"));
+                .orElseThrow(() -> new InvalidInputException("Department not found"));
 
-        List<Room> rooms = roomRepository.findByDepartmentId(departmentId);
+        // Lấy tất cả các phòng thuộc Department
+        List<Room> allRooms = roomRepository.findByDepartmentId(departmentId);
 
-        return rooms.stream()
+        //Chuẩn hóa StaffPosition
+        String normalizedPosition = TextUtils.normalizeText(StaffPosition);
+
+        //Lọc danh sách phòng theo vai trò
+        List<Room> filteredRooms = allRooms.stream()
+                .filter(room -> isRoomSuitableForPosition(room, normalizedPosition))
+                .collect(Collectors.toList());
+
+        //Chuyển đổi và trả về
+        return filteredRooms.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isRoomSuitableForPosition(Room room, String normalizedPosition) {
+        String roomType = room.getRoomType().getCode();
+
+        switch (normalizedPosition) {
+            case "doctor":
+                // Bác sĩ chỉ được phân vào phòng khám
+                return "PHONG_KHAM".equalsIgnoreCase(roomType);
+            case "nurse":
+                // Y tá có thể được phân vào phòng khám hoặc phòng điều trị
+                return "PHONG_KHAM".equalsIgnoreCase(roomType) ||
+                        "PHONG_THUONG".equalsIgnoreCase(roomType) ||
+                        "PHONG_VIP".equalsIgnoreCase(roomType);
+            case "Lab Technician":
+                // Kỹ thuật viên xét nghiệm có thể được phân vào tất cả các loại phòng
+                return "XET_NGHIEM".equalsIgnoreCase(roomType);
+
+            case "Medical Imaging Technician":
+                // Kỹ thuật viên hình ảnh y học chỉ được phân vào phòng chẩn đoán hình ảnh
+                return "CHAN_DOAN_HINH_ANH".equalsIgnoreCase(roomType);
+
+            case "Pharmacist":
+                // Dược sĩ chỉ được phân vào phòng dược
+                return "PHONG_THUOC".equalsIgnoreCase(roomType);
+
+            case "Cashier":
+                // Kỹ thuật viên xét nghiệm có thể được phân vào tất cả các loại phòng
+                return "THU_NGAN".equalsIgnoreCase(roomType);
+
+            case "Patient Receptionist":
+                // Kỹ thuật viên xét nghiệm có thể được phân vào tất cả các loại phòng
+                return "TIEP_NHAN".equalsIgnoreCase(roomType);
+            default:
+                // Các vai trò khác (ví dụ: Quản lý) có thể được phép thấy tất cả phòng,
+                // hoặc không được phép thấy phòng nào.
+                // Ví dụ: Cho phép tất cả phòng nếu vai trò không được định nghĩa
+                return true; // Hoặc `false` nếu bạn muốn nghiêm ngặt hơn
+        }
     }
 
 //    public List<RoomResponse> getAllRooms() {
@@ -109,10 +160,10 @@ public class RoomService {
 
     public ApiResponse<RoomResponse> Create(RoomRequest newRoom) {
         Department department = departmentRepository.findById(newRoom.getDepartmentId())
-                .orElseThrow(() -> new RuntimeException("Department not found"));
+                .orElseThrow(() -> new InvalidInputException("Department not found"));
 
         RoomTypes roomTypes = roomTypesRepository.findById(newRoom.getRoomTypeId())
-                .orElseThrow(() -> new RuntimeException("RoonType not found"));
+                .orElseThrow(() -> new InvalidInputException("RoonType not found"));
 
         RoomStatus status = newRoom.getRoomStatus() != null ?
                 RoomStatus.valueOf(newRoom.getRoomStatus().toUpperCase()) :
@@ -140,12 +191,12 @@ public class RoomService {
     public ApiResponse<RoomResponse> updateRoom(int roomId, RoomUpdateRequest request) {
         // 1. Tìm Room hiện tại (Nếu không tìm thấy thì ném ngoại lệ)
         Room existingRoom = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("Room not found with ID: " + roomId));
+                .orElseThrow(() -> new InvalidInputException("Room not found with ID: " + roomId));
 
         if (request.getName() != null) {
             if(roomRepository.existsByName(request.getName())) {
                 return new ApiResponse<>(false, "Room name already exists: " + request.getName(), null);
-                //throw new IllegalArgumentException("Room name already exists: " + request.getName());
+                //throw new InvalidInputException("Room name already exists: " + request.getName());
             }
             existingRoom.setName(request.getName());
         }
@@ -180,14 +231,14 @@ public class RoomService {
         // Cập nhật Department
         if (request.getDepartmentId() != null) {
             Department newDepartment = departmentRepository.findById(request.getDepartmentId())
-                    .orElseThrow(() -> new RuntimeException("Department not found with ID: " + request.getDepartmentId()));
+                    .orElseThrow(() -> new InvalidInputException("Department not found with ID: " + request.getDepartmentId()));
             existingRoom.setDepartment(newDepartment);
         }
 
         // Cập nhật RoomTypes
         if (request.getRoomTypeId() != null) {
             RoomTypes newRoomType = roomTypesRepository.findById(request.getRoomTypeId())
-                    .orElseThrow(() -> new RuntimeException("RoomType not found with ID: " + request.getRoomTypeId()));
+                    .orElseThrow(() -> new InvalidInputException("RoomType not found with ID: " + request.getRoomTypeId()));
             existingRoom.setRoomType(newRoomType);
         }
 

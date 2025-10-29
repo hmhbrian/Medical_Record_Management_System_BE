@@ -1,5 +1,6 @@
 package com.example.clinicbooking.config;
 
+import com.example.clinicbooking.exceptions.CustomAccessDeniedHandler;
 import com.example.clinicbooking.security.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,8 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
 
     private static final String[] SWAGGER_WHITELIST = {
             "/v3/api-docs/**",
@@ -39,7 +42,11 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .authenticationProvider(daoAuthenticationProvider())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptions -> exceptions
+                                // Xử lý lỗi 403 Forbidden
+                                .accessDeniedHandler(accessDeniedHandler)
+                );
 
         return http.build();
     }

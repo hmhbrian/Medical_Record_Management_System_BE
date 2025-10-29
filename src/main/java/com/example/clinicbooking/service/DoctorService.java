@@ -5,6 +5,7 @@ import com.example.clinicbooking.DTO.Doctor.DoctorResponse;
 import com.example.clinicbooking.entity.Doctor;
 import com.example.clinicbooking.entity.Staff;
 import com.example.clinicbooking.entity.User;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class DoctorService implements IDoctorService {
         Doctor doctor = new Doctor();
         doctor.setStaff(staff);
         doctor.setSpecialty(specialtyRepo.findById(request.specialtyId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyên khoa")));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy chuyên khoa")));
         doctor.setExperienceYears(request.experienceYears);
         doctor.setCertificationName(request.certificationName);
         doctor.setIssuedBy(request.issuedBy);
@@ -56,17 +57,17 @@ public class DoctorService implements IDoctorService {
     @Transactional
     public DoctorResponse getbyUserId(Integer userId){
         if (userId == null) {
-            throw new IllegalArgumentException("User ID cannot be null");
+            throw new InvalidInputException("User ID cannot be null");
         }
 
         try {
             // Use Optional directly instead of stream
             Doctor doctor = doctorRepo.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + userId));
+                    .orElseThrow(() -> new InvalidInputException("Doctor not found with ID: " + userId));
             return covertToResponse(doctor);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Lỗi khi lấy bác sĩ", e);
+            throw new InvalidInputException("Lỗi khi lấy bác sĩ");
         }
     }
 
@@ -102,30 +103,30 @@ public class DoctorService implements IDoctorService {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace(); // hoặc dùng logger.error(...)
-            throw new RuntimeException("Lỗi khi lấy danh sách bác sĩ theo chuyên khoa", e);
+            throw new InvalidInputException("Lỗi khi lấy danh sách bác sĩ theo chuyên khoa");
         }
     }
     @Override
     public DoctorResponse getDoctorsById(Integer doctorId) {
         if (doctorId == null) {
-            throw new IllegalArgumentException("Doctor ID cannot be null");
+            throw new InvalidInputException("Doctor ID cannot be null");
         }
 
         try {
             // Use Optional directly instead of stream
             Doctor doctor = doctorRepo.findById(doctorId)
-                    .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + doctorId));
+                    .orElseThrow(() -> new InvalidInputException("Doctor not found with ID: " + doctorId));
             return covertToResponse(doctor);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Lỗi khi lấy bác sĩ", e);
+            throw new InvalidInputException("Lỗi khi lấy bác sĩ");
         }
     }
     @Override
     @Transactional
     public DoctorResponse update(Integer id, DoctorRequest request) {
         Doctor doctor = doctorRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+                .orElseThrow(() -> new InvalidInputException("Doctor not found"));
 
         User user = doctor.getStaff().getUser();
         Staff staff = doctor.getStaff();
@@ -135,7 +136,7 @@ public class DoctorService implements IDoctorService {
 
         // Cập nhật doctor
         doctor.setSpecialty(specialtyRepo.findById(request.specialtyId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyên khoa")));
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy chuyên khoa")));
         doctor.setExperienceYears(request.experienceYears);
         doctor.setCertificationName(request.certificationName);
         doctor.setIssuedBy(request.issuedBy);
@@ -147,7 +148,7 @@ public class DoctorService implements IDoctorService {
     @Transactional
     public void delete(Integer id) {
         Doctor doctor = doctorRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+                .orElseThrow(() -> new InvalidInputException("Doctor not found"));
 
         Staff staff = doctor.getStaff();
 

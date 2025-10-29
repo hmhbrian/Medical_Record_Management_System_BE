@@ -7,6 +7,7 @@ import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordMetricsResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
+import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceOrderResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceOrdersRequest;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.entity.MedicalRecord;
@@ -143,6 +144,16 @@ public class MedicalRecordController {
 
         // Trả về 201 Created (hoặc 200 OK)
         return new ResponseEntity<>(recordService.createServiceOrders(recordId, dto), HttpStatus.CREATED);
+    }
+
+    //Lấy danh sách các chỉ định xét nghiệm/hình ảnh đã tạo cho Tab 2.
+    @GetMapping("/{recordId}/service-orders")
+    public ResponseEntity<List<ServiceOrderResponse>> getServiceOrders(
+            @PathVariable Integer recordId) {
+
+        List<ServiceOrderResponse> response = recordService.getServiceOrders(recordId);
+
+        return ResponseEntity.ok(response);
     }
 }
 
