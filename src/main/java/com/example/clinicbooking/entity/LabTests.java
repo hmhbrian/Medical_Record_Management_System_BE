@@ -33,5 +33,7 @@ public class LabTests {
     private LocalDateTime requestedDate;
     @Column(name = "result_date")
     private LocalDateTime resultDate;
-    private String status;
+    @Enumerated(EnumType.STRING) // Dùng Enum cho trạng thái để dễ quản lý
+    @Column(nullable = false)
+    private ServiceStatus status;
 }

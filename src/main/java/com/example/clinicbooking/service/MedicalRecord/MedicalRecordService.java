@@ -265,21 +265,20 @@ public class MedicalRecordService {
             Medical_Examination examination = medicalExaminationRepo.findById(dto.getExaminationServiceId())
                     .orElseThrow(() -> new InvalidInputException("Dịch vụ khám không tồn tại."));
 
-            //Tạo bản ghi mới trong bảng 'resultexamination'
-            ResultExamination newExamination = new ResultExamination();
-            newExamination.setRecord(record);
-            newExamination.setDoctor(record.getDoctor()); // Lấy bác sĩ từ hồ sơ
-            newExamination.setExamination(examination);
-            newExamination.setRequestedDate(LocalDateTime.now());
-            newExamination.setStatus("PENDING_PAYMENT"); // Trạng thái: Chờ thanh toán
+            // Tạo hoặc cập nhật ResultExamination
+            ResultExamination existingExamination = resultExaminationRepo.findByRecord(record)
+                    .orElse(new ResultExamination());
 
-            newExamination = resultExaminationRepo.save(newExamination);
+            //ResultExamination newExamination = new ResultExamination();
+            existingExamination.setRecord(record);
+            existingExamination.setDoctor(record.getDoctor()); // Lấy bác sĩ từ hồ sơ
+            existingExamination.setExamination(examination);
+            existingExamination.setRequestedDate(LocalDateTime.now());
+            existingExamination.setStatus("IN_PROGRESS"); // Trạng thái: Chờ thanh toán
+
+            resultExaminationRepo.save(existingExamination); //payment sẽ tạo khi có toa thuốc
 
             //Tạo payment
-            List<ServiceDetail> serviceItems = List.of(
-                    new ServiceDetail("EXAMINATION", newExamination.getId(), examination.getExaminationName(), examination.getPrice())
-            );
-            paymentService.handlePayment(record, serviceItems);
 //            BigDecimal servicePrice = new BigDecimal(String.valueOf(examination.getPrice()));
 //
 //            double insuranceRateService = 0.8; // Giả định tỷ lệ hỗ trợ BHYT
@@ -383,13 +382,12 @@ public class MedicalRecordService {
         List<MedicalRecordIcd10> savedIcd10s = medicalRecordIcd10Repository.findByRecordIdOrderByDiagnosisOrder(recordId);
 
         // 3. Xử lý Dịch vụ Khám (Kiểm tra xem đã chỉ định dịch vụ khám chưa)
-        ResultExamination examResult = resultExaminationRepo.findByRecord(record)
-                .orElseThrow(() -> new InvalidInputException(
-                        "Hồ sơ bệnh án có ID " + recordId + " chưa có dịch vụ khám được chỉ định. (Lỗi 404)"
-                ));
+        Optional<ResultExamination> optionalExamResult = resultExaminationRepo.findByRecord(record);
         Integer examinationServiceId = null;
         String examinationServiceName = null;
-        if(examResult != null) {
+
+        if(optionalExamResult.isPresent()) {
+            ResultExamination examResult = optionalExamResult.get();
             examinationServiceId = examResult.getExamination().getId();
             examinationServiceName = examResult.getExamination().getExaminationName();
         }
@@ -436,6 +434,7 @@ public class MedicalRecordService {
         return dto;
     }
 
+    // Tạo Chỉ định Dịch vụ (Xét nghiệm + Hình ảnh) cho hồ sơ bệnh án
     @Transactional
     public ApiResponse<?> createServiceOrders(Integer recordId, ServiceOrdersRequest dto) {
 
@@ -457,7 +456,7 @@ public class MedicalRecordService {
                 labTest.setDoctor(record.getDoctor());
                 labTest.setTestTypes(testTypes); // Liên kết tới loại xét nghiệm
                 labTest.setRequestedDate(LocalDateTime.now());
-                labTest.setStatus("PENDING_PAYMENT"); // Trạng thái ban đầu
+                labTest.setStatus(ServiceStatus.PENDING_PAYMENT); // Trạng thái ban đầu
 
                 labTest = labTestRepo.save(labTest);
 
@@ -478,7 +477,7 @@ public class MedicalRecordService {
                 imagingTest.setDoctor(record.getDoctor());
                 imagingTest.setImagingTypes(imagingType); // Liên kết tới loại hình ảnh
                 imagingTest.setRequestedDate(LocalDateTime.now());
-                imagingTest.setStatus("PENDING_PAYMENT");
+                imagingTest.setStatus(ServiceStatus.PENDING_PAYMENT);
 
                 imagingTest = imagingTestRepo.save(imagingTest);
 
@@ -487,21 +486,22 @@ public class MedicalRecordService {
             }
         }
 
-        // --- 3. TẠO PHIẾU THANH TOÁN (PAYMENTS) ---
+        // --- 3. Tạo phiếu THANH TOÁN TRẢ TRƯỚC (chỉ cho Lab/Imaging) ---
         if (serviceItems.isEmpty()) {
             // Trường hợp không có chỉ định nào được gửi
             return new ApiResponse<>(false, "Không có dịch vụ nào được chỉ định.", null);
         }
 
-        paymentService.handlePayment(record, serviceItems);
+        paymentService.createPaymentOrder(record, serviceItems);
 
         // Cập nhật trạng thái hồ sơ (Ví dụ: Chuyển từ IN_PROGRESS sang PENDING_PAYMENT_SERVICE)
-        record.setStatus(MedicalRecordStatus.PENDING_RESULTS);
+        record.setStatus(MedicalRecordStatus.PENDING_PREPAYMENT);
         recordRepo.save(record);
 
         return new ApiResponse<>(true, "Chỉ định đã được gửi thành công và chuyển sang thanh toán.",null);
     }
 
+    // Lấy danh sách Chỉ định Dịch vụ (Xét nghiệm + Hình ảnh) cho hồ sơ bệnh án
     public List<ServiceOrderResponse> getServiceOrders(Integer recordId) {
         MedicalRecord record = recordRepo.findById(recordId)
                 .orElseThrow(() -> new RuntimeException("Hồ sơ bệnh án không tồn tại."));
@@ -533,7 +533,7 @@ public class MedicalRecordService {
         dto.setCode(lt.getTestTypes().getTestCode());
         dto.setName(lt.getTestTypes().getTestName());
         dto.setRequestDate(lt.getRequestedDate());
-        dto.setStatus(lt.getStatus());
+        dto.setStatus(lt.getStatus().name());
 
         // Tên nhân viên phụ trách
         if (lt.getLabTechnician() != null && lt.getLabTechnician().getStaff().getUser() != null) {
@@ -553,7 +553,7 @@ public class MedicalRecordService {
         dto.setCode(it.getImagingTypes().getImagingCode());
         dto.setName(it.getImagingTypes().getImagingName());
         dto.setRequestDate(it.getRequestedDate());
-        dto.setStatus(it.getStatus());
+        dto.setStatus(it.getStatus().name());
 
         // Tên nhân viên phụ trách
         if (it.getImagingStaff() != null && it.getImagingStaff().getStaff().getUser() != null) {
@@ -564,7 +564,7 @@ public class MedicalRecordService {
         return dto;
     }
 
-    // Chuyển đổi từ Entity sang DTO Response
+    // Chuyển đổi MedicalRecord từ Entity sang DTO Response
     private MedicalRecordResponse covertToResponse(MedicalRecord medicalRecord) {
         PatientSummary patientSummary = new PatientSummary();
         patientSummary.setPatientCode(medicalRecord.getPatient().getPatientcode());

@@ -106,6 +106,7 @@ public class MedicalRecordController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //Cập nhật chẩn đoán cho hồ sơ ngoại trú.
     @PutMapping("/{recordId}/diagnosis")
     public ResponseEntity<ApiResponse<?>> updateDiagnosis(
             @PathVariable Integer recordId,
@@ -124,10 +125,10 @@ public class MedicalRecordController {
 
         // Xử lý NotFoundException bằng ControllerAdvice hoặc ExceptionHandler
         if (response == null) {
-            return ResponseEntity.ok(new ApiResponse<>(true, "Lấy dữ liệu khám & chânr đoán thất bại", null));
+            return ResponseEntity.ok(new ApiResponse<>(true, "Lấy dữ liệu khám & chẩn đoán thất bại", null));
         }
 
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lấy dữ liệu khám & chânr đoán thành công", response));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Lấy dữ liệu khám & chẩn đoán thành công", response));
     }
 
     //Tạo các chỉ định xét nghiệm/hình ảnh và phiếu thanh toán liên quan.

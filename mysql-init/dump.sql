@@ -34,7 +34,7 @@ CREATE TABLE `appointment_status` (
   KEY `update_by` (`update_by`),
   CONSTRAINT `appointment_status_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`id`),
   CONSTRAINT `appointment_status_ibfk_2` FOREIGN KEY (`update_by`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `appointment_status` (
 
 LOCK TABLES `appointment_status` WRITE;
 /*!40000 ALTER TABLE `appointment_status` DISABLE KEYS */;
-INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,6,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,6,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,6,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07'),(26,14,2,NULL,8,'2025-10-23 08:20:16'),(27,14,3,NULL,22,'2025-10-23 08:24:22'),(28,14,4,NULL,8,'2025-10-23 08:26:27');
+INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,6,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,6,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,6,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07'),(26,14,2,NULL,8,'2025-10-23 08:20:16'),(27,14,3,NULL,22,'2025-10-23 08:24:22'),(28,14,4,NULL,8,'2025-10-23 08:26:27'),(29,13,2,NULL,8,'2025-10-31 01:59:07'),(30,13,3,NULL,NULL,'2025-10-31 02:01:37');
 /*!40000 ALTER TABLE `appointment_status` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -746,6 +746,37 @@ LOCK TABLES `inpatient_records` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `lab_parameters`
+--
+
+DROP TABLE IF EXISTS `lab_parameters`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `lab_parameters` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `unit` varchar(20) NOT NULL,
+  `min_reference` varchar(50) NOT NULL,
+  `max_reference` varchar(50) NOT NULL,
+  `test_type_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  KEY `test_type_id` (`test_type_id`),
+  CONSTRAINT `lab_parameters_ibfk_1` FOREIGN KEY (`test_type_id`) REFERENCES `testtypes` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lab_parameters`
+--
+
+LOCK TABLES `lab_parameters` WRITE;
+/*!40000 ALTER TABLE `lab_parameters` DISABLE KEYS */;
+INSERT INTO `lab_parameters` VALUES (1,'WBC (Bạch cầu)','10^9/L','4.0','10.0',1),(2,'RBC (Hồng cầu)','10^12/L','3.8','5.8',1),(3,'HGB (Hemoglobin)','g/L','120','160',1),(4,'HCT (Hematocrit)','%','37','54',1),(5,'PLT (Tiểu cầu)','10^9/L','150','450',1),(6,'MCV','fL','80','100',1),(7,'MCH','pg','27','32',1),(8,'RDW-CV','%','11.5','14.5',1),(9,'Glucose','mmol/L','3.9','6.4',2),(10,'ALT (SGPT)','U/L','0','40',2),(11,'AST (SGOT)','U/L','0','40',2),(12,'Creatinine','umol/L','60','110',2),(13,'Cholesterol','mmol/L','0','5.2',2),(14,'Urea','mmol/L','2.5','7.5',2),(15,'Acid Uric','umol/L','140','420',2),(16,'Total Protein','g/L','60','80',2),(17,'Albumin','g/L','35','50',2),(18,'Bilirubin T.T','umol/L','0','21',2),(19,'Triglycerides','mmol/L','0','1.7',2),(20,'HDL-C','mmol/L','0.9','3.0',2),(21,'LDL-C','mmol/L','0','3.37',2),(22,'CRP (Định lượng)','mg/L','0','5',2),(23,'PT (Prothrombin Time)','giây','11.0','13.5',3),(24,'INR','ratio','0.8','1.2',3),(25,'APTT','giây','25.0','35.0',3),(26,'Fibrinogen','g/L','2.0','4.0',3),(27,'pH','','5.0','8.0',4),(28,'Protein niệu','g/L','0.0','0.15',4),(29,'Bạch cầu niệu','tb/HPF','0','5',4),(30,'LEU (Bạch cầu)','Định tính','Âm tính','Âm tính',4),(31,'NIT (Nitrite)','Định tính','Âm tính','Âm tính',4),(32,'BIL (Bilirubin)','Định tính','Âm tính','Âm tính',4),(33,'KET (Ketone)','Định tính','Âm tính','Âm tính',4),(34,'TSH (Tuyến giáp)','uIU/mL','0.27','4.2',5),(35,'T3','nmol/L','1.0','2.8',5),(36,'FT4','pmol/L','10.0','25.0',5),(37,'HCG (Định lượng)','mIU/mL','0','5',5);
+/*!40000 ALTER TABLE `lab_parameters` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `lab_staff`
 --
 
@@ -791,6 +822,41 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `lab_test_details`
+--
+
+DROP TABLE IF EXISTS `lab_test_details`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `lab_test_details` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `lab_test_id` int NOT NULL,
+  `test_parameter_id` int NOT NULL,
+  `result_value` varchar(50) NOT NULL,
+  `parameter_name` varchar(100) NOT NULL,
+  `unit` varchar(20) DEFAULT NULL,
+  `min_reference_range` varchar(50) DEFAULT NULL,
+  `max_reference_range` varchar(50) DEFAULT NULL,
+  `is_abnormal` tinyint(1) DEFAULT '0',
+  `notes` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `lab_test_id` (`lab_test_id`),
+  KEY `test_parameter_id` (`test_parameter_id`),
+  CONSTRAINT `lab_test_details_ibfk_1` FOREIGN KEY (`lab_test_id`) REFERENCES `lab_tests` (`id`),
+  CONSTRAINT `lab_test_details_ibfk_2` FOREIGN KEY (`test_parameter_id`) REFERENCES `lab_parameters` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lab_test_details`
+--
+
+LOCK TABLES `lab_test_details` WRITE;
+/*!40000 ALTER TABLE `lab_test_details` DISABLE KEYS */;
+/*!40000 ALTER TABLE `lab_test_details` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `lab_tests`
@@ -890,7 +956,7 @@ CREATE TABLE `medical_records` (
   CONSTRAINT `FK_mr_ap` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`id`),
   CONSTRAINT `medical_records_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`),
   CONSTRAINT `medical_records_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -899,7 +965,7 @@ CREATE TABLE `medical_records` (
 
 LOCK TABLES `medical_records` WRITE;
 /*!40000 ALTER TABLE `medical_records` DISABLE KEYS */;
-INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3'),(4,1,4,'2025-10-23',1,'đau răng do sâu',14,'Đau răng hàm','Đau răng do sâu','PENDING_RESULTS','MR4');
+INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3'),(4,1,4,'2025-10-23',1,'đau răng do sâu',14,'Đau răng hàm','Đau răng do sâu','PENDING_POSTPAYMENT','MR4'),(5,4,4,'2025-10-31',1,NULL,13,'Đau răng',NULL,'WAITING','MR5');
 /*!40000 ALTER TABLE `medical_records` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1002,6 +1068,7 @@ CREATE TABLE `medicines` (
   `drugtype_id` int DEFAULT NULL,
   `active_ingredient` varchar(255) DEFAULT NULL,
   `dosage_form` varchar(255) DEFAULT NULL,
+  `route_of_administration` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_m_dt` (`drugtype_id`),
   CONSTRAINT `FK_m_dt` FOREIGN KEY (`drugtype_id`) REFERENCES `drugtype` (`id`)
@@ -1014,7 +1081,7 @@ CREATE TABLE `medicines` (
 
 LOCK TABLES `medicines` WRITE;
 /*!40000 ALTER TABLE `medicines` DISABLE KEYS */;
-INSERT INTO `medicines` VALUES (1,'Paracetamol 500 mg','viên','2025-07-24',2000,100,2000,'500 mg','Traphaco',0,'2023-07-24',3,'Paracetamol','Viên nén'),(2,'Amoxicillin 500 mg','viên','2025-08-24',1500,100,1500,'500 mg','DHG Pharma',0,'2023-08-24',1,'Amoxicillin','Viên nén'),(3,'Ascorbic acid 500mg','viên','2025-08-01',1000,50,1000,'500 mg','Traphaco',0,'2023-08-01',5,'Ascorbic acid','Viên nén'),(4,'Ibuprofen 400mg','viên','2025-11-20',2500,100,2500,'400 mg','Sanofi',0,'2023-11-20',3,'Ibuprofen','Viên nén'),(5,'Acetylsalicylic acid 81mg','viên','2025-05-30',1800,100,1800,'81 mg','Bayer',0,'2023-05-30',2,'Acetylsalicylic acid','Viên nén'),(6,'Metformin hydrochloride 500mg','viên','2025-12-01',3000,100,3000,'500 mg','US Pharma',0,'2023-12-01',4,'Metformin hydrochloride','Viên nén'),(7,'Azithromycin 500mg','viên','0202-10-05',5000,100,5000,'500 mg','Pfizer',0,'2022-10-05',1,'Azithromycin','Viên nén'),(8,'Loratadine 10mg','viên','2026-02-18',1200,50,1200,'10 mg','Stada',0,'2026-02-18',6,'Loratadine','Viên nén'),(9,'Cefixime 200mg','viên','2025-09-15',3500,100,3500,'200 mg','Domesco',0,'2023-09-15',1,'Cefixime','Viên nén'),(10,'Omeprazole 20mg','viên','2026-03-01',2200,100,2200,'20 mg','Mekophar',0,'2024-03-01',7,'Omeprazole','Viên nang');
+INSERT INTO `medicines` VALUES (1,'Paracetamol 500 mg','viên','2025-07-24',2000,100,2000,'500 mg','Traphaco',0,'2023-07-24',3,'Paracetamol','Viên nén',NULL),(2,'Amoxicillin 500 mg','viên','2025-08-24',1500,100,1500,'500 mg','DHG Pharma',0,'2023-08-24',1,'Amoxicillin','Viên nén',NULL),(3,'Ascorbic acid 500mg','viên','2025-08-01',1000,50,1000,'500 mg','Traphaco',0,'2023-08-01',5,'Ascorbic acid','Viên nén',NULL),(4,'Ibuprofen 400mg','viên','2025-11-20',2500,100,2500,'400 mg','Sanofi',0,'2023-11-20',3,'Ibuprofen','Viên nén',NULL),(5,'Acetylsalicylic acid 81mg','viên','2025-05-30',1800,100,1800,'81 mg','Bayer',0,'2023-05-30',2,'Acetylsalicylic acid','Viên nén',NULL),(6,'Metformin hydrochloride 500mg','viên','2025-12-01',3000,100,3000,'500 mg','US Pharma',0,'2023-12-01',4,'Metformin hydrochloride','Viên nén',NULL),(7,'Azithromycin 500mg','viên','0202-10-05',5000,100,5000,'500 mg','Pfizer',0,'2022-10-05',1,'Azithromycin','Viên nén',NULL),(8,'Loratadine 10mg','viên','2026-02-18',1200,50,1200,'10 mg','Stada',0,'2026-02-18',6,'Loratadine','Viên nén',NULL),(9,'Cefixime 200mg','viên','2025-09-15',3500,100,3500,'200 mg','Domesco',0,'2023-09-15',1,'Cefixime','Viên nén',NULL),(10,'Omeprazole 20mg','viên','2026-03-01',2200,100,2200,'20 mg','Mekophar',0,'2024-03-01',7,'Omeprazole','Viên nang',NULL);
 /*!40000 ALTER TABLE `medicines` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1163,7 +1230,7 @@ CREATE TABLE `paymentdetails` (
   PRIMARY KEY (`id`),
   KEY `payment_id` (`payment_id`),
   CONSTRAINT `paymentdetails_ibfk_1` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1172,7 +1239,7 @@ CREATE TABLE `paymentdetails` (
 
 LOCK TABLES `paymentdetails` WRITE;
 /*!40000 ALTER TABLE `paymentdetails` DISABLE KEYS */;
-INSERT INTO `paymentdetails` VALUES (2,2,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-27 09:35:54'),(4,2,'IMAGING_TEST',2,'X-quang răng',200000.00,140000.00,60000.00,'2025-10-27 09:54:16');
+INSERT INTO `paymentdetails` VALUES (2,2,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-27 09:35:54'),(4,2,'IMAGING_TEST',2,'X-quang răng',200000.00,140000.00,60000.00,'2025-10-27 09:54:16'),(5,3,'PRESCRIPTION',3,'Đơn thuốc ngày 2025-10-30T16:23:15.094107',34000.00,23800.00,10200.00,'2025-10-30 15:51:22'),(6,3,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-30 15:51:22');
 /*!40000 ALTER TABLE `paymentdetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1199,7 +1266,7 @@ CREATE TABLE `payments` (
   KEY `cashier_id` (`cashier_id`),
   CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
   CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`cashier_id`) REFERENCES `cashier` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1208,7 +1275,7 @@ CREATE TABLE `payments` (
 
 LOCK TABLES `payments` WRITE;
 /*!40000 ALTER TABLE `payments` DISABLE KEYS */;
-INSERT INTO `payments` VALUES (2,4,NULL,450000.00,NULL,NULL,315000.00,135000.00,'PENDING_PAYMENT','2025-10-27 09:35:54');
+INSERT INTO `payments` VALUES (2,4,NULL,450000.00,NULL,NULL,315000.00,135000.00,'PENDING_PAYMENT','2025-10-27 09:35:54'),(3,4,NULL,284000.00,NULL,NULL,198800.00,85200.00,'PENDING_PAYMENT','2025-10-30 15:51:22');
 /*!40000 ALTER TABLE `payments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1273,12 +1340,14 @@ CREATE TABLE `prescriptiondetails` (
   `quantity` int DEFAULT NULL,
   `dosage` varchar(255) DEFAULT NULL,
   `notes` varchar(255) DEFAULT NULL,
+  `is_substitutable` tinyint(1) DEFAULT NULL,
+  `daily_quantity` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `prescription_id` (`prescription_id`),
   KEY `medicine_id` (`medicine_id`),
   CONSTRAINT `prescriptiondetails_ibfk_1` FOREIGN KEY (`prescription_id`) REFERENCES `prescriptions` (`id`),
   CONSTRAINT `prescriptiondetails_ibfk_2` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1287,7 +1356,7 @@ CREATE TABLE `prescriptiondetails` (
 
 LOCK TABLES `prescriptiondetails` WRITE;
 /*!40000 ALTER TABLE `prescriptiondetails` DISABLE KEYS */;
-INSERT INTO `prescriptiondetails` VALUES (1,1,1,4,'2 lần/ngày','Sau bữa ăn'),(2,1,5,2,'1 lần/ngày','Trước khi ngủ'),(3,2,5,9,'3 lần/ngày','Sau bữa ăn'),(4,2,8,6,'2 lần/ngày','Trước khi ăn'),(5,2,10,3,'1 lần/ngày','Sau khi ăn bữa trưa');
+INSERT INTO `prescriptiondetails` VALUES (1,1,1,4,'2 lần/ngày','Sau bữa ăn',NULL,NULL),(2,1,5,2,'1 lần/ngày','Trước khi ngủ',NULL,NULL),(3,2,5,9,'3 lần/ngày','Sau bữa ăn',NULL,NULL),(4,2,8,6,'2 lần/ngày','Trước khi ăn',NULL,NULL),(5,2,10,3,'1 lần/ngày','Sau khi ăn bữa trưa',NULL,NULL),(10,3,1,8,'Uống 1 viên x 2 lần/ngày','',1,2),(11,3,2,12,'Uống 1 viên x 3 lần/ngày','',0,3);
 /*!40000 ALTER TABLE `prescriptiondetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1305,7 +1374,9 @@ CREATE TABLE `prescriptions` (
   `doctor_id` int DEFAULT NULL,
   `pharmacist_id` int DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
-  `prescription_date` date DEFAULT NULL,
+  `prescription_date` datetime(6) NOT NULL,
+  `total_days` int DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`),
   KEY `inpatient_record_id` (`inpatient_record_id`),
@@ -1315,7 +1386,7 @@ CREATE TABLE `prescriptions` (
   CONSTRAINT `prescriptions_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
   CONSTRAINT `prescriptions_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
   CONSTRAINT `prescriptions_ibfk_4` FOREIGN KEY (`pharmacist_id`) REFERENCES `pharmacy_staff` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1324,9 +1395,28 @@ CREATE TABLE `prescriptions` (
 
 LOCK TABLES `prescriptions` WRITE;
 /*!40000 ALTER TABLE `prescriptions` DISABLE KEYS */;
-INSERT INTO `prescriptions` VALUES (1,1,NULL,1,1,'NEW','2025-05-24'),(2,2,NULL,1,1,'NEW','2025-05-24');
+INSERT INTO `prescriptions` VALUES (1,1,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(2,2,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(3,4,NULL,4,NULL,'PENDING_PAYMENT','2025-10-30 09:23:15.094107',4,'PRE3');
 /*!40000 ALTER TABLE `prescriptions` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_prescriptions` BEFORE INSERT ON `prescriptions` FOR EACH ROW BEGIN
+    DECLARE new_code VARCHAR(20);
+    SET new_code = CONCAT('PRE',  IFNULL((SELECT MAX(id) FROM prescriptions), 0) + 1);
+    SET NEW.code = new_code;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `receptionist`
@@ -1588,7 +1678,7 @@ CREATE TABLE `staff` (
 
 LOCK TABLES `staff` WRITE;
 /*!40000 ALTER TABLE `staff` DISABLE KEYS */;
-INSERT INTO `staff` VALUES (1,1,4,1),(2,1,5,1),(3,1,7,5),(4,1,8,2),(5,5,11,1),(6,1,14,1),(7,2,18,2),(8,3,19,1),(10,4,21,9),(11,7,22,10),(12,3,23,8),(13,3,24,8),(14,3,25,8),(15,3,26,8);
+INSERT INTO `staff` VALUES (1,1,4,1),(2,1,5,1),(3,1,7,5),(4,1,8,2),(5,5,11,12),(6,1,14,1),(7,2,18,2),(8,3,19,1),(10,4,21,9),(11,7,22,10),(12,3,23,8),(13,3,24,8),(14,3,25,8),(15,3,26,8);
 /*!40000 ALTER TABLE `staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1669,7 +1759,7 @@ CREATE TABLE `testtypes` (
   PRIMARY KEY (`id`),
   KEY `FK_tt_d` (`department_id`),
   CONSTRAINT `FK_tt_d` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1678,7 +1768,7 @@ CREATE TABLE `testtypes` (
 
 LOCK TABLES `testtypes` WRITE;
 /*!40000 ALTER TABLE `testtypes` DISABLE KEYS */;
-INSERT INTO `testtypes` VALUES (1,'Xét nghiệm máu tổng quát',200000,'Kiểm tra chỉ số huyết học',1,'TEST1',1),(2,'Xét nghiệm sinh hóa',200000,'Đánh giá chức năng gan, thận',1,'TEST2',1),(3,'Xét nghiệm đông máu',180000,'Phục vụ chuẩn bị phẫu thuật ngoại khoa',2,'TEST3',1),(4,'Xét nghiệm nước tiểu',120000,'Đánh giá chức năng thận và tiết niệu',3,'TEST4',1),(5,'Xét nghiệm nội tiết',250000,'Theo dõi sức khỏe thai kỳ và nội tiết tố',5,'TEST5',1);
+INSERT INTO `testtypes` VALUES (1,'Xét nghiệm Huyết học (Máu tổng quát)',200000,'Kiểm tra chỉ số huyết học',1,'TEST1',1),(2,'Xét nghiệm sinh hóa',200000,'Đánh giá chức năng gan, thận',1,'TEST2',1),(3,'Xét nghiệm Đông cầm máu',180000,'Phục vụ chuẩn bị phẫu thuật ngoại khoa',2,'TEST3',1),(4,'Xét nghiệm Hóa sinh/Tế bào nước tiểu',120000,'Đánh giá chức năng thận và tiết niệu',3,'TEST4',1),(5,'Xét nghiệm nội tiết',250000,'Theo dõi sức khỏe thai kỳ và nội tiết tố',5,'TEST5',1),(6,'Xét nghiệm Vi sinh',350000,'Phân lập, xác định vi khuẩn, nấm; làm kháng sinh đồ.',1,'TEST6',1),(7,'Xét nghiệm Miễn dịch',400000,'Phát hiện kháng thể, kháng nguyên (Viêm gan B/C, HIV, Sốt xuất huyết).',1,'TEST7',1),(8,'Xét nghiệm Ký sinh trùng',200000,'Tìm kiếm trứng, ấu trùng giun sán trong máu/phân/nước tiểu.',1,'TEST8',1),(9,'Xét nghiệm Di truyền/Phân tử',1500000,'Phân tích DNA/RNA (PCR, Genotype), thường phục vụ cho Ung bướu, Truyền nhiễm.',1,'TEST9',1),(10,'Xét nghiệm Giải phẫu bệnh',800000,'Sinh thiết, tế bào học (pap smear, chọc hút kim nhỏ) để chẩn đoán ung thư.',1,'TEST10',1);
 /*!40000 ALTER TABLE `testtypes` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1888,4 +1978,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-29 10:06:12
+-- Dump completed on 2025-10-31  9:43:22
