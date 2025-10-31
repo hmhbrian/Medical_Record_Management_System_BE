@@ -68,6 +68,7 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
+    //Hàm kiểm tra phòng có phù hợp với vai trò nhân viên không
     private boolean isRoomSuitableForPosition(Room room, String normalizedPosition) {
         String roomType = room.getRoomType().getCode();
 
@@ -112,6 +113,7 @@ public class RoomService {
 //                .map(this::convertToResponse)
 //                .collect(Collectors.toList());
 //    }
+    //Lấy danh sách phòng(Phân trang và lọc phòng)
     public Page<RoomResponse> getAllRooms(
             int page, int size,
             Integer departmentId,

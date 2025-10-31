@@ -4,6 +4,7 @@ import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceDetail;
 import com.example.clinicbooking.entity.MedicalRecord;
 import com.example.clinicbooking.entity.Payment;
 import com.example.clinicbooking.entity.PaymentDetail;
+import com.example.clinicbooking.entity.PaymentStatus;
 import com.example.clinicbooking.repository.PaymentDetailRepository;
 import com.example.clinicbooking.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class PaymentService {
      * @return Payment Entity đã được lưu/cập nhật
      */
     @Transactional(propagation = Propagation.REQUIRED) // Đảm bảo nằm trong giao dịch lớn
-    public Payment handlePayment(MedicalRecord record, List<ServiceDetail> serviceItems) {
+    public Payment createPaymentOrder(MedicalRecord record, List<ServiceDetail> serviceItems) {
 
         // 1. Tính toán Tổng tiền ước tính
         BigDecimal totalEstimatedAmount = serviceItems.stream()
@@ -90,33 +91,24 @@ public class PaymentService {
         bhytCovered = totalInsuranceCovered;
         patientOwed = totalPatientOwed;
 
-        // 3. Tìm kiếm Payment. Nếu không có thì tạo mới.
-        Payment payment = paymentRepo.findByRecord(record).orElse(new Payment());
-
-        // 4. Cập nhật Payment
-        if (payment.getId() == null) { // Chỉ đặt createdAt nếu là Payment mới
-            payment.setCreatedAt(LocalDateTime.now());
-            payment.setRecord(record);
-            payment.setTotalAmount(totalEstimatedAmount);
-            payment.setInsuranceCoverage(bhytCovered);
-            payment.setPatientPayment(patientOwed);
-        }
-        else{
-            payment.setTotalAmount(payment.getTotalAmount().add(totalEstimatedAmount));
-            payment.setInsuranceCoverage(payment.getInsuranceCoverage().add(bhytCovered));
-            payment.setPatientPayment(payment.getPatientPayment().add(patientOwed));
-        }
-        payment.setStatus("PENDING_PAYMENT");
+        // 3. TẠO MỚI Payment (Luôn tạo mới vì là trả trước/trả sau độc lập)
+        Payment newpayment = new Payment();
+        newpayment.setCreatedAt(LocalDateTime.now());
+        newpayment.setRecord(record);
+        newpayment.setTotalAmount(totalEstimatedAmount);
+        newpayment.setInsuranceCoverage(bhytCovered);
+        newpayment.setPatientPayment(patientOwed);
+        newpayment.setStatus(PaymentStatus.PENDING_PAYMENT);
 
         // 5. Lưu Payment (để có ID gán cho PaymentDetail)
-        payment = paymentRepo.save(payment);
+        newpayment = paymentRepo.save(newpayment);
 
         // 6. Lưu PaymentDetails
         for (PaymentDetail detail : paymentDetails) {
-            detail.setPayment(payment);
+            detail.setPayment(newpayment);
         }
         paymentDetailRepo.saveAll(paymentDetails);
 
-        return payment;
+        return newpayment;
     }
 }

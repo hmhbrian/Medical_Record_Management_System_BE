@@ -39,8 +39,9 @@ public class Payment {
     @Column(name = "payment_method", length = 50)
     private String paymentMethod;
 
-    @Column(name = "status", length = 50)
-    private String status; // Ví dụ: PENDING_PAYMENT, PAID, CANCELED
+    @Column(name = "status", length = 50,nullable = false)
+    @Enumerated(EnumType.STRING) // Dùng Enum cho trạng thái để dễ quản lý
+    private PaymentStatus status; // Ví dụ: PENDING_PAYMENT, PAID, CANCELED
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

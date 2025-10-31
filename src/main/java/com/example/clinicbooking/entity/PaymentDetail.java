@@ -24,7 +24,7 @@ public class PaymentDetail {
     private Payment payment;
 
     // Khóa ngoại tổng quát (Polymorphic Association)
-    // Tên bảng đích ('EXAMINATION', 'LAB_TEST', 'IMAGING_TEST', 'MEDICINE', 'BED', 'OTHER')
+    // Tên bảng đích ('EXAMINATION', 'LAB_TEST', 'IMAGING_TEST', 'PRESCRIPTION', 'BED', 'OTHER')
     @Column(name = "service_type", length = 50)
     private String serviceType;
 

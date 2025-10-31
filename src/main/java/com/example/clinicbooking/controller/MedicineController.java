@@ -2,7 +2,8 @@ package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.Medicine.MedicineRequest;
 import com.example.clinicbooking.DTO.Medicine.MedicineResponse;
-import com.example.clinicbooking.service.MedicineService;
+import com.example.clinicbooking.DTO.Medicine.MedicineSummaryResponse;
+import com.example.clinicbooking.service.Medicine.MedicineService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -54,5 +55,12 @@ public class MedicineController {
     ) {
         return ResponseEntity.ok(medicineService.getExpiringMedicines(days));
     }
+
+    @GetMapping("/prescription")
+    public ResponseEntity<List<MedicineSummaryResponse>> getMedicineForPrescription(
+            @RequestParam(name = "keyword", required = false) String keyword) {
+        return ResponseEntity.ok(medicineService.getMedicineForPrescription(keyword));
+    }
+
 }
 
