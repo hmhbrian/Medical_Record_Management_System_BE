@@ -14,5 +14,8 @@ public class ServiceOrderResponse {
     private String Name;
     private LocalDateTime requestDate;
     private String status;
+    private LocalDateTime resultDate;
+    private String result;
     private String assignedStaffName;
+    private String assignedStaffCode;
 }

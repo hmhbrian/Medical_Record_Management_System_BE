@@ -11,5 +11,10 @@ public class StaffRequest extends BaseUserRequest {
     public int departmentId;
     public int positionId;
     // nurse, receptionist, technician,...
-    public int experienceYears;;
+    public int experienceYears;
+    //Doctor
+    public int specialtyId;
+    public String certificationName;
+    public String issuedBy;
+    public LocalDate issueDate;
 }

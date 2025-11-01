@@ -27,6 +27,7 @@ public class PrescriptionService {
     private final MedicalRecordRepository recordRepo;
     private final MedicineRepository medicineRepo;
     private final ResultExaminationRepository examinationRepo;
+    private final PaymentRepository paymentRepo;
     private final PaymentService paymentService;
 
     //Lưu hoặc Gửi Đơn thuốc
@@ -42,16 +43,12 @@ public class PrescriptionService {
         // Tổng giá trị Đơn thuốc
         Double PrescriptionPrice = 0.0;
 
-        // 1. Tìm hoặc Tạo mới Đơn thuốc (Prescription)
-        Optional<Prescriptions> existingPrescription = prescriptionRepo.findByRecord(record);
+        // List các trạng thái bị loại trừ (ví dụ: CANCELED, COMPLETED)
+        List<PrescriptionStatus> excludedStatuses = List.of(PrescriptionStatus.CANCELED, PrescriptionStatus.COMPLETED, PrescriptionStatus.PAID, PrescriptionStatus.PENDING_PAYMENT);
 
-        // Kiểm tra trạng thái PAID trước khi chỉnh sửa
-        if(existingPrescription.isPresent()){
-            if(existingPrescription.get().getStatus() == PrescriptionStatus.PENDING_PAYMENT)
-                return new ApiResponse<>(false,"Đơn thuốc đang chờ thanh toán, không thể chỉnh sửa.", null);
-            else if(existingPrescription.get().getStatus() == PrescriptionStatus.PAID)
-                return new ApiResponse<>(false,"Đơn thuốc đã được thanh toán, không thể chỉnh sửa.", null);
-        }
+        // 1. Tìm hoặc Tạo mới Đơn thuốc (Prescription)
+        // Tìm đơn có tồn tại nhưng chưa bị hủy hoặc hoàn thành
+        Optional<Prescriptions> existingPrescription = prescriptionRepo.findByRecordAndStatusNotIn(record,excludedStatuses);
 
         Prescriptions prescription = existingPrescription.orElseGet(() -> {
             Prescriptions newP = new Prescriptions();
@@ -134,12 +131,65 @@ public class PrescriptionService {
         return new ApiResponse<>(true,"Đơn thuốc đã được lưu thành công.", null);
     }
 
+    //Hủy đơn thuốc đang chờ thanh toán
+    @Transactional
+    public ApiResponse<?> cancelPrescriptionAndAllowNew(Integer recordId) {
+
+        MedicalRecord medicalRecord = recordRepo.findById(recordId)
+                .orElseThrow(() -> new InvalidInputException("Không tồn tại hồ sơ bệnh án này."));
+
+        // 1. Tìm đơn thuốc hiện tại
+        Prescriptions prescription = prescriptionRepo.findByRecord(medicalRecord)
+                .orElseThrow(() -> new InvalidInputException("Hồ sơ bệnh án không có đơn thuốc nào."));
+
+        // 2. Kiểm tra trạng thái đơn thuốc
+        if (prescription.getStatus() == PrescriptionStatus.PAID ||
+                prescription.getStatus() == PrescriptionStatus.COMPLETED) {
+
+            return new ApiResponse<>(false, "Đơn thuốc đã được thanh toán hoặc hoàn thành, không thể hủy. Cần thực hiện hoàn tiền (Refund).", null);
+        }
+
+        if (prescription.getStatus() == PrescriptionStatus.CANCELED) {
+            return new ApiResponse<>(false, "Đơn thuốc đã bị hủy trước đó.", null);
+        }
+
+        // 3. Xử lý HỦY PHIẾU THANH TOÁN (nếu đang ở trạng thái PENDING_PAYMENT)
+        if (prescription.getStatus() == PrescriptionStatus.PENDING_PAYMENT) {
+
+            // 3.1. Tìm phiếu thanh toán liên quan
+            Optional<Payment> paymentOpt = paymentRepo.findByObjectTypeAndObjectIdAndStatus(
+                    "PRESCRIPTION",
+                    prescription.getId(),
+                    PaymentStatus.PENDING_PAYMENT
+            );
+
+            if (paymentOpt.isPresent()) {
+                // 3.2. Cập nhật trạng thái Payment sang CANCELED
+                Payment paymentToCancel = paymentOpt.get();
+                paymentToCancel.setStatus(PaymentStatus.CANCELLED);
+                paymentRepo.save(paymentToCancel);
+
+                // Gửi thông báo đến Thu ngân về việc hủy hóa đơn
+                // paymentService.notifyCashierOfCancellation(paymentToCancel);
+            }
+        }
+
+        // 4. Cập nhật trạng thái Đơn thuốc sang CANCELED
+        prescription.setStatus(PrescriptionStatus.CANCELED);
+        prescriptionRepo.save(prescription);
+
+        // 5. Kết quả: Cho phép bác sĩ tạo đơn mới
+        return new ApiResponse<>(true, "Đơn thuốc cũ đã được hủy thành công. Bạn có thể kê đơn mới.", null);
+    }
+
     // Lấy Đơn thuốc theo ID Hồ sơ bệnh án
     public PrescriptionResponse getPrescriptionByRecordId(Integer recordId) {
         MedicalRecord record = recordRepo.findById(recordId).orElseThrow(
                 () -> new InvalidInputException("Hồ sơ này không tồn tại"));
 
-        Prescriptions prescription = prescriptionRepo.findByRecord(record)
+        // List các trạng thái bị loại trừ (ví dụ: CANCELED, COMPLETED)
+        List<PrescriptionStatus> excludedStatuses = List.of(PrescriptionStatus.CANCELED);
+        Prescriptions prescription = prescriptionRepo.findByRecordAndStatusNotIn(record, excludedStatuses)
                 .orElseThrow(() -> new InvalidInputException("Không tìm thấy đơn thuốc cho hồ sơ này."));
 
         List<PrescriptionDetails> details = detailRepo.findAllByPrescription(prescription); // Cần viết method này
