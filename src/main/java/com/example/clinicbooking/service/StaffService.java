@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class StaffService implements IStaffService {
+    private final DoctorRepository doctorRepo;
+    private final SpecialtyRepository specialtyRepo;
     private final NurseRepository nurseRepo;
     private final ImagingStaffRepository imagingStaffRepo;
     private final CashierRepository cashierRepo;
@@ -35,7 +37,20 @@ public class StaffService implements IStaffService {
         Staff staff = staffCreationService.createStaff(user, staffRequest.getDepartmentId(), staffRequest.getPositionId());
         String message = "Tạo nhân viên thành công!";
 
-        if(staffRequest.getPositionId() == 2) {
+        if(staffRequest.getPositionId() == 1) {
+            Doctor doctor = new Doctor();
+            doctor.setStaff(staff);
+            doctor.setExperienceYears(staffRequest.getExperienceYears());
+            Specialty specialty = specialtyRepo.findById(staffRequest.getSpecialtyId())
+                    .orElseThrow(() -> new InvalidInputException("Chuyên khoa không tồn tại với id: " + staffRequest.getSpecialtyId()));
+            doctor.setSpecialty(specialty);
+            doctor.setCertificationName(staffRequest.getCertificationName());
+            doctor.setIssuedBy(staffRequest.getIssuedBy());
+            doctor.setIssueDate(staffRequest.getIssueDate());
+            doctorRepo.save(doctor);
+            message = "Thêm bác sĩ thành công!";
+        }
+        else if(staffRequest.getPositionId() == 2) {
             Nurse nurse = new Nurse();
             nurse.setStaff(staff);
             nurse.setExperienceYears(staffRequest.experienceYears);

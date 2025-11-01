@@ -34,7 +34,7 @@ CREATE TABLE `appointment_status` (
   KEY `update_by` (`update_by`),
   CONSTRAINT `appointment_status_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`id`),
   CONSTRAINT `appointment_status_ibfk_2` FOREIGN KEY (`update_by`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `appointment_status` (
 
 LOCK TABLES `appointment_status` WRITE;
 /*!40000 ALTER TABLE `appointment_status` DISABLE KEYS */;
-INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,6,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,6,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,6,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07'),(26,14,2,NULL,8,'2025-10-23 08:20:16'),(27,14,3,NULL,22,'2025-10-23 08:24:22'),(28,14,4,NULL,8,'2025-10-23 08:26:27'),(29,13,2,NULL,8,'2025-10-31 01:59:07'),(30,13,3,NULL,NULL,'2025-10-31 02:01:37');
+INSERT INTO `appointment_status` VALUES (1,1,1,NULL,3,'2025-05-16 09:29:47'),(2,1,2,'',4,'2025-05-16 09:41:30'),(8,6,1,NULL,3,'2025-05-19 00:17:16'),(13,7,1,NULL,3,'2025-05-25 02:11:33'),(14,6,6,'Bận đột xuất',3,'2025-05-25 02:12:04'),(15,8,1,NULL,3,'2025-08-22 11:11:38'),(16,9,1,NULL,9,'2025-08-24 04:00:07'),(17,10,1,NULL,3,'2025-08-25 06:57:26'),(18,7,6,'Bận đột xuất',3,'2025-08-25 06:58:13'),(22,12,1,'Đau răng hàm',10,'2025-10-16 03:05:55'),(23,12,6,'Bận đột xuất',10,'2025-10-16 03:11:37'),(24,13,1,'Đau răng hàm',10,'2025-10-16 08:15:39'),(25,14,1,'Đau răng hàm',3,'2025-10-19 02:23:07'),(26,14,2,NULL,8,'2025-10-23 08:20:16'),(27,14,3,NULL,22,'2025-10-23 08:24:22'),(28,14,4,NULL,8,'2025-10-23 08:26:27'),(29,13,2,NULL,8,'2025-10-31 01:59:07'),(30,13,3,NULL,NULL,'2025-10-31 02:01:37'),(31,15,1,'Khát và Uống nhiều, Đi tiểu nhiều',10,'2025-11-01 03:47:13'),(32,15,2,NULL,28,'2025-11-01 03:52:13'),(33,15,3,NULL,NULL,'2025-11-01 03:56:42'),(34,15,4,NULL,28,'2025-11-01 03:58:57');
 /*!40000 ALTER TABLE `appointment_status` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -129,7 +129,7 @@ CREATE TABLE `appointments` (
   CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
   CONSTRAINT `appointments_ibfk_3` FOREIGN KEY (`doctor_schedule_id`) REFERENCES `doctor_schedules` (`id`),
   CONSTRAINT `fk_a_slot_schedule` FOREIGN KEY (`schedule_slot_id`) REFERENCES `schedule_slots` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -138,7 +138,7 @@ CREATE TABLE `appointments` (
 
 LOCK TABLES `appointments` WRITE;
 /*!40000 ALTER TABLE `appointments` DISABLE KEYS */;
-INSERT INTO `appointments` VALUES (1,1,1,2,'2025-05-16 09:29:47',3,'LH1'),(6,1,1,152,'2025-05-19 00:17:16',15,'LH6'),(7,1,2,253,'2025-05-25 02:11:33',28,'LH7'),(8,1,3,316,'2025-08-22 11:11:38',37,'LH8'),(9,3,3,315,'2025-08-24 04:00:07',45,'LH9'),(10,1,1,306,'2025-08-25 06:57:26',61,'LH10'),(12,4,4,3,'2025-10-16 03:05:55',67,'LH11'),(13,4,4,3,'2025-10-16 08:15:39',67,'LH13'),(14,1,4,319,'2025-10-19 02:23:06',104,'LH14');
+INSERT INTO `appointments` VALUES (1,1,1,2,'2025-05-16 09:29:47',3,'LH1'),(6,1,1,152,'2025-05-19 00:17:16',15,'LH6'),(7,1,2,253,'2025-05-25 02:11:33',28,'LH7'),(8,1,3,316,'2025-08-22 11:11:38',37,'LH8'),(9,3,3,315,'2025-08-24 04:00:07',45,'LH9'),(10,1,1,306,'2025-08-25 06:57:26',61,'LH10'),(12,4,4,3,'2025-10-16 03:05:55',67,'LH11'),(13,4,4,3,'2025-10-16 08:15:39',67,'LH13'),(14,1,4,319,'2025-10-19 02:23:06',104,'LH14'),(15,4,6,326,'2025-11-01 03:47:13',185,'LH15');
 /*!40000 ALTER TABLE `appointments` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -229,7 +229,7 @@ CREATE TABLE `cashier` (
   PRIMARY KEY (`id`),
   KEY `idx_cashier_staff_id` (`staff_id`),
   CONSTRAINT `cashier_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -238,6 +238,7 @@ CREATE TABLE `cashier` (
 
 LOCK TABLES `cashier` WRITE;
 /*!40000 ALTER TABLE `cashier` DISABLE KEYS */;
+INSERT INTO `cashier` VALUES (1,18,5,'CAS1');
 /*!40000 ALTER TABLE `cashier` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -314,7 +315,7 @@ CREATE TABLE `doctor_schedules` (
   CONSTRAINT `doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
   CONSTRAINT `doctor_schedules_ibfk_2` FOREIGN KEY (`shift_type_id`) REFERENCES `shift_type` (`id`),
   CONSTRAINT `doctor_schedules_ibfk_3` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=325 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=327 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,7 +324,7 @@ CREATE TABLE `doctor_schedules` (
 
 LOCK TABLES `doctor_schedules` WRITE;
 /*!40000 ALTER TABLE `doctor_schedules` DISABLE KEYS */;
-INSERT INTO `doctor_schedules` VALUES (1,1,2,3,'2025-05-10','ACTIVE',15,0),(2,1,1,3,'2025-05-12','ACTIVE',15,1),(3,4,2,17,'2025-10-17','ACTIVE',15,1),(52,2,2,2,'2025-05-13','ACTIVE',15,0),(53,2,1,1,'2025-05-14','ACTIVE',15,0),(102,1,2,3,'2025-05-20','ACTIVE',15,0),(152,1,3,1,'2025-05-20','ACTIVE',10,0),(153,1,1,1,'2025-05-21','ACTIVE',14,0),(154,1,2,3,'2025-05-22','ACTIVE',14,0),(155,1,3,3,'2025-05-22','ACTIVE',10,0),(156,1,1,3,'2025-05-23','ACTIVE',12,0),(157,1,2,3,'2025-05-23','ACTIVE',12,0),(158,1,2,3,'2025-05-24','ACTIVE',12,0),(202,4,1,3,'2025-05-29','ACTIVE',15,0),(252,2,1,2,'2025-05-26','ACTIVE',15,0),(253,2,1,2,'2025-05-27','ACTIVE',15,0),(254,2,2,2,'2025-05-27','ACTIVE',10,0),(255,2,2,6,'2025-05-28','ACTIVE',15,0),(256,2,3,6,'2025-05-28','ACTIVE',8,0),(257,2,1,2,'2025-05-30','ACTIVE',15,0),(258,2,2,2,'2025-05-30','ACTIVE',15,0),(259,2,1,2,'2025-06-01','ACTIVE',15,0),(260,2,2,6,'2025-06-02','ACTIVE',15,0),(261,2,3,6,'2025-06-02','ACTIVE',8,0),(262,1,1,1,'2025-05-27','ACTIVE',15,0),(263,1,1,1,'2025-05-28','ACTIVE',15,0),(264,1,2,1,'2025-05-28','ACTIVE',15,0),(265,1,2,7,'2025-05-29','ACTIVE',15,0),(266,1,3,7,'2025-05-29','ACTIVE',8,0),(302,1,2,3,'2025-08-24','ACTIVE',20,0),(303,1,1,3,'2025-08-24','ACTIVE',20,0),(304,1,2,3,'2025-08-25','ACTIVE',20,0),(305,1,3,3,'2025-08-25','ACTIVE',20,0),(306,1,1,2,'2025-08-27','ACTIVE',20,0),(307,1,2,2,'2025-08-27','ACTIVE',20,0),(308,2,2,5,'2025-08-24','ACTIVE',20,0),(309,2,3,5,'2025-08-24','ACTIVE',20,0),(310,2,2,5,'2025-08-25','ACTIVE',20,0),(311,2,1,5,'2025-08-26','ACTIVE',20,0),(312,2,2,5,'2025-08-26','ACTIVE',20,0),(313,3,1,7,'2025-08-24','ACTIVE',20,0),(314,3,2,7,'2025-08-24','ACTIVE',20,0),(315,3,2,7,'2025-08-25','ACTIVE',20,0),(316,3,3,7,'2025-08-25','ACTIVE',20,0),(317,4,1,17,'2025-10-18','ACTIVE',15,0),(318,4,1,3,'2025-10-21','ACTIVE',15,0),(319,4,1,3,'2025-10-20','ACTIVE',15,1),(320,4,2,3,'2025-10-20','ACTIVE',15,0),(321,4,2,3,'2025-10-21','ACTIVE',15,0),(322,4,2,4,'2025-10-22','ACTIVE',15,0),(323,4,3,4,'2025-10-22','ACTIVE',15,0),(324,2,1,7,'2025-10-30','ACTIVE',15,0);
+INSERT INTO `doctor_schedules` VALUES (1,1,2,3,'2025-05-10','ACTIVE',15,0),(2,1,1,3,'2025-05-12','ACTIVE',15,1),(3,4,2,17,'2025-10-17','ACTIVE',15,1),(52,2,2,2,'2025-05-13','ACTIVE',15,0),(53,2,1,1,'2025-05-14','ACTIVE',15,0),(102,1,2,3,'2025-05-20','ACTIVE',15,0),(152,1,3,1,'2025-05-20','ACTIVE',10,0),(153,1,1,1,'2025-05-21','ACTIVE',14,0),(154,1,2,3,'2025-05-22','ACTIVE',14,0),(155,1,3,3,'2025-05-22','ACTIVE',10,0),(156,1,1,3,'2025-05-23','ACTIVE',12,0),(157,1,2,3,'2025-05-23','ACTIVE',12,0),(158,1,2,3,'2025-05-24','ACTIVE',12,0),(202,4,1,3,'2025-05-29','ACTIVE',15,0),(252,2,1,2,'2025-05-26','ACTIVE',15,0),(253,2,1,2,'2025-05-27','ACTIVE',15,0),(254,2,2,2,'2025-05-27','ACTIVE',10,0),(255,2,2,6,'2025-05-28','ACTIVE',15,0),(256,2,3,6,'2025-05-28','ACTIVE',8,0),(257,2,1,2,'2025-05-30','ACTIVE',15,0),(258,2,2,2,'2025-05-30','ACTIVE',15,0),(259,2,1,2,'2025-06-01','ACTIVE',15,0),(260,2,2,6,'2025-06-02','ACTIVE',15,0),(261,2,3,6,'2025-06-02','ACTIVE',8,0),(262,1,1,1,'2025-05-27','ACTIVE',15,0),(263,1,1,1,'2025-05-28','ACTIVE',15,0),(264,1,2,1,'2025-05-28','ACTIVE',15,0),(265,1,2,7,'2025-05-29','ACTIVE',15,0),(266,1,3,7,'2025-05-29','ACTIVE',8,0),(302,1,2,3,'2025-08-24','ACTIVE',20,0),(303,1,1,3,'2025-08-24','ACTIVE',20,0),(304,1,2,3,'2025-08-25','ACTIVE',20,0),(305,1,3,3,'2025-08-25','ACTIVE',20,0),(306,1,1,2,'2025-08-27','ACTIVE',20,0),(307,1,2,2,'2025-08-27','ACTIVE',20,0),(308,2,2,5,'2025-08-24','ACTIVE',20,0),(309,2,3,5,'2025-08-24','ACTIVE',20,0),(310,2,2,5,'2025-08-25','ACTIVE',20,0),(311,2,1,5,'2025-08-26','ACTIVE',20,0),(312,2,2,5,'2025-08-26','ACTIVE',20,0),(313,3,1,7,'2025-08-24','ACTIVE',20,0),(314,3,2,7,'2025-08-24','ACTIVE',20,0),(315,3,2,7,'2025-08-25','ACTIVE',20,0),(316,3,3,7,'2025-08-25','ACTIVE',20,0),(317,4,1,17,'2025-10-18','ACTIVE',15,0),(318,4,1,3,'2025-10-21','ACTIVE',15,0),(319,4,1,3,'2025-10-20','ACTIVE',15,1),(320,4,2,3,'2025-10-20','ACTIVE',15,0),(321,4,2,3,'2025-10-21','ACTIVE',15,0),(322,4,2,4,'2025-10-22','ACTIVE',15,0),(323,4,3,4,'2025-10-22','ACTIVE',15,0),(324,2,1,7,'2025-10-30','ACTIVE',15,0),(326,6,1,8,'2025-11-03','ACTIVE',15,1);
 /*!40000 ALTER TABLE `doctor_schedules` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -447,7 +448,7 @@ CREATE TABLE `doctors` (
   KEY `idx_doctor_specialty` (`specialty_id`),
   CONSTRAINT `doctors_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`),
   CONSTRAINT `doctors_ibfk_2` FOREIGN KEY (`specialty_id`) REFERENCES `specialty` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -456,7 +457,7 @@ CREATE TABLE `doctors` (
 
 LOCK TABLES `doctors` WRITE;
 /*!40000 ALTER TABLE `doctors` DISABLE KEYS */;
-INSERT INTO `doctors` VALUES (1,1,'DOC1',1,9,'Chứng chỉ Nội khoa','Bộ Y tế','2015-08-20'),(2,2,'DOC2',1,10,'Chứng chỉ Nội khoa','Bộ Y tế','2015-08-20'),(3,3,'DOC3',7,10,'Chứng chỉ Nội khoa','Bộ Y tế','2020-08-20'),(4,4,'DOC4',8,11,'Chứng chỉ Nội khoa','Bộ Y tế','2020-08-20'),(5,6,'DOC5',1,9,'Chứng chỉ Nội khoa','Bộ Y tế','2015-08-20');
+INSERT INTO `doctors` VALUES (1,1,'DOC1',1,9,'Chứng chỉ Nội khoa','Bộ Y tế','2015-08-20'),(2,2,'DOC2',1,10,'Chứng chỉ Nội khoa','Bộ Y tế','2015-08-20'),(3,3,'DOC3',7,10,'Chứng chỉ Nội khoa','Bộ Y tế','2020-08-20'),(4,4,'DOC4',8,11,'Chứng chỉ Nội khoa','Bộ Y tế','2020-08-20'),(5,6,'DOC5',1,9,'Chứng chỉ Nội khoa','Bộ Y tế','2015-08-20'),(6,17,'DOC6',10,7,'Chứng chỉ Nội khoa','Bộ Y tế','2018-10-12');
 /*!40000 ALTER TABLE `doctors` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -560,6 +561,39 @@ LOCK TABLES `icd10_catalog` WRITE;
 /*!40000 ALTER TABLE `icd10_catalog` DISABLE KEYS */;
 INSERT INTO `icd10_catalog` VALUES (1,'A09','Viêm dạ dày-ruột và viêm đại tràng do nhiễm trùng và không đặc hiệu','Infectious and unspecified gastroenteritis and colitis','I: A00-B99'),(2,'A00.9','Bệnh tả, không đặc hiệu','Cholera, unspecified','I: A00-B99'),(3,'B18.1','Viêm gan vi rút B mạn tính không có delta tác nhân','Chronic viral hepatitis B without delta-agent','I: A00-B99'),(4,'B24','Bệnh do vi rút gây suy giảm miễn dịch ở người (HIV) không đặc hiệu','Unspecified human immunodeficiency virus [HIV] disease','I: A00-B99'),(5,'B35.1','Nấm móng tay/chân','Tinea unguium','I: A00-B99'),(6,'B02.9','Bệnh Zona, không biến chứng','Zoster without complication','I: A00-B99'),(7,'C34.9','U ác tính của phế quản hoặc phổi, không đặc hiệu','Malignant neoplasm of bronchus or lung, unspecified','II: C00-D48'),(8,'C50.9','U ác tính của vú, không đặc hiệu','Malignant neoplasm of breast, unspecified','II: C00-D48'),(9,'D12.6','U lành tính của đại tràng, không đặc hiệu','Benign neoplasm of colon, unspecified','II: C00-D48'),(10,'D50.9','Thiếu máu do thiếu sắt, không đặc hiệu','Iron deficiency anaemia, unspecified','III: D50-D89'),(11,'D64.9','Thiếu máu, không đặc hiệu','Anaemia, unspecified','III: D50-D89'),(12,'D80.9','Suy giảm miễn dịch, không đặc hiệu','Immunodeficiency, unspecified','III: D50-D89'),(13,'E11.9','Đái tháo đường không phụ thuộc insulin, không biến chứng','Non-insulin-dependent diabetes mellitus without complications','IV: E00-E90'),(14,'E78.5','Tăng lipid máu, không đặc hiệu','Hyperlipidaemia, unspecified','IV: E00-E90'),(15,'E66.9','Béo phì, không đặc hiệu','Obesity, unspecified','IV: E00-E90'),(16,'E05.9','Nhiễm độc tuyến giáp, không đặc hiệu','Thyrotoxicosis, unspecified','IV: E00-E90'),(17,'F32.9','Giai đoạn trầm cảm, không đặc hiệu','Depressive episode, unspecified','V: F00-F99'),(18,'F41.9','Rối loạn lo âu, không đặc hiệu','Anxiety disorder, unspecified','V: F00-F99'),(19,'F10.2','Rối loạn tâm thần và hành vi do sử dụng rượu, phụ thuộc','Mental and behavioural disorders due to use of alcohol, dependence syndrome','V: F00-F99'),(20,'G43.9','Đau nửa đầu, không đặc hiệu','Migraine, unspecified','VI: G00-G99'),(21,'G20','Bệnh Parkinson','Parkinson\'s disease','VI: G00-G99'),(22,'G44.2','Đau đầu kiểu căng thẳng','Tension-type headache','VI: G00-G99'),(23,'G81.9','Liệt nửa người, không đặc hiệu','Hemiplegia, unspecified','VI: G00-G99'),(24,'I10','Tăng huyết áp vô căn (nguyên phát)','Essential (primary) hypertension','IX: I00-I99'),(25,'I25.1','Bệnh tim thiếu máu cục bộ mạn tính','Atherosclerotic heart disease','IX: I00-I99'),(26,'I64','Đột quỵ, không phân loại là xuất huyết hoặc nhồi máu','Stroke, not specified as haemorrhage or infarction','IX: I00-I99'),(27,'I50.0','Suy tim sung huyết','Congest heart failure','IX: I00-I99'),(28,'I83.9','Giãn tĩnh mạch chi dưới không có loét hoặc viêm','Varicose veins of lower extremities without ulcer or inflammation','IX: I00-I99'),(29,'J45.9','Hen phế quản, không đặc hiệu','Asthma, unspecified','X: J00-J99'),(30,'J44.9','Bệnh phổi tắc nghẽn mạn tính (COPD), không đặc hiệu','Chronic obstructive pulmonary disease, unspecified','X: J00-J99'),(31,'J02.9','Viêm họng cấp, không đặc hiệu','Acute pharyngitis, unspecified','X: J00-J99'),(32,'J18.9','Viêm phổi, không đặc hiệu','Pneumonia, unspecified','X: J00-J99'),(33,'K29.7','Viêm dạ dày, không đặc hiệu','Gastritis, unspecified','XI: K00-K93'),(34,'K35.9','Viêm ruột thừa cấp, không đặc hiệu','Acute appendicitis, unspecified','XI: K00-K93'),(35,'K74.6','Xơ gan, không đặc hiệu','Other and unspecified cirrhosis of liver','XI: K00-K93'),(36,'M54.5','Đau thắt lưng dưới','Low back pain','XIII: M00-M99'),(37,'M17.9','Thoái hóa khớp gối, không đặc hiệu','Osteoarthritis of knee, unspecified','XIII: M00-M99'),(38,'M79.1','Đau cơ','Myalgia','XIII: M00-M99'),(39,'M25.5','Đau khớp, không đặc hiệu','Pain in joint, unspecified','XIII: M00-M99'),(40,'M81.9','Loãng xương, không đặc hiệu','Osteoporosis, unspecified','XIII: M00-M99'),(41,'N18.9','Suy thận mạn, không đặc hiệu','Chronic kidney disease, unspecified','XIV: N00-N99'),(42,'N39.0','Nhiễm trùng đường tiết niệu, vị trí không đặc hiệu','Urinary tract infection, site unspecified','XIV: N00-N99'),(43,'Z00.0','Khám sức khỏe tổng quát','General medical examination','XXI: Z00-Z99'),(44,'K02.9','Sâu răng, không đặc hiệu','Dental caries, unspecified','XI: K00-K93'),(45,'K04.0','Viêm tủy răng','Pulpitis','XI: K00-K93'),(46,'K04.4','Viêm nha chu cấp tính','Acute apical periodontitis of pulpal origin','XI: K00-K93'),(47,'K05.1','Viêm lợi mạn tính','Chronic gingivitis','XI: K00-K93'),(48,'K05.3','Viêm nha chu mạn tính','Chronic periodontitis','XI: K00-K93'),(49,'K08.1','Mất răng do tai nạn, nhổ răng hoặc do bệnh quanh răng','Loss of teeth due to accident, extraction or local periodontal disease','XI: K00-K93'),(50,'K12.0','Viêm lợi/miệng áp tơ tái diễn','Recurrent oral aphthae','XI: K00-K93'),(51,'K00.0','Thiếu răng (Mất răng bẩm sinh)','Anodontia','XI: K00-K93'),(52,'K07.3','Bất thường vị trí răng, không đặc hiệu','Anomalies of tooth position, unspecified','XI: K00-K93'),(53,'K06.9','Rối loạn lợi và xương ổ răng mất răng, không đặc hiệu','Disorder of gingiva and edentulous alveolar ridge, unspecified','XI: K00-K93'),(54,'K04.7','Áp xe quanh chóp không có lỗ rò','Periapical abscess without sinus','XI: K00-K93'),(55,'K01.1','Răng kẹt hoặc răng mọc ngầm','Impacted teeth','XI: K00-K93'),(56,'K03.6','Mòn răng (Bào mòn răng)','Attrition and abrasion of teeth','XI: K00-K93'),(57,'K11.2','Viêm tuyến nước bọt','Sialadenitis','XI: K00-K93'),(58,'K13.7','Các tổn thương và bệnh lý khác của niêm mạc miệng, không đặc hiệu','Other and unspecified lesions of oral mucosa','XI: K00-K93');
 /*!40000 ALTER TABLE `icd10_catalog` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `imaging_result_files`
+--
+
+DROP TABLE IF EXISTS `imaging_result_files`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `imaging_result_files` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `imaging_test_id` int DEFAULT NULL,
+  `file_url` varchar(255) NOT NULL,
+  `file_type` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL COMMENT 'Mô tả hình ảnh Ví dụ: "Ảnh X-quang thẳng", "Lát cắt T1")',
+  `is_main_image` tinyint(1) DEFAULT NULL COMMENT 'Đánh dấu đây là hình ảnh chính',
+  `name` varchar(255) DEFAULT NULL,
+  `imaging_tests_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UKlsmdkp9aiovlxjgy6r3296urd` (`imaging_tests_id`),
+  KEY `imaging_test_id` (`imaging_test_id`),
+  CONSTRAINT `FKpqfvemaaxx0o7iq7jh81n4h74` FOREIGN KEY (`imaging_tests_id`) REFERENCES `imaging_tests` (`id`),
+  CONSTRAINT `imaging_result_files_ibfk_1` FOREIGN KEY (`imaging_test_id`) REFERENCES `imaging_tests` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Danh sách kết quả của 1 chẩn đoán';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `imaging_result_files`
+--
+
+LOCK TABLES `imaging_result_files` WRITE;
+/*!40000 ALTER TABLE `imaging_result_files` DISABLE KEYS */;
+/*!40000 ALTER TABLE `imaging_result_files` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -754,10 +788,10 @@ DROP TABLE IF EXISTS `lab_parameters`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `lab_parameters` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `unit` varchar(20) NOT NULL,
-  `min_reference` varchar(50) NOT NULL,
-  `max_reference` varchar(50) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `unit` varchar(255) DEFAULT NULL,
+  `min_reference` varchar(255) DEFAULT NULL,
+  `max_reference` varchar(255) DEFAULT NULL,
   `test_type_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
@@ -834,11 +868,11 @@ CREATE TABLE `lab_test_details` (
   `id` int NOT NULL AUTO_INCREMENT,
   `lab_test_id` int NOT NULL,
   `test_parameter_id` int NOT NULL,
-  `result_value` varchar(50) NOT NULL,
-  `parameter_name` varchar(100) NOT NULL,
-  `unit` varchar(20) DEFAULT NULL,
-  `min_reference_range` varchar(50) DEFAULT NULL,
-  `max_reference_range` varchar(50) DEFAULT NULL,
+  `result_value` varchar(255) DEFAULT NULL,
+  `parameter_name` varchar(255) DEFAULT NULL,
+  `unit` varchar(255) DEFAULT NULL,
+  `min_reference_range` varchar(255) DEFAULT NULL,
+  `max_reference_range` varchar(255) DEFAULT NULL,
   `is_abnormal` tinyint(1) DEFAULT '0',
   `notes` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -846,7 +880,7 @@ CREATE TABLE `lab_test_details` (
   KEY `test_parameter_id` (`test_parameter_id`),
   CONSTRAINT `lab_test_details_ibfk_1` FOREIGN KEY (`lab_test_id`) REFERENCES `lab_tests` (`id`),
   CONSTRAINT `lab_test_details_ibfk_2` FOREIGN KEY (`test_parameter_id`) REFERENCES `lab_parameters` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -855,6 +889,7 @@ CREATE TABLE `lab_test_details` (
 
 LOCK TABLES `lab_test_details` WRITE;
 /*!40000 ALTER TABLE `lab_test_details` DISABLE KEYS */;
+INSERT INTO `lab_test_details` VALUES (15,3,9,'8.5','Glucose','mmol/L','3.9','6.4',1,'Tăng cao, nghi ngờ Đái tháo đường.'),(16,3,10,'55','ALT (SGPT)','U/L','0','40',1,'Men gan tăng nhẹ.'),(17,3,13,'6.1','Cholesterol','mmol/L','0','5.2',1,'Tăng cao.'),(18,3,19,'2.5','Triglycerides','mmol/L','0','1.7',1,'Tăng cao.'),(19,3,21,'4.2','LDL-C','mmol/L','0','3.37',1,'Tăng cao.'),(20,3,22,'8','CRP (Định lượng)','mg/L','0','5',1,'Tăng nhẹ, có thể do viêm nhiễm.'),(21,3,11,'30','AST (SGOT)','U/L','0','40',0,NULL),(22,3,12,'88','Creatinine','umol/L','60','110',0,NULL),(23,3,14,'5.5','Urea','mmol/L','2.5','7.5',0,NULL),(24,3,15,'350','Acid Uric','umol/L','140','420',0,NULL),(25,3,16,'72','Total Protein','g/L','60','80',0,NULL),(26,3,17,'40','Albumin','g/L','35','50',0,NULL),(27,3,18,'15','Bilirubin T.T','umol/L','0','21',0,NULL),(28,3,20,'1.1','HDL-C','mmol/L','0.9','3.0',0,NULL);
 /*!40000 ALTER TABLE `lab_test_details` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -887,7 +922,7 @@ CREATE TABLE `lab_tests` (
   CONSTRAINT `lab_tests_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
   CONSTRAINT `lab_tests_ibfk_4` FOREIGN KEY (`lab_staff_id`) REFERENCES `lab_staff` (`id`),
   CONSTRAINT `lab_tests_ibfk_5` FOREIGN KEY (`test_type_id`) REFERENCES `testtypes` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -896,6 +931,7 @@ CREATE TABLE `lab_tests` (
 
 LOCK TABLES `lab_tests` WRITE;
 /*!40000 ALTER TABLE `lab_tests` DISABLE KEYS */;
+INSERT INTO `lab_tests` VALUES (3,6,NULL,6,2,2,'2025-11-01 04:39:09','2025-11-01 05:00:09',NULL,'COMPLETED'),(4,6,NULL,6,NULL,4,'2025-11-01 04:39:09',NULL,NULL,'IN_PROGRESS');
 /*!40000 ALTER TABLE `lab_tests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -917,7 +953,7 @@ CREATE TABLE `medical_record_icd10` (
   KEY `icd10_catalog_id` (`icd10_catalog_id`),
   CONSTRAINT `medical_record_icd10_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`) ON DELETE CASCADE,
   CONSTRAINT `medical_record_icd10_ibfk_2` FOREIGN KEY (`icd10_catalog_id`) REFERENCES `icd10_catalog` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Liên kết chẩn đoán ICD-10 với hồ sơ bệnh án';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Liên kết chẩn đoán ICD-10 với hồ sơ bệnh án';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -926,7 +962,7 @@ CREATE TABLE `medical_record_icd10` (
 
 LOCK TABLES `medical_record_icd10` WRITE;
 /*!40000 ALTER TABLE `medical_record_icd10` DISABLE KEYS */;
-INSERT INTO `medical_record_icd10` VALUES (5,4,44,1,0),(6,4,45,0,1);
+INSERT INTO `medical_record_icd10` VALUES (5,4,44,1,0),(6,4,45,0,1),(10,6,13,0,0);
 /*!40000 ALTER TABLE `medical_record_icd10` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -956,7 +992,7 @@ CREATE TABLE `medical_records` (
   CONSTRAINT `FK_mr_ap` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`id`),
   CONSTRAINT `medical_records_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`),
   CONSTRAINT `medical_records_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -965,7 +1001,7 @@ CREATE TABLE `medical_records` (
 
 LOCK TABLES `medical_records` WRITE;
 /*!40000 ALTER TABLE `medical_records` DISABLE KEYS */;
-INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3'),(4,1,4,'2025-10-23',1,'đau răng do sâu',14,'Đau răng hàm','Đau răng do sâu','PENDING_POSTPAYMENT','MR4'),(5,4,4,'2025-10-31',1,NULL,13,'Đau răng',NULL,'WAITING','MR5');
+INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3'),(4,1,4,'2025-10-23',1,'đau răng do sâu',14,'Đau răng hàm','Đau răng do sâu','PENDING_POSTPAYMENT','MR4'),(5,4,4,'2025-10-31',1,NULL,13,'Đau răng',NULL,'WAITING','MR5'),(6,4,6,'2025-11-01',1,'Nghi ngờ Đái tháo đường',15,'Khát và Uống nhiều, Đi tiểu nhiều','Bệnh nhân có tứ chứng kinh điển (đa khát, đa niệu), sụt 5kg/tháng. Đề nghị xét nghiệm Glucose máu lúc đói và HbA1c khẩn.','PENDING_PREPAYMENT','MR6');
 /*!40000 ALTER TABLE `medical_records` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1230,7 +1266,7 @@ CREATE TABLE `paymentdetails` (
   PRIMARY KEY (`id`),
   KEY `payment_id` (`payment_id`),
   CONSTRAINT `paymentdetails_ibfk_1` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1239,7 +1275,7 @@ CREATE TABLE `paymentdetails` (
 
 LOCK TABLES `paymentdetails` WRITE;
 /*!40000 ALTER TABLE `paymentdetails` DISABLE KEYS */;
-INSERT INTO `paymentdetails` VALUES (2,2,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-27 09:35:54'),(4,2,'IMAGING_TEST',2,'X-quang răng',200000.00,140000.00,60000.00,'2025-10-27 09:54:16'),(5,3,'PRESCRIPTION',3,'Đơn thuốc ngày 2025-10-30T16:23:15.094107',34000.00,23800.00,10200.00,'2025-10-30 15:51:22'),(6,3,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-30 15:51:22');
+INSERT INTO `paymentdetails` VALUES (2,2,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-27 09:35:54'),(4,2,'IMAGING_TEST',2,'X-quang răng',200000.00,140000.00,60000.00,'2025-10-27 09:54:16'),(5,3,'PRESCRIPTION',3,'Đơn thuốc ngày 2025-10-30T16:23:15.094107',34000.00,23800.00,10200.00,'2025-10-30 15:51:22'),(6,3,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-30 15:51:22'),(7,4,'LAB_TEST',3,'Xét nghiệm sinh hóa',200000.00,0.00,200000.00,'2025-11-01 04:39:09'),(8,4,'LAB_TEST',4,'Xét nghiệm Hóa sinh/Tế bào nước tiểu',120000.00,0.00,120000.00,'2025-11-01 04:39:09');
 /*!40000 ALTER TABLE `paymentdetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1266,7 +1302,7 @@ CREATE TABLE `payments` (
   KEY `cashier_id` (`cashier_id`),
   CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `medical_records` (`id`),
   CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`cashier_id`) REFERENCES `cashier` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1275,7 +1311,7 @@ CREATE TABLE `payments` (
 
 LOCK TABLES `payments` WRITE;
 /*!40000 ALTER TABLE `payments` DISABLE KEYS */;
-INSERT INTO `payments` VALUES (2,4,NULL,450000.00,NULL,NULL,315000.00,135000.00,'PENDING_PAYMENT','2025-10-27 09:35:54'),(3,4,NULL,284000.00,NULL,NULL,198800.00,85200.00,'PENDING_PAYMENT','2025-10-30 15:51:22');
+INSERT INTO `payments` VALUES (2,4,NULL,450000.00,NULL,NULL,315000.00,135000.00,'PENDING_PAYMENT','2025-10-27 09:35:54'),(3,4,NULL,284000.00,NULL,NULL,198800.00,85200.00,'CANCELLED','2025-10-30 15:51:22'),(4,6,1,320000.00,'2025-11-01 04:50:09','cash',0.00,320000.00,'PAID','2025-11-01 04:39:09');
 /*!40000 ALTER TABLE `payments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1347,7 +1383,7 @@ CREATE TABLE `prescriptiondetails` (
   KEY `medicine_id` (`medicine_id`),
   CONSTRAINT `prescriptiondetails_ibfk_1` FOREIGN KEY (`prescription_id`) REFERENCES `prescriptions` (`id`),
   CONSTRAINT `prescriptiondetails_ibfk_2` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1356,7 +1392,7 @@ CREATE TABLE `prescriptiondetails` (
 
 LOCK TABLES `prescriptiondetails` WRITE;
 /*!40000 ALTER TABLE `prescriptiondetails` DISABLE KEYS */;
-INSERT INTO `prescriptiondetails` VALUES (1,1,1,4,'2 lần/ngày','Sau bữa ăn',NULL,NULL),(2,1,5,2,'1 lần/ngày','Trước khi ngủ',NULL,NULL),(3,2,5,9,'3 lần/ngày','Sau bữa ăn',NULL,NULL),(4,2,8,6,'2 lần/ngày','Trước khi ăn',NULL,NULL),(5,2,10,3,'1 lần/ngày','Sau khi ăn bữa trưa',NULL,NULL),(10,3,1,8,'Uống 1 viên x 2 lần/ngày','',1,2),(11,3,2,12,'Uống 1 viên x 3 lần/ngày','',0,3);
+INSERT INTO `prescriptiondetails` VALUES (1,1,1,4,'2 lần/ngày','Sau bữa ăn',NULL,NULL),(2,1,5,2,'1 lần/ngày','Trước khi ngủ',NULL,NULL),(3,2,5,9,'3 lần/ngày','Sau bữa ăn',NULL,NULL),(4,2,8,6,'2 lần/ngày','Trước khi ăn',NULL,NULL),(5,2,10,3,'1 lần/ngày','Sau khi ăn bữa trưa',NULL,NULL),(12,3,1,6,'Uống 1 viên x 2 lần/ngày','',1,2),(13,3,2,9,'Uống 1 viên x 3 lần/ngày','',0,3),(14,4,1,8,'Uống 1 viên x 2 lần/ngày','',1,2),(15,4,2,12,'Uống 1 viên x 3 lần/ngày','',0,3);
 /*!40000 ALTER TABLE `prescriptiondetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1386,7 +1422,7 @@ CREATE TABLE `prescriptions` (
   CONSTRAINT `prescriptions_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
   CONSTRAINT `prescriptions_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
   CONSTRAINT `prescriptions_ibfk_4` FOREIGN KEY (`pharmacist_id`) REFERENCES `pharmacy_staff` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1395,7 +1431,7 @@ CREATE TABLE `prescriptions` (
 
 LOCK TABLES `prescriptions` WRITE;
 /*!40000 ALTER TABLE `prescriptions` DISABLE KEYS */;
-INSERT INTO `prescriptions` VALUES (1,1,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(2,2,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(3,4,NULL,4,NULL,'PENDING_PAYMENT','2025-10-30 09:23:15.094107',4,'PRE3');
+INSERT INTO `prescriptions` VALUES (1,1,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(2,2,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(3,4,NULL,4,NULL,'CANCELED','2025-10-30 09:23:15.094107',3,'PRE3'),(4,4,NULL,4,NULL,'DRAFT','2025-10-31 04:49:57.983889',4,'PRE4');
 /*!40000 ALTER TABLE `prescriptions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1491,7 +1527,7 @@ CREATE TABLE `resultexamination` (
   CONSTRAINT `resultexamination_ibfk_2` FOREIGN KEY (`inpatient_record_id`) REFERENCES `inpatient_records` (`id`),
   CONSTRAINT `resultexamination_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`),
   CONSTRAINT `resultexamination_ibfk_4` FOREIGN KEY (`examination_id`) REFERENCES `medicalexamination` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1500,7 +1536,7 @@ CREATE TABLE `resultexamination` (
 
 LOCK TABLES `resultexamination` WRITE;
 /*!40000 ALTER TABLE `resultexamination` DISABLE KEYS */;
-INSERT INTO `resultexamination` VALUES (4,4,NULL,4,2,NULL,'PENDING_PAYMENT','2025-10-27 09:35:53.888805',NULL);
+INSERT INTO `resultexamination` VALUES (4,4,NULL,4,2,NULL,'PENDING_PAYMENT','2025-10-27 09:35:53.888805',NULL),(5,6,NULL,6,1,NULL,'IN_PROGRESS','2025-11-01 04:33:55.806456',NULL);
 /*!40000 ALTER TABLE `resultexamination` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1582,7 +1618,7 @@ CREATE TABLE `schedule_slots` (
   KEY `idx_slot_sched` (`doctor_schedule_id`),
   KEY `idx_slot_booked` (`is_booked`),
   CONSTRAINT `fk_slot_schedule` FOREIGN KEY (`doctor_schedule_id`) REFERENCES `doctor_schedules` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=172 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1591,7 +1627,7 @@ CREATE TABLE `schedule_slots` (
 
 LOCK TABLES `schedule_slots` WRITE;
 /*!40000 ALTER TABLE `schedule_slots` DISABLE KEYS */;
-INSERT INTO `schedule_slots` VALUES (1,2,'08:00:00','08:20:00',0),(2,2,'08:20:00','08:40:00',0),(3,2,'08:40:00','09:00:00',1),(4,2,'09:00:00','09:20:00',0),(5,2,'09:20:00','09:40:00',0),(6,2,'09:40:00','10:00:00',0),(7,2,'10:00:00','10:20:00',0),(8,2,'10:20:00','10:40:00',0),(9,2,'10:40:00','11:00:00',0),(10,2,'11:00:00','11:20:00',0),(11,2,'11:20:00','11:40:00',0),(12,2,'11:40:00','12:00:00',0),(13,152,'18:00:00','18:20:00',0),(14,152,'18:20:00','18:40:00',0),(15,152,'18:40:00','19:00:00',1),(16,152,'19:00:00','19:20:00',0),(17,152,'19:20:00','19:40:00',0),(18,152,'19:40:00','20:00:00',0),(19,152,'20:00:00','20:20:00',0),(20,152,'20:20:00','20:40:00',0),(21,152,'20:40:00','21:00:00',0),(22,253,'08:00:00','08:20:00',0),(23,253,'08:20:00','08:40:00',0),(24,253,'08:40:00','09:00:00',0),(25,253,'09:00:00','09:20:00',0),(26,253,'09:20:00','09:40:00',0),(27,253,'09:40:00','10:00:00',0),(28,253,'10:00:00','10:20:00',1),(29,253,'10:20:00','10:40:00',0),(30,253,'10:40:00','11:00:00',0),(31,253,'11:00:00','11:20:00',0),(32,253,'11:20:00','11:40:00',0),(33,253,'11:40:00','12:00:00',0),(34,316,'18:00:00','18:20:00',0),(35,316,'18:20:00','18:40:00',0),(36,316,'18:40:00','19:00:00',0),(37,316,'19:00:00','19:20:00',1),(38,316,'19:20:00','19:40:00',0),(39,316,'19:40:00','20:00:00',0),(40,316,'20:00:00','20:20:00',0),(41,316,'20:20:00','20:40:00',0),(42,316,'20:40:00','21:00:00',0),(43,315,'13:00:00','13:20:00',0),(44,315,'13:20:00','13:40:00',0),(45,315,'13:40:00','14:00:00',1),(46,315,'14:00:00','14:20:00',0),(47,315,'14:20:00','14:40:00',0),(48,315,'14:40:00','15:00:00',0),(49,315,'15:00:00','15:20:00',0),(50,315,'15:20:00','15:40:00',0),(51,315,'15:40:00','16:00:00',0),(52,315,'16:00:00','16:20:00',0),(53,315,'16:20:00','16:40:00',0),(54,315,'16:40:00','17:00:00',0),(55,306,'08:00:00','08:20:00',0),(56,306,'08:20:00','08:40:00',0),(57,306,'08:40:00','09:00:00',0),(58,306,'09:00:00','09:20:00',0),(59,306,'09:20:00','09:40:00',0),(60,306,'09:40:00','10:00:00',0),(61,306,'10:00:00','10:20:00',1),(62,306,'10:20:00','10:40:00',0),(63,306,'10:40:00','11:00:00',0),(64,306,'11:00:00','11:20:00',0),(65,306,'11:20:00','11:40:00',0),(66,306,'11:40:00','12:00:00',0),(67,3,'13:00:00','13:20:00',1),(68,3,'13:20:00','13:40:00',0),(69,3,'13:40:00','14:00:00',0),(70,3,'14:00:00','14:20:00',0),(71,3,'14:20:00','14:40:00',0),(72,3,'14:40:00','15:00:00',0),(73,3,'15:00:00','15:20:00',0),(74,3,'15:20:00','15:40:00',0),(75,3,'15:40:00','16:00:00',0),(76,3,'16:00:00','16:20:00',0),(77,3,'16:20:00','16:40:00',0),(78,3,'16:40:00','17:00:00',0),(79,317,'08:00:00','08:20:00',0),(80,317,'08:20:00','08:40:00',0),(81,317,'08:40:00','09:00:00',0),(82,317,'09:00:00','09:20:00',0),(83,317,'09:20:00','09:40:00',0),(84,317,'09:40:00','10:00:00',0),(85,317,'10:00:00','10:20:00',0),(86,317,'10:20:00','10:40:00',0),(87,317,'10:40:00','11:00:00',0),(88,317,'11:00:00','11:20:00',0),(89,317,'11:20:00','11:40:00',0),(90,317,'11:40:00','12:00:00',0),(91,318,'08:00:00','08:20:00',0),(92,318,'08:20:00','08:40:00',0),(93,318,'08:40:00','09:00:00',0),(94,318,'09:00:00','09:20:00',0),(95,318,'09:20:00','09:40:00',0),(96,318,'09:40:00','10:00:00',0),(97,318,'10:00:00','10:20:00',0),(98,318,'10:20:00','10:40:00',0),(99,318,'10:40:00','11:00:00',0),(100,318,'11:00:00','11:20:00',0),(101,318,'11:20:00','11:40:00',0),(102,318,'11:40:00','12:00:00',0),(103,319,'08:00:00','08:20:00',0),(104,319,'08:20:00','08:40:00',1),(105,319,'08:40:00','09:00:00',0),(106,319,'09:00:00','09:20:00',0),(107,319,'09:20:00','09:40:00',0),(108,319,'09:40:00','10:00:00',0),(109,319,'10:00:00','10:20:00',0),(110,319,'10:20:00','10:40:00',0),(111,319,'10:40:00','11:00:00',0),(112,319,'11:00:00','11:20:00',0),(113,319,'11:20:00','11:40:00',0),(114,319,'11:40:00','12:00:00',0),(115,320,'13:00:00','13:20:00',0),(116,320,'13:20:00','13:40:00',0),(117,320,'13:40:00','14:00:00',0),(118,320,'14:00:00','14:20:00',0),(119,320,'14:20:00','14:40:00',0),(120,320,'14:40:00','15:00:00',0),(121,320,'15:00:00','15:20:00',0),(122,320,'15:20:00','15:40:00',0),(123,320,'15:40:00','16:00:00',0),(124,320,'16:00:00','16:20:00',0),(125,320,'16:20:00','16:40:00',0),(126,320,'16:40:00','17:00:00',0),(127,321,'13:00:00','13:20:00',0),(128,321,'13:20:00','13:40:00',0),(129,321,'13:40:00','14:00:00',0),(130,321,'14:00:00','14:20:00',0),(131,321,'14:20:00','14:40:00',0),(132,321,'14:40:00','15:00:00',0),(133,321,'15:00:00','15:20:00',0),(134,321,'15:20:00','15:40:00',0),(135,321,'15:40:00','16:00:00',0),(136,321,'16:00:00','16:20:00',0),(137,321,'16:20:00','16:40:00',0),(138,321,'16:40:00','17:00:00',0),(139,322,'13:00:00','13:20:00',0),(140,322,'13:20:00','13:40:00',0),(141,322,'13:40:00','14:00:00',0),(142,322,'14:00:00','14:20:00',0),(143,322,'14:20:00','14:40:00',0),(144,322,'14:40:00','15:00:00',0),(145,322,'15:00:00','15:20:00',0),(146,322,'15:20:00','15:40:00',0),(147,322,'15:40:00','16:00:00',0),(148,322,'16:00:00','16:20:00',0),(149,322,'16:20:00','16:40:00',0),(150,322,'16:40:00','17:00:00',0),(151,323,'18:00:00','18:20:00',0),(152,323,'18:20:00','18:40:00',0),(153,323,'18:40:00','19:00:00',0),(154,323,'19:00:00','19:20:00',0),(155,323,'19:20:00','19:40:00',0),(156,323,'19:40:00','20:00:00',0),(157,323,'20:00:00','20:20:00',0),(158,323,'20:20:00','20:40:00',0),(159,323,'20:40:00','21:00:00',0),(160,324,'08:00:00','08:20:00',0),(161,324,'08:20:00','08:40:00',0),(162,324,'08:40:00','09:00:00',0),(163,324,'09:00:00','09:20:00',0),(164,324,'09:20:00','09:40:00',0),(165,324,'09:40:00','10:00:00',0),(166,324,'10:00:00','10:20:00',0),(167,324,'10:20:00','10:40:00',0),(168,324,'10:40:00','11:00:00',0),(169,324,'11:00:00','11:20:00',0),(170,324,'11:20:00','11:40:00',0),(171,324,'11:40:00','12:00:00',0);
+INSERT INTO `schedule_slots` VALUES (1,2,'08:00:00','08:20:00',0),(2,2,'08:20:00','08:40:00',0),(3,2,'08:40:00','09:00:00',1),(4,2,'09:00:00','09:20:00',0),(5,2,'09:20:00','09:40:00',0),(6,2,'09:40:00','10:00:00',0),(7,2,'10:00:00','10:20:00',0),(8,2,'10:20:00','10:40:00',0),(9,2,'10:40:00','11:00:00',0),(10,2,'11:00:00','11:20:00',0),(11,2,'11:20:00','11:40:00',0),(12,2,'11:40:00','12:00:00',0),(13,152,'18:00:00','18:20:00',0),(14,152,'18:20:00','18:40:00',0),(15,152,'18:40:00','19:00:00',1),(16,152,'19:00:00','19:20:00',0),(17,152,'19:20:00','19:40:00',0),(18,152,'19:40:00','20:00:00',0),(19,152,'20:00:00','20:20:00',0),(20,152,'20:20:00','20:40:00',0),(21,152,'20:40:00','21:00:00',0),(22,253,'08:00:00','08:20:00',0),(23,253,'08:20:00','08:40:00',0),(24,253,'08:40:00','09:00:00',0),(25,253,'09:00:00','09:20:00',0),(26,253,'09:20:00','09:40:00',0),(27,253,'09:40:00','10:00:00',0),(28,253,'10:00:00','10:20:00',1),(29,253,'10:20:00','10:40:00',0),(30,253,'10:40:00','11:00:00',0),(31,253,'11:00:00','11:20:00',0),(32,253,'11:20:00','11:40:00',0),(33,253,'11:40:00','12:00:00',0),(34,316,'18:00:00','18:20:00',0),(35,316,'18:20:00','18:40:00',0),(36,316,'18:40:00','19:00:00',0),(37,316,'19:00:00','19:20:00',1),(38,316,'19:20:00','19:40:00',0),(39,316,'19:40:00','20:00:00',0),(40,316,'20:00:00','20:20:00',0),(41,316,'20:20:00','20:40:00',0),(42,316,'20:40:00','21:00:00',0),(43,315,'13:00:00','13:20:00',0),(44,315,'13:20:00','13:40:00',0),(45,315,'13:40:00','14:00:00',1),(46,315,'14:00:00','14:20:00',0),(47,315,'14:20:00','14:40:00',0),(48,315,'14:40:00','15:00:00',0),(49,315,'15:00:00','15:20:00',0),(50,315,'15:20:00','15:40:00',0),(51,315,'15:40:00','16:00:00',0),(52,315,'16:00:00','16:20:00',0),(53,315,'16:20:00','16:40:00',0),(54,315,'16:40:00','17:00:00',0),(55,306,'08:00:00','08:20:00',0),(56,306,'08:20:00','08:40:00',0),(57,306,'08:40:00','09:00:00',0),(58,306,'09:00:00','09:20:00',0),(59,306,'09:20:00','09:40:00',0),(60,306,'09:40:00','10:00:00',0),(61,306,'10:00:00','10:20:00',1),(62,306,'10:20:00','10:40:00',0),(63,306,'10:40:00','11:00:00',0),(64,306,'11:00:00','11:20:00',0),(65,306,'11:20:00','11:40:00',0),(66,306,'11:40:00','12:00:00',0),(67,3,'13:00:00','13:20:00',1),(68,3,'13:20:00','13:40:00',0),(69,3,'13:40:00','14:00:00',0),(70,3,'14:00:00','14:20:00',0),(71,3,'14:20:00','14:40:00',0),(72,3,'14:40:00','15:00:00',0),(73,3,'15:00:00','15:20:00',0),(74,3,'15:20:00','15:40:00',0),(75,3,'15:40:00','16:00:00',0),(76,3,'16:00:00','16:20:00',0),(77,3,'16:20:00','16:40:00',0),(78,3,'16:40:00','17:00:00',0),(79,317,'08:00:00','08:20:00',0),(80,317,'08:20:00','08:40:00',0),(81,317,'08:40:00','09:00:00',0),(82,317,'09:00:00','09:20:00',0),(83,317,'09:20:00','09:40:00',0),(84,317,'09:40:00','10:00:00',0),(85,317,'10:00:00','10:20:00',0),(86,317,'10:20:00','10:40:00',0),(87,317,'10:40:00','11:00:00',0),(88,317,'11:00:00','11:20:00',0),(89,317,'11:20:00','11:40:00',0),(90,317,'11:40:00','12:00:00',0),(91,318,'08:00:00','08:20:00',0),(92,318,'08:20:00','08:40:00',0),(93,318,'08:40:00','09:00:00',0),(94,318,'09:00:00','09:20:00',0),(95,318,'09:20:00','09:40:00',0),(96,318,'09:40:00','10:00:00',0),(97,318,'10:00:00','10:20:00',0),(98,318,'10:20:00','10:40:00',0),(99,318,'10:40:00','11:00:00',0),(100,318,'11:00:00','11:20:00',0),(101,318,'11:20:00','11:40:00',0),(102,318,'11:40:00','12:00:00',0),(103,319,'08:00:00','08:20:00',0),(104,319,'08:20:00','08:40:00',1),(105,319,'08:40:00','09:00:00',0),(106,319,'09:00:00','09:20:00',0),(107,319,'09:20:00','09:40:00',0),(108,319,'09:40:00','10:00:00',0),(109,319,'10:00:00','10:20:00',0),(110,319,'10:20:00','10:40:00',0),(111,319,'10:40:00','11:00:00',0),(112,319,'11:00:00','11:20:00',0),(113,319,'11:20:00','11:40:00',0),(114,319,'11:40:00','12:00:00',0),(115,320,'13:00:00','13:20:00',0),(116,320,'13:20:00','13:40:00',0),(117,320,'13:40:00','14:00:00',0),(118,320,'14:00:00','14:20:00',0),(119,320,'14:20:00','14:40:00',0),(120,320,'14:40:00','15:00:00',0),(121,320,'15:00:00','15:20:00',0),(122,320,'15:20:00','15:40:00',0),(123,320,'15:40:00','16:00:00',0),(124,320,'16:00:00','16:20:00',0),(125,320,'16:20:00','16:40:00',0),(126,320,'16:40:00','17:00:00',0),(127,321,'13:00:00','13:20:00',0),(128,321,'13:20:00','13:40:00',0),(129,321,'13:40:00','14:00:00',0),(130,321,'14:00:00','14:20:00',0),(131,321,'14:20:00','14:40:00',0),(132,321,'14:40:00','15:00:00',0),(133,321,'15:00:00','15:20:00',0),(134,321,'15:20:00','15:40:00',0),(135,321,'15:40:00','16:00:00',0),(136,321,'16:00:00','16:20:00',0),(137,321,'16:20:00','16:40:00',0),(138,321,'16:40:00','17:00:00',0),(139,322,'13:00:00','13:20:00',0),(140,322,'13:20:00','13:40:00',0),(141,322,'13:40:00','14:00:00',0),(142,322,'14:00:00','14:20:00',0),(143,322,'14:20:00','14:40:00',0),(144,322,'14:40:00','15:00:00',0),(145,322,'15:00:00','15:20:00',0),(146,322,'15:20:00','15:40:00',0),(147,322,'15:40:00','16:00:00',0),(148,322,'16:00:00','16:20:00',0),(149,322,'16:20:00','16:40:00',0),(150,322,'16:40:00','17:00:00',0),(151,323,'18:00:00','18:20:00',0),(152,323,'18:20:00','18:40:00',0),(153,323,'18:40:00','19:00:00',0),(154,323,'19:00:00','19:20:00',0),(155,323,'19:20:00','19:40:00',0),(156,323,'19:40:00','20:00:00',0),(157,323,'20:00:00','20:20:00',0),(158,323,'20:20:00','20:40:00',0),(159,323,'20:40:00','21:00:00',0),(160,324,'08:00:00','08:20:00',0),(161,324,'08:20:00','08:40:00',0),(162,324,'08:40:00','09:00:00',0),(163,324,'09:00:00','09:20:00',0),(164,324,'09:20:00','09:40:00',0),(165,324,'09:40:00','10:00:00',0),(166,324,'10:00:00','10:20:00',0),(167,324,'10:20:00','10:40:00',0),(168,324,'10:40:00','11:00:00',0),(169,324,'11:00:00','11:20:00',0),(170,324,'11:20:00','11:40:00',0),(171,324,'11:40:00','12:00:00',0),(184,326,'08:00:00','08:20:00',0),(185,326,'08:20:00','08:40:00',1),(186,326,'08:40:00','09:00:00',0),(187,326,'09:00:00','09:20:00',0),(188,326,'09:20:00','09:40:00',0),(189,326,'09:40:00','10:00:00',0),(190,326,'10:00:00','10:20:00',0),(191,326,'10:20:00','10:40:00',0),(192,326,'10:40:00','11:00:00',0),(193,326,'11:00:00','11:20:00',0),(194,326,'11:20:00','11:40:00',0),(195,326,'11:40:00','12:00:00',0);
 /*!40000 ALTER TABLE `schedule_slots` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1637,7 +1673,7 @@ CREATE TABLE `specialty` (
   PRIMARY KEY (`id`),
   KEY `department_id` (`department_id`),
   CONSTRAINT `specialty_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1646,7 +1682,7 @@ CREATE TABLE `specialty` (
 
 LOCK TABLES `specialty` WRITE;
 /*!40000 ALTER TABLE `specialty` DISABLE KEYS */;
-INSERT INTO `specialty` VALUES (1,1,'Tim mạch','Điều trị các bệnh về tim','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//tim_mach.jpg'),(2,1,'Hô hấp','Chuyên điều trị các bệnh liên quan đến phổi','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//ho_hap.jpg'),(3,2,'Ngoại tổng quát','Phẫu thuật cơ bản','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//Ngoai_tong_quat.jpg'),(4,3,'Nhi hô hấp','Chăm sóc bệnh hô hấp cho trẻ','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//tre_em.png'),(6,2,'Chấn thương chỉnh hình','Điều trị các chấn thương xương khớp','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//chan_thuong_chinh_hinh.jpg'),(7,5,'Thai sản','','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//thai_san.jpg'),(8,2,'Răng hàm mặt','','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//rang_ham_mat.jpg'),(9,2,'Da liễu','','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//Da_lieu.jpg');
+INSERT INTO `specialty` VALUES (1,1,'Tim mạch','Điều trị các bệnh về tim','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//tim_mach.jpg'),(2,1,'Hô hấp','Chuyên điều trị các bệnh liên quan đến phổi','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//ho_hap.jpg'),(3,2,'Ngoại tổng quát','Phẫu thuật cơ bản','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//Ngoai_tong_quat.jpg'),(4,3,'Nhi hô hấp','Chăm sóc bệnh hô hấp cho trẻ','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//tre_em.png'),(6,2,'Chấn thương chỉnh hình','Điều trị các chấn thương xương khớp','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//chan_thuong_chinh_hinh.jpg'),(7,5,'Thai sản','','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//thai_san.jpg'),(8,2,'Răng hàm mặt','','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//rang_ham_mat.jpg'),(9,2,'Da liễu','','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//Da_lieu.jpg'),(10,1,'Nội tiết','Chuyên chẩn đoán và điều trị các bệnh liên quan đến hormone và các tuyến nội tiết như tuyến giáp, tuyến yên, tuyến thượng thận, tuyến tụy (tiểu đường), và rối loạn chuyển hóa.','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/noitiet.jpg');
 /*!40000 ALTER TABLE `specialty` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1669,7 +1705,7 @@ CREATE TABLE `staff` (
   CONSTRAINT `staff_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `staff_ibfk_2` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
   CONSTRAINT `staff_ibfk_3` FOREIGN KEY (`position_id`) REFERENCES `staff_position` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1678,7 +1714,7 @@ CREATE TABLE `staff` (
 
 LOCK TABLES `staff` WRITE;
 /*!40000 ALTER TABLE `staff` DISABLE KEYS */;
-INSERT INTO `staff` VALUES (1,1,4,1),(2,1,5,1),(3,1,7,5),(4,1,8,2),(5,5,11,12),(6,1,14,1),(7,2,18,2),(8,3,19,1),(10,4,21,9),(11,7,22,10),(12,3,23,8),(13,3,24,8),(14,3,25,8),(15,3,26,8);
+INSERT INTO `staff` VALUES (1,1,4,1),(2,1,5,1),(3,1,7,5),(4,1,8,2),(5,5,11,12),(6,1,14,1),(7,2,18,2),(8,3,19,1),(10,4,21,9),(11,7,22,10),(12,3,23,8),(13,3,24,8),(14,3,25,8),(15,3,26,8),(17,1,28,1),(18,6,29,11);
 /*!40000 ALTER TABLE `staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1822,7 +1858,7 @@ CREATE TABLE `users` (
   KEY `idx_user_fullname` (`fullname`),
   KEY `idx_user_email` (`email`),
   KEY `idx_user_phone` (`phone_number`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1831,7 +1867,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Huỳnh Minh Hoàng','hoanghm4869@gmail.com','0337023824','2003-11-12',0,'TBH TDM','$2a$10$b6E2VmRKJ8pB25uky/vWN.1XnlYvFSOEwK3jtxPchw5nqbLmqQoPC',0,'2025-04-10 00:00:00',NULL),(3,'Nguyễn Văn A','nguyenvanA@example.com','0123456789','1995-05-20',0,'123 Đường Lê Lợi, Tdm, TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',1,'2025-04-10 04:48:35',NULL),(4,'Trần Văn C','tranvanc@hospital.com','0323456709','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$XiutYothZ4rma/P.J5c2leYOLb/hTj6V677Re5gy5hSWeB1yBe71y',2,'2025-04-10 08:28:32','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1747710399077.png'),(5,'Nguyễn Minh Thuận','Thuannm@example.com','0223456789','1985-06-20',0,'123 Nguyễn Trãi, TP.HCM','$2a$10$o/BAwrm8rlbRUtVKepG8iuhlFxvVMfn6LVhLyaaiLtmdvUAIkGLbC',2,'2025-04-16 08:06:58','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nam.png'),(7,'Nguyễn Hồng Yến','Yennh@example.com','0423456789','1995-06-20',1,'123 Lý Thái Tổ, TP.HCM','$2a$10$ZRb1sOPqiTR1NgDn7l9ryuU7JbBOT6QnX2.ai.skFTmg/VMVFNu5u',2,'2025-05-18 06:40:23','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(8,'Trần Thu Phương','Phuongtt20@example.com','0523456789','1994-08-20',1,'123 Phan Châu Trinh, TP.HCM','$2a$10$qFTu3C44lJEAz4.AEo/qIOnwihykzMMB5mYTqv0nKcnFePOhvBtxK',2,'2025-05-18 07:36:34','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(9,'Nguyễn Việt Trung','Truntnv@gmail.com','0336013824','2003-06-25',0,'Phú Hòa','$2a$10$kvsD41NR8tMs6ZFfth6wI.ksdSKpySwLVYW2Y/CT/0KoryGjrzxCq',1,'2025-05-19 00:13:09',''),(10,'Nguyễn Thanh Nam','Namnt@gmail.com','0723456789','2002-05-23',0,'Củ Chi','$2a$10$WYEA1.VFcVZYAR1tAqY8vO/Sr/C1Y3bVp6TDVwyKAbQIfPcTuBCQm',1,'2025-05-23 17:17:39',''),(11,'Hồ Ngọc Châu','Chaunh@gmail.com','0823456789','2000-06-24',1,'TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',2,'2025-05-24 16:47:19',NULL),(12,'Nguyễn Ngọc Hà','hann@gmail.com','038023564','2003-11-25',1,'phường Thủ Dầu Một','$2a$10$jtuaGLERzhkK9ScR63RZPO1VLcFgTratjYAmWhWZXz1.PHKX2p3XK',1,'2025-08-21 09:18:07',NULL),(13,'Nguyễn Thanh Thảo','thaont@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$Ru49ve58Uu1O0CXhf0.Lqu48tpwLWf32xZVJ32FS9VL91up0IulK6',1,'2025-08-21 16:05:53','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825874773.jpg'),(14,'Trần Văn C','Thuann1m@example.com','0323456789','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$iwcOFEhX3qKwdYfG/kQ6QuPxQUokKlxOENmeSJ/VYgu4918xbGLhq',2,'2025-08-22 01:23:35','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825850325.jpg'),(15,'Nguyễn Thanh Hằng','hangnt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$v4mss5YDekozGY9xkvRQIe/FdEjz8uFNx1U9u84TzjQkASAvkUdpO',1,'2025-08-22 01:26:01',NULL),(16,'Nguyễn Thanh Thu','nguyenvan123@example.com','0320156487','2002-05-14',0,'phường Chánh Hiệp','$2a$10$.cnH7Hx/jTUaCll79EDPk.q5zlRJ1ntCUmGtV9sQSULT8ybVYnCH6',1,'2025-08-22 01:26:52',NULL),(17,'Nguyễn Thanh Thuỷ','thuynt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$4iEmWwD6Ju6U/vamg5MbMOjWERSQ2PHCPA67uCq42eqQlKDxYlrtm',1,'2025-08-22 13:10:33',''),(18,'Nguyễn Thị Ngân','ngannt@gmail.com','0337033824','2000-09-28',0,'Chánh Hiệp','$2a$10$aOyLpSBFMRaj1n8MRk2.EOma7w1gsf/gIjKB4aMFkRd4Te./hMaAm',2,'2025-09-28 17:36:54','string'),(19,'Nguyễn Tiến Duy','duynt@gmail.com','0337043824','1999-10-28',1,'Phú Lợi','$2a$10$ixigocA1JDl.IF/Nu7vb4eh6.JAdWX7eZWGfX/J6C.8oDt5YPGtRO',2,'2025-09-28 17:39:05',''),(21,'Trần Quốc Hưng','hungtq@gmail.com','0335021425','1998-10-24',0,'Chánh Hiệp','$2a$10$OqWuoiRwDumfhosnXeY89eQtU1aYl0KRh3YFIOENknGbMQoHL1mVe',2,'2025-10-24 15:36:57',NULL),(22,'Nguyễn Ngọc Hiền','hiennn@gmail.com','0331052674','1998-10-26',1,'Phú Thọ','$2a$10$TiRHyAvjV776S5vTqHkS5.P0MPdB53nPfCNRvdaWIyZjMl4SdYYRy',2,'2025-10-26 03:13:19',''),(23,'Lưu Đức Thịnh','thinhld@gmail.com','0334013754','2000-09-26',0,'Phường Sài Gòn','$2a$10$4UMopa1Mav7yU/cKqs77AuL4CNwQITdaxT/vlBPCODRnEbM5vrfQe',2,'2025-10-26 04:02:22',''),(24,'Trần Thanh Yến','yentt@gmail.com','0322063455','1999-09-02',1,'Phường Thuận An','$2a$10$vtO/28Wsx0xIl5J9c8Ev3ORYuv2.hDR4fnhUrCU34ss9Si0.zrYJW',2,'2025-10-26 04:03:47',''),(25,'Nguyễn Thanh Hoa','hoant@gmail.com','0935451060','1998-07-19',1,'Phường Thuận An','$2a$10$xpNbX//Nwwt/DQkBeJ9uOeFlH.tEJcEWdcVU4SVuhYjimpMhnHgw2',2,'2025-10-26 04:04:58',''),(26,'Nguyễn Thanh Phúc','phucnt@gmail.com','0925522406','1998-10-19',1,'Phường Hiệp An','$2a$10$uKMUKGbqsZKZkRl75cKskutuR6UmPG9Qh48.wQ6bg9b5lY8yihn7e',2,'2025-10-26 04:05:50','');
+INSERT INTO `users` VALUES (1,'Huỳnh Minh Hoàng','hoanghm4869@gmail.com','0337023824','2003-11-12',0,'TBH TDM','$2a$10$b6E2VmRKJ8pB25uky/vWN.1XnlYvFSOEwK3jtxPchw5nqbLmqQoPC',0,'2025-04-10 00:00:00',NULL),(3,'Nguyễn Văn A','nguyenvanA@example.com','0123456789','1995-05-20',0,'123 Đường Lê Lợi, Tdm, TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',1,'2025-04-10 04:48:35',NULL),(4,'Trần Văn C','tranvanc@hospital.com','0323456709','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$XiutYothZ4rma/P.J5c2leYOLb/hTj6V677Re5gy5hSWeB1yBe71y',2,'2025-04-10 08:28:32','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1747710399077.png'),(5,'Nguyễn Minh Thuận','Thuannm@example.com','0223456789','1985-06-20',0,'123 Nguyễn Trãi, TP.HCM','$2a$10$o/BAwrm8rlbRUtVKepG8iuhlFxvVMfn6LVhLyaaiLtmdvUAIkGLbC',2,'2025-04-16 08:06:58','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nam.png'),(7,'Nguyễn Hồng Yến','Yennh@example.com','0423456789','1995-06-20',1,'123 Lý Thái Tổ, TP.HCM','$2a$10$ZRb1sOPqiTR1NgDn7l9ryuU7JbBOT6QnX2.ai.skFTmg/VMVFNu5u',2,'2025-05-18 06:40:23','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(8,'Trần Thu Phương','Phuongtt20@example.com','0523456789','1994-08-20',1,'123 Phan Châu Trinh, TP.HCM','$2a$10$qFTu3C44lJEAz4.AEo/qIOnwihykzMMB5mYTqv0nKcnFePOhvBtxK',2,'2025-05-18 07:36:34','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital//bs_nu.jpg'),(9,'Nguyễn Việt Trung','Truntnv@gmail.com','0336013824','2003-06-25',0,'Phú Hòa','$2a$10$kvsD41NR8tMs6ZFfth6wI.ksdSKpySwLVYW2Y/CT/0KoryGjrzxCq',1,'2025-05-19 00:13:09',''),(10,'Nguyễn Thanh Nam','Namnt@gmail.com','0723456789','2002-05-23',0,'Củ Chi','$2a$10$WYEA1.VFcVZYAR1tAqY8vO/Sr/C1Y3bVp6TDVwyKAbQIfPcTuBCQm',1,'2025-05-23 17:17:39',''),(11,'Hồ Ngọc Châu','Chaunh@gmail.com','0823456789','2000-06-24',1,'TP HCM','$2a$10$XDLLf84jVbgGduWVA4N/.e2/ZqEVVhZe5d0ljbaxetYsLS.Az55I6',2,'2025-05-24 16:47:19',NULL),(12,'Nguyễn Ngọc Hà','hann@gmail.com','038023564','2003-11-25',1,'phường Thủ Dầu Một','$2a$10$jtuaGLERzhkK9ScR63RZPO1VLcFgTratjYAmWhWZXz1.PHKX2p3XK',1,'2025-08-21 09:18:07',NULL),(13,'Nguyễn Thanh Thảo','thaont@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$Ru49ve58Uu1O0CXhf0.Lqu48tpwLWf32xZVJ32FS9VL91up0IulK6',1,'2025-08-21 16:05:53','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825874773.jpg'),(14,'Trần Văn C','Thuann1m@example.com','0323456789','1985-06-20',0,'123 Lê Lợi, TP.HCM','$2a$10$iwcOFEhX3qKwdYfG/kQ6QuPxQUokKlxOENmeSJ/VYgu4918xbGLhq',2,'2025-08-22 01:23:35','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1755825850325.jpg'),(15,'Nguyễn Thanh Hằng','hangnt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$v4mss5YDekozGY9xkvRQIe/FdEjz8uFNx1U9u84TzjQkASAvkUdpO',1,'2025-08-22 01:26:01',NULL),(16,'Nguyễn Thanh Thu','nguyenvan123@example.com','0320156487','2002-05-14',0,'phường Chánh Hiệp','$2a$10$.cnH7Hx/jTUaCll79EDPk.q5zlRJ1ntCUmGtV9sQSULT8ybVYnCH6',1,'2025-08-22 01:26:52',NULL),(17,'Nguyễn Thanh Thuỷ','thuynt@gmail.com','0320156487','2002-05-14',1,'phường Chánh Hiệp','$2a$10$4iEmWwD6Ju6U/vamg5MbMOjWERSQ2PHCPA67uCq42eqQlKDxYlrtm',1,'2025-08-22 13:10:33',''),(18,'Nguyễn Thị Ngân','ngannt@gmail.com','0337033824','2000-09-28',0,'Chánh Hiệp','$2a$10$aOyLpSBFMRaj1n8MRk2.EOma7w1gsf/gIjKB4aMFkRd4Te./hMaAm',2,'2025-09-28 17:36:54','string'),(19,'Nguyễn Tiến Duy','duynt@gmail.com','0337043824','1999-10-28',1,'Phú Lợi','$2a$10$ixigocA1JDl.IF/Nu7vb4eh6.JAdWX7eZWGfX/J6C.8oDt5YPGtRO',2,'2025-09-28 17:39:05',''),(21,'Trần Quốc Hưng','hungtq@gmail.com','0335021425','1998-10-24',0,'Chánh Hiệp','$2a$10$OqWuoiRwDumfhosnXeY89eQtU1aYl0KRh3YFIOENknGbMQoHL1mVe',2,'2025-10-24 15:36:57',NULL),(22,'Nguyễn Ngọc Hiền','hiennn@gmail.com','0331052674','1998-10-26',1,'Phú Thọ','$2a$10$TiRHyAvjV776S5vTqHkS5.P0MPdB53nPfCNRvdaWIyZjMl4SdYYRy',2,'2025-10-26 03:13:19',''),(23,'Lưu Đức Thịnh','thinhld@gmail.com','0334013754','2000-09-26',0,'Phường Sài Gòn','$2a$10$4UMopa1Mav7yU/cKqs77AuL4CNwQITdaxT/vlBPCODRnEbM5vrfQe',2,'2025-10-26 04:02:22',''),(24,'Trần Thanh Yến','yentt@gmail.com','0322063455','1999-09-02',1,'Phường Thuận An','$2a$10$vtO/28Wsx0xIl5J9c8Ev3ORYuv2.hDR4fnhUrCU34ss9Si0.zrYJW',2,'2025-10-26 04:03:47',''),(25,'Nguyễn Thanh Hoa','hoant@gmail.com','0935451060','1998-07-19',1,'Phường Thuận An','$2a$10$xpNbX//Nwwt/DQkBeJ9uOeFlH.tEJcEWdcVU4SVuhYjimpMhnHgw2',2,'2025-10-26 04:04:58',''),(26,'Nguyễn Thanh Phúc','phucnt@gmail.com','0925522406','1998-10-19',1,'Phường Hiệp An','$2a$10$uKMUKGbqsZKZkRl75cKskutuR6UmPG9Qh48.wQ6bg9b5lY8yihn7e',2,'2025-10-26 04:05:50',''),(28,'Nguyễn Thanh Hải','haint@gmail.com','0337062145','1992-04-23',0,'phường Phú Thọ','$2a$10$bU0L3VQY0654v7JueeFlOeSOE4G.MdjPaIEDGKpIO0k/1ffKVHr3q',2,'2025-10-31 16:23:13','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/user-avatars/1761927791946.jpeg'),(29,'Nguyễn Thanh Liên','liennt@gmail.com','0335021454','1997-12-23',1,'Phường Phú Thọ','$2a$10$TB9nGpI82SaGLnXIwXHpH.qkCJ6lv7A0cTCR49EvAXEqSwa16Kvya',2,'2025-11-01 04:55:33','https://jzfjnxlskhghjjsvecqj.supabase.co/storage/v1/object/public/hospital/cashier1.jpeg');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1978,4 +2014,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-31  9:43:22
+-- Dump completed on 2025-11-01 12:45:22

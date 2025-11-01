@@ -25,35 +25,7 @@ public class SpecialtyService {
     private final DepartmentRepository departmentRepo;
     private final DoctorRepository doctorRepo;
 
-    public List<SpecialtyResponse> getAll() {
-        return specialtyRepository.findAll().stream()
-                .map(this::covertToResponse)
-                .collect(Collectors.toList());
-    }
-
-    private SpecialtyResponse covertToResponse(Specialty specialty) {
-        SpecialtyResponse dto = new SpecialtyResponse();
-        dto.setId(specialty.getId());
-        dto.setName(specialty.getName());
-        dto.setDescription(specialty.getDescription());
-        dto.setIcon(specialty.getIcon());
-
-        //số lượng bác sĩ theo specialty
-        int countDoctors = doctorRepo.countBySpecialtyId(specialty.getId());
-        dto.setNumberOfDoctors(countDoctors);
-        return dto;
-    }
-
-    public Specialty getSpecialtyById(int id) {
-        Specialty specialty = specialtyRepository.findById(id).orElseThrow(()
-                -> new InvalidInputException("Không tìm thấy chuyên khoa"));
-        return specialty;
-    }
-
-    public List<Specialty> getSpecialtiesByDepartment(int departmentId) {
-        return specialtyRepository.findSpecialtiesByDepartment_Id(departmentId);
-    }
-
+    //TẠO MỚI CHUYÊN KHOA
     public Specialty save(SpecialtyRequest specialtyRq) {
         Department dept = departmentRepo.findById(specialtyRq.getDepartmentId())
                 .orElseThrow(() -> new InvalidInputException("Department not found with id: " + specialtyRq.getDepartmentId()));
@@ -66,6 +38,7 @@ public class SpecialtyService {
         return specialtyRepository.save(specialty);
     }
 
+    //CẬP NHẬT CHUYÊN KHOA
     public Specialty update(int id, SpecialtyRequest specialtyRq) {
         Specialty specialty = specialtyRepository.findById(id)
                 .orElseThrow(() -> new InvalidInputException("Specialty not found with id: " + id));
@@ -85,7 +58,44 @@ public class SpecialtyService {
         return specialtyRepository.save(specialty);
     }
 
+    //XÓA CHUYÊN KHOA THEO ID
     public void deleteSpecialtyById(int id) {
         specialtyRepository.deleteById(id);
+    }
+
+    //LẤY TẤT CẢ CHUYÊN KHOA
+    public List<SpecialtyResponse> getAll() {
+        return specialtyRepository.findAll().stream()
+                .map(this::covertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    //LẤY CHUYÊN KHOA THEO ID
+    public Specialty getSpecialtyById(int id) {
+        Specialty specialty = specialtyRepository.findById(id).orElseThrow(()
+                -> new InvalidInputException("Không tìm thấy chuyên khoa"));
+        return specialty;
+    }
+
+    //LẤY DANH SÁCH CHUYÊN KHOA THEO DEPARTMENT ID
+    public List<SpecialtyResponse> getSpecialtiesByDepartment(int departmentId) {
+        List<Specialty> specialties = specialtyRepository.findSpecialtiesByDepartment_Id(departmentId);
+        return specialties.stream()
+                .map(this::covertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    //Chuyển đổi entity Specialty sang DTO SpecialtyResponse
+    private SpecialtyResponse covertToResponse(Specialty specialty) {
+        SpecialtyResponse dto = new SpecialtyResponse();
+        dto.setId(specialty.getId());
+        dto.setName(specialty.getName());
+        dto.setDescription(specialty.getDescription());
+        dto.setIcon(specialty.getIcon());
+
+        //số lượng bác sĩ theo specialty
+        int countDoctors = doctorRepo.countBySpecialtyId(specialty.getId());
+        dto.setNumberOfDoctors(countDoctors);
+        return dto;
     }
 }

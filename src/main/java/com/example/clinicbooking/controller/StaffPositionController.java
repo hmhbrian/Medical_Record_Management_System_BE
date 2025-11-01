@@ -25,4 +25,9 @@ public class StaffPositionController {
         return staffPositionService.getAllPosition();
     }
 
+    @GetMapping("/no-doctor")
+    public List<staff_position> getAllStafPositionNoDoctor() {
+        return staffPositionService.getAllNoDoctor();
+    }
+
 }

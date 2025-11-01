@@ -533,11 +533,14 @@ public class MedicalRecordService {
         dto.setCode(lt.getTestTypes().getTestCode());
         dto.setName(lt.getTestTypes().getTestName());
         dto.setRequestDate(lt.getRequestedDate());
+        dto.setResultDate(lt.getResultDate());
+        dto.setResult(lt.getResult());
         dto.setStatus(lt.getStatus().name());
 
         // Tên nhân viên phụ trách
         if (lt.getLabTechnician() != null && lt.getLabTechnician().getStaff().getUser() != null) {
             dto.setAssignedStaffName(lt.getLabTechnician().getStaff().getUser().getFullname());
+            dto.setAssignedStaffCode(lt.getLabTechnician().getLabTechnicianCode());
         } else {
             dto.setAssignedStaffName("Chưa phân công");
         }
@@ -553,11 +556,14 @@ public class MedicalRecordService {
         dto.setCode(it.getImagingTypes().getImagingCode());
         dto.setName(it.getImagingTypes().getImagingName());
         dto.setRequestDate(it.getRequestedDate());
+        dto.setResultDate(it.getResultDate());
+        dto.setResult(it.getResult());
         dto.setStatus(it.getStatus().name());
 
         // Tên nhân viên phụ trách
         if (it.getImagingStaff() != null && it.getImagingStaff().getStaff().getUser() != null) {
             dto.setAssignedStaffName(it.getImagingStaff().getStaff().getUser().getFullname());
+            dto.setAssignedStaffCode(it.getImagingStaff().getImgScode());
         } else {
             dto.setAssignedStaffName("Chưa phân công");
         }
