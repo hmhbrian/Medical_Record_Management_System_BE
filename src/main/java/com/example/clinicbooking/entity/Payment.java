@@ -15,12 +15,12 @@ public class Payment {
     private Integer id;
 
     // Liên kết tới Hồ sơ Bệnh án
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "record_id")
     private MedicalRecord record;
 
     // Liên kết tới Nhân viên Thu ngân
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cashier_id")
     private Cashier cashier; //
 
@@ -45,4 +45,15 @@ public class Payment {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "actual_paid_amount")
+    private BigDecimal actualPaidAmount;
+    @Column(name = "invoice_number")
+    private String InvoiceNumber;
+    @Column(name = "invoice_serial")
+    private String InvoiceSerial;
+    @Column(name = "is_invoice_issued")
+    private Boolean IsInvoiceIssued;
+
+    private String notes;
 }

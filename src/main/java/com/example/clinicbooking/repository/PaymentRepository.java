@@ -4,11 +4,12 @@ import com.example.clinicbooking.entity.MedicalRecord;
 import com.example.clinicbooking.entity.Payment;
 import com.example.clinicbooking.entity.PaymentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface PaymentRepository extends JpaRepository<Payment, Integer> {
+public interface PaymentRepository extends JpaRepository<Payment, Integer>, JpaSpecificationExecutor<Payment> {
     Optional<Payment> findByRecord(MedicalRecord record);
 
     // Tìm phiếu thanh toán theo loại đối tượng và ID đối tượng
@@ -16,4 +17,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer> {
     @Query("SELECT p FROM Payment p JOIN PaymentDetail pd on p.id = pd.payment.id " +
             "WHERE pd.serviceType = :objectType AND pd.serviceId = :objectId AND p.status = :status")
     Optional<Payment> findByObjectTypeAndObjectIdAndStatus(String objectType, Integer objectId, PaymentStatus status);
+
+    boolean existsByRecordAndStatus(MedicalRecord record, PaymentStatus status);
 }

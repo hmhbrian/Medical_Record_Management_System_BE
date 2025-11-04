@@ -16,11 +16,9 @@ import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import com.example.clinicbooking.security.CustomUserDetails;
-import com.example.clinicbooking.service.MedicalExamination.MedicalExaminationService;
-import com.example.clinicbooking.service.PaymentService;
+import com.example.clinicbooking.service.Payment.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +28,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -274,7 +270,7 @@ public class MedicalRecordService {
             existingExamination.setDoctor(record.getDoctor()); // Lấy bác sĩ từ hồ sơ
             existingExamination.setExamination(examination);
             existingExamination.setRequestedDate(LocalDateTime.now());
-            existingExamination.setStatus("IN_PROGRESS"); // Trạng thái: Chờ thanh toán
+            existingExamination.setStatus(ServiceStatus.IN_PROGRESS); // Trạng thái: Chờ thanh toán
 
             resultExaminationRepo.save(existingExamination); //payment sẽ tạo khi có toa thuốc
 
@@ -404,7 +400,7 @@ public class MedicalRecordService {
 
         //Thông tin bệnh nhân
         PatientSummary patientSummary = new PatientSummary();
-        patientSummary.setPatientCode(patient.getPatientcode());
+        patientSummary.setPatientCode(patient.getPatientCode());
         patientSummary.setFullName(user.getFullname());
         patientSummary.setDateOfBirth(user.getDateOfBirth());
         patientSummary.setPhoneNumber(user.getPhoneNumber());
@@ -573,7 +569,7 @@ public class MedicalRecordService {
     // Chuyển đổi MedicalRecord từ Entity sang DTO Response
     private MedicalRecordResponse covertToResponse(MedicalRecord medicalRecord) {
         PatientSummary patientSummary = new PatientSummary();
-        patientSummary.setPatientCode(medicalRecord.getPatient().getPatientcode());
+        patientSummary.setPatientCode(medicalRecord.getPatient().getPatientCode());
         patientSummary.setDateOfBirth(medicalRecord.getPatient().getUser().getDateOfBirth());
         patientSummary.setFullName(medicalRecord.getPatient().getUser().getFullname());
         patientSummary.setPhoneNumber(medicalRecord.getPatient().getUser().getPhoneNumber());

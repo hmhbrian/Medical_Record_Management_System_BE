@@ -9,6 +9,7 @@ import com.example.clinicbooking.DTO.Prescription.PrescriptionResponse;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
+import com.example.clinicbooking.service.Payment.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

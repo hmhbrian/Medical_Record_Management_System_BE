@@ -18,7 +18,8 @@ public class Patient {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-    private String patientcode;
+    @Column(name = "patient_code", unique = true, nullable = false)
+    private String patientCode;
     @Column(name = "medical_history")
     private String medicalHistory;
     @Column(name = "insurance_number")
