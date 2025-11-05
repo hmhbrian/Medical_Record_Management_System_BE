@@ -500,7 +500,7 @@ public class MedicalRecordService {
     // Lấy danh sách Chỉ định Dịch vụ (Xét nghiệm + Hình ảnh) cho hồ sơ bệnh án
     public List<ServiceOrderResponse> getServiceOrders(Integer recordId) {
         MedicalRecord record = recordRepo.findById(recordId)
-                .orElseThrow(() -> new RuntimeException("Hồ sơ bệnh án không tồn tại."));
+                .orElseThrow(() -> new InvalidInputException("Hồ sơ bệnh án không tồn tại."));
 
         // 1. Lấy danh sách Chỉ định Xét nghiệm
         List<LabTests> labTests = labTestRepo.findAllByRecord(record);
@@ -508,6 +508,9 @@ public class MedicalRecordService {
         // 2. Lấy danh sách Chỉ định Hình ảnh
         List<ImagingTests> imagingTests = imagingTestRepo.findAllByRecord(record);
 
+        if(labTests.isEmpty() && imagingTests.isEmpty()) {
+            return new ArrayList<>(); // Trả về danh sách rỗng nếu không có chỉ định
+        }
         // 3. Ánh xạ sang DTO
         Stream<ServiceOrderResponse> labTestDtos = labTests.stream()
                 .map(this::mapLabTestToUnifiedDTO);

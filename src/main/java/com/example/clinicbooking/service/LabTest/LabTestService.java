@@ -1,4 +1,4 @@
-package com.example.clinicbooking.service;
+package com.example.clinicbooking.service.LabTest;
 
 import com.example.clinicbooking.DTO.LabTest.LabTestDetailResponse;
 import com.example.clinicbooking.DTO.LabTest.ParameterDetailResponse;

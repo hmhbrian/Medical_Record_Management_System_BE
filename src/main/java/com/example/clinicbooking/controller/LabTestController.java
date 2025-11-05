@@ -2,7 +2,7 @@ package com.example.clinicbooking.controller;
 
 
 import com.example.clinicbooking.DTO.LabTest.LabTestDetailResponse;
-import com.example.clinicbooking.service.LabTestService;
+import com.example.clinicbooking.service.LabTest.LabTestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
