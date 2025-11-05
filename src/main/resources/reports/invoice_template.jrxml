@@ -1,0 +1,97 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="invoice_template" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<parameter name="P_PATIENT_NAME" class="java.lang.String"/>
+	<parameter name="P_INVOICE_NUMBER" class="java.lang.String"/>
+	<parameter name="P_PAYMENT_DATE" class="java.lang.String"/>
+	<parameter name="P_PATIENT_DUE" class="java.math.BigDecimal"/>
+	<parameter name="P_BHYT_COVERAGE" class="java.math.BigDecimal"/>
+	<parameter name="P_TOTAL_AMOUNT" class="java.math.BigDecimal"/>
+	<query language="sql"><![CDATA[]]></query>
+	<field name="description" class="java.lang.String"/>
+	<field name="grossAmount" class="java.math.BigDecimal"/>
+	<field name="insuranceCoverage" class="java.math.BigDecimal"/>
+	<field name="patientPaymentTotal" class="java.math.BigDecimal"/>
+	<background splitType="Stretch"/>
+	<title height="108" splitType="Stretch">
+		<element kind="image" x="6" y="8" width="80" height="70">
+			<expression><![CDATA["E:\\CNTT\\BCTN\\ClinicBooking\\images\\logo_medic.png"]]></expression>
+		</element>
+		<element kind="staticText" x="300" y="30" width="270" height="40" forecolor="#3366CC" fontSize="16.0" bold="true" hTextAlign="Center" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[HÓA ĐƠN THANH TOÁN]]></text>
+		</element>
+	</title>
+	<pageHeader height="60" splitType="Stretch">
+		<element kind="staticText" x="6" y="5" width="80" height="15" bold="true" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[Số HĐ:]]></text>
+		</element>
+		<element kind="textField" x="86" y="5" width="150" height="15" vTextAlign="Middle">
+			<expression><![CDATA[$P{P_INVOICE_NUMBER}]]></expression>
+		</element>
+		<element kind="staticText" x="550" y="5" width="150" height="15" bold="true" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[Ngày Thanh toán: ]]></text>
+		</element>
+		<element kind="textField" x="650" y="5" width="150" height="15" vTextAlign="Middle">
+			<expression><![CDATA[$P{P_PAYMENT_DATE}]]></expression>
+		</element>
+		<element kind="staticText" x="6" y="30" width="80" height="15" bold="true" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[Khách hàng:]]></text>
+		</element>
+		<element kind="textField" x="86" y="30" width="300" height="15" vTextAlign="Middle" fontName="DejaVu Sans">
+			<expression><![CDATA[$P{P_PATIENT_NAME}]]></expression>
+		</element>
+	</pageHeader>
+	<columnHeader height="25" splitType="Stretch">
+		<element kind="staticText" x="6" y="5" width="200" height="20" bold="true" hTextAlign="Center" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[Dịch vụ]]></text>
+		</element>
+		<element kind="staticText" x="360" y="5" width="120" height="20" bold="true" hTextAlign="Right" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[Thành tiền]]></text>
+		</element>
+		<element kind="staticText" x="485" y="5" width="120" height="20" forecolor="#006600" bold="true" hTextAlign="Right" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[BHYT chi trả]]></text>
+		</element>
+		<element kind="staticText" x="610" y="5" width="120" height="20" forecolor="#CC0000" bold="true" hTextAlign="Right" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[Bệnh nhân trả]]></text>
+		</element>
+		<element kind="line" x="0" y="24" width="802" height="1"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<element kind="textField" x="6" y="0" width="200" height="20" vTextAlign="Middle" fontName="DejaVu Sans">
+				<expression><![CDATA[$F{description}]]></expression>
+			</element>
+			<element kind="textField" x="360" y="0" width="120" height="20" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{grossAmount}]]></expression>
+			</element>
+			<element kind="textField" x="485" y="0" width="120" height="20" forecolor="#006600" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{insuranceCoverage}]]></expression>
+			</element>
+			<element kind="textField" x="610" y="0" width="120" height="20" forecolor="#CC0000" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{patientPaymentTotal}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="100" splitType="Stretch">
+		<element kind="line" x="0" y="0" width="802" height="1"/>
+		<element kind="staticText" x="500" y="10" width="200" height="20" bold="true" hTextAlign="Right" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[TỔNG CỘNG (TRƯỚC BHYT):]]></text>
+		</element>
+		<element kind="textField" x="660" y="10" width="130" height="20" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$P{P_TOTAL_AMOUNT}]]></expression>
+		</element>
+		<element kind="staticText" x="500" y="35" width="200" height="20" forecolor="#006600" bold="true" hTextAlign="Right" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[BẢO HIỂM Y TẾ CHI TRẢ:]]></text>
+		</element>
+		<element kind="textField" x="660" y="35" width="130" height="20" forecolor="#006600" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$P{P_BHYT_COVERAGE}]]></expression>
+		</element>
+		<element kind="staticText" x="500" y="60" width="200" height="20" forecolor="#CC0000" fontSize="12.0" bold="true" hTextAlign="Right" vTextAlign="Middle" fontName="DejaVu Sans">
+			<text><![CDATA[TỔNG BN THANH TOÁN:]]></text>
+		</element>
+		<element kind="textField" x="660" y="60" width="130" height="20" forecolor="#CC0000" fontSize="12.0" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$P{P_PATIENT_DUE}]]></expression>
+		</element>
+	</summary>
+</jasperReport>

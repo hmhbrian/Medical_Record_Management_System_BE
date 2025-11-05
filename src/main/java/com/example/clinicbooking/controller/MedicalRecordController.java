@@ -149,12 +149,14 @@ public class MedicalRecordController {
 
     //Lấy danh sách các chỉ định xét nghiệm/hình ảnh đã tạo cho Tab 2.
     @GetMapping("/{recordId}/service-orders")
-    public ResponseEntity<List<ServiceOrderResponse>> getServiceOrders(
+    public ResponseEntity<ApiResponse<List<ServiceOrderResponse>>> getServiceOrders(
             @PathVariable Integer recordId) {
 
         List<ServiceOrderResponse> response = recordService.getServiceOrders(recordId);
-
-        return ResponseEntity.ok(response);
+        if(response.isEmpty()) {
+            return ResponseEntity.ok(new ApiResponse<>(false,"Không tìm thấy chỉ định nào!",null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(true,"Danh sách các chỉ định",response));
     }
 }
 

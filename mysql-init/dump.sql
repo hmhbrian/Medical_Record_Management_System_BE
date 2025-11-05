@@ -682,7 +682,7 @@ CREATE TABLE `imaging_tests` (
 
 LOCK TABLES `imaging_tests` WRITE;
 /*!40000 ALTER TABLE `imaging_tests` DISABLE KEYS */;
-INSERT INTO `imaging_tests` VALUES (2,4,NULL,4,NULL,7,'2025-10-27 09:54:16',NULL,NULL,NULL,'PENDING_PAYMENT');
+INSERT INTO `imaging_tests` VALUES (2,4,NULL,4,NULL,7,'2025-10-27 09:54:16',NULL,NULL,NULL,'PAID');
 /*!40000 ALTER TABLE `imaging_tests` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -777,6 +777,33 @@ CREATE TABLE `inpatient_records` (
 LOCK TABLES `inpatient_records` WRITE;
 /*!40000 ALTER TABLE `inpatient_records` DISABLE KEYS */;
 /*!40000 ALTER TABLE `inpatient_records` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `invoice_sequence`
+--
+
+DROP TABLE IF EXISTS `invoice_sequence`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `invoice_sequence` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `year` varchar(255) DEFAULT NULL,
+  `serial` varchar(255) DEFAULT NULL,
+  `currentNumber` int DEFAULT NULL,
+  `current_number` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `invoice_sequence`
+--
+
+LOCK TABLES `invoice_sequence` WRITE;
+/*!40000 ALTER TABLE `invoice_sequence` DISABLE KEYS */;
+INSERT INTO `invoice_sequence` VALUES (1,'2025','AA/20E',NULL,2);
+/*!40000 ALTER TABLE `invoice_sequence` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1001,7 +1028,7 @@ CREATE TABLE `medical_records` (
 
 LOCK TABLES `medical_records` WRITE;
 /*!40000 ALTER TABLE `medical_records` DISABLE KEYS */;
-INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3'),(4,1,4,'2025-10-23',1,'đau răng do sâu',14,'Đau răng hàm','Đau răng do sâu','PENDING_POSTPAYMENT','MR4'),(5,4,4,'2025-10-31',1,NULL,13,'Đau răng',NULL,'WAITING','MR5'),(6,4,6,'2025-11-01',1,'Nghi ngờ Đái tháo đường',15,'Khát và Uống nhiều, Đi tiểu nhiều','Bệnh nhân có tứ chứng kinh điển (đa khát, đa niệu), sụt 5kg/tháng. Đề nghị xét nghiệm Glucose máu lúc đói và HbA1c khẩn.','PENDING_PREPAYMENT','MR6');
+INSERT INTO `medical_records` VALUES (1,1,1,'2025-05-12',1,'Thiếu máu nhẹ',1,'Đau đầu, chóng mặt',NULL,'PENDING_RESULTS','MR1'),(2,1,1,'2025-05-24',1,'Loét dạ dày',1,'Đau bụng',NULL,'WAITING','MR2'),(3,1,3,'2025-08-22',1,'Loét dạ dày',8,'Đau bụng',NULL,'WAITING','MR3'),(4,1,4,'2025-10-23',1,'đau răng do sâu',14,'Đau răng hàm','Đau răng do sâu','COMPLETED','MR4'),(5,4,4,'2025-10-31',1,NULL,13,'Đau răng',NULL,'WAITING','MR5'),(6,4,6,'2025-11-01',1,'Nghi ngờ Đái tháo đường',15,'Khát và Uống nhiều, Đi tiểu nhiều','Bệnh nhân có tứ chứng kinh điển (đa khát, đa niệu), sụt 5kg/tháng. Đề nghị xét nghiệm Glucose máu lúc đói và HbA1c khẩn.','PENDING_PREPAYMENT','MR6');
 /*!40000 ALTER TABLE `medical_records` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1207,7 +1234,7 @@ DROP TABLE IF EXISTS `patients`;
 CREATE TABLE `patients` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int DEFAULT NULL,
-  `patientcode` varchar(255) DEFAULT NULL,
+  `patient_code` varchar(255) DEFAULT NULL,
   `medical_history` varchar(255) DEFAULT NULL,
   `insurance_number` varchar(255) DEFAULT NULL,
   `insurance_rate` double DEFAULT NULL,
@@ -1238,7 +1265,7 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `before_insert_patients` BEFORE INSERT ON `patients` FOR EACH ROW BEGIN
     DECLARE new_code VARCHAR(20);
     SET new_code = CONCAT('PAT', IFNULL((SELECT MAX(id) FROM patients), 0) + 1);
-    SET NEW.patientcode = new_code;
+    SET NEW.patient_code = new_code;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1275,7 +1302,7 @@ CREATE TABLE `paymentdetails` (
 
 LOCK TABLES `paymentdetails` WRITE;
 /*!40000 ALTER TABLE `paymentdetails` DISABLE KEYS */;
-INSERT INTO `paymentdetails` VALUES (2,2,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-27 09:35:54'),(4,2,'IMAGING_TEST',2,'X-quang răng',200000.00,140000.00,60000.00,'2025-10-27 09:54:16'),(5,3,'PRESCRIPTION',3,'Đơn thuốc ngày 2025-10-30T16:23:15.094107',34000.00,23800.00,10200.00,'2025-10-30 15:51:22'),(6,3,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-30 15:51:22'),(7,4,'LAB_TEST',3,'Xét nghiệm sinh hóa',200000.00,0.00,200000.00,'2025-11-01 04:39:09'),(8,4,'LAB_TEST',4,'Xét nghiệm Hóa sinh/Tế bào nước tiểu',120000.00,0.00,120000.00,'2025-11-01 04:39:09');
+INSERT INTO `paymentdetails` VALUES (4,2,'IMAGING_TEST',2,'X-quang răng',200000.00,140000.00,60000.00,'2025-10-27 09:54:16'),(5,3,'PRESCRIPTION',4,'Đơn thuốc ngày 2025-10-30T16:23:15.094107',34000.00,23800.00,10200.00,'2025-10-30 15:51:22'),(6,3,'EXAMINATION',4,'Khám ngoại tổng quát',250000.00,175000.00,75000.00,'2025-10-30 15:51:22'),(7,4,'LAB_TEST',3,'Xét nghiệm sinh hóa',200000.00,0.00,200000.00,'2025-11-01 04:39:09'),(8,4,'LAB_TEST',4,'Xét nghiệm Hóa sinh/Tế bào nước tiểu',120000.00,0.00,120000.00,'2025-11-01 04:39:09');
 /*!40000 ALTER TABLE `paymentdetails` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1297,6 +1324,11 @@ CREATE TABLE `payments` (
   `patient_payment` decimal(38,2) DEFAULT NULL,
   `status` varchar(50) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
+  `actual_paid_amount` decimal(38,2) DEFAULT NULL,
+  `notes` varchar(255) DEFAULT NULL,
+  `invoice_number` varchar(255) DEFAULT NULL,
+  `invoice_serial` varchar(255) DEFAULT NULL,
+  `is_invoice_issued` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `record_id` (`record_id`),
   KEY `cashier_id` (`cashier_id`),
@@ -1311,7 +1343,7 @@ CREATE TABLE `payments` (
 
 LOCK TABLES `payments` WRITE;
 /*!40000 ALTER TABLE `payments` DISABLE KEYS */;
-INSERT INTO `payments` VALUES (2,4,NULL,450000.00,NULL,NULL,315000.00,135000.00,'PENDING_PAYMENT','2025-10-27 09:35:54'),(3,4,NULL,284000.00,NULL,NULL,198800.00,85200.00,'CANCELLED','2025-10-30 15:51:22'),(4,6,1,320000.00,'2025-11-01 04:50:09','cash',0.00,320000.00,'PAID','2025-11-01 04:39:09');
+INSERT INTO `payments` VALUES (2,4,1,450000.00,'2025-11-02 17:07:06','CASH',315000.00,135000.00,'PAID','2025-10-27 09:35:54',135000.00,NULL,'AA/20E-2025-000001','AA/20E',_binary ''),(3,4,1,284000.00,'2025-11-03 09:32:08','CASH',198800.00,85200.00,'PAID','2025-10-30 15:51:22',100000.00,'Hoàn lại: 14800.00','AA/20E-2025-000002','AA/20E',_binary ''),(4,6,1,320000.00,'2025-11-01 04:50:09','CASH',0.00,320000.00,'PAID','2025-11-01 04:39:09',NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `payments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1431,7 +1463,7 @@ CREATE TABLE `prescriptions` (
 
 LOCK TABLES `prescriptions` WRITE;
 /*!40000 ALTER TABLE `prescriptions` DISABLE KEYS */;
-INSERT INTO `prescriptions` VALUES (1,1,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(2,2,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(3,4,NULL,4,NULL,'CANCELED','2025-10-30 09:23:15.094107',3,'PRE3'),(4,4,NULL,4,NULL,'DRAFT','2025-10-31 04:49:57.983889',4,'PRE4');
+INSERT INTO `prescriptions` VALUES (1,1,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(2,2,NULL,1,1,'NEW','2025-05-24 00:00:00.000000',NULL,NULL),(3,4,NULL,4,NULL,'CANCELED','2025-10-30 09:23:15.094107',3,'PRE3'),(4,4,NULL,4,NULL,'PAID','2025-10-31 04:49:57.983889',4,'PRE4');
 /*!40000 ALTER TABLE `prescriptions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1536,7 +1568,7 @@ CREATE TABLE `resultexamination` (
 
 LOCK TABLES `resultexamination` WRITE;
 /*!40000 ALTER TABLE `resultexamination` DISABLE KEYS */;
-INSERT INTO `resultexamination` VALUES (4,4,NULL,4,2,NULL,'PENDING_PAYMENT','2025-10-27 09:35:53.888805',NULL),(5,6,NULL,6,1,NULL,'IN_PROGRESS','2025-11-01 04:33:55.806456',NULL);
+INSERT INTO `resultexamination` VALUES (4,4,NULL,4,2,NULL,'PAID','2025-10-27 09:35:53.888805',NULL),(5,6,NULL,6,1,NULL,'IN_PROGRESS','2025-11-01 04:33:55.806456',NULL);
 /*!40000 ALTER TABLE `resultexamination` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2014,4 +2046,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-01 12:45:22
+-- Dump completed on 2025-11-03 23:03:46

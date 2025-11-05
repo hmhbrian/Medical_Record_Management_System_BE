@@ -132,6 +132,28 @@
 			<version>1.5.5.Final</version>
 			<scope>provided</scope>
 		</dependency>
+		<!--JasperReports - xuất PDF -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>7.0.3</version> </dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>7.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-pdf</artifactId>
+			<version>7.0.3</version>
+		</dependency>
+		<!-- SỬ DỤNG JDT COMPILER: Công cụ biên dịch Java nhẹ nhất cho JasperReports -->
+		<dependency>
+			<groupId>org.eclipse.jdt</groupId>
+			<artifactId>ecj</artifactId>
+			<version>3.27.0</version> <!-- Phiên bản tương thích với Java 17 -->
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
