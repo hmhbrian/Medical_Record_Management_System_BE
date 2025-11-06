@@ -10,6 +10,7 @@ import com.example.clinicbooking.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,11 @@ public class DoctorService implements IDoctorService {
 
     @Override
     public List<DoctorResponse> getAll() {
-        return doctorRepo.findAll().stream()
+        List<Doctor> doctors = doctorRepo.findAll();
+        if (doctors.isEmpty()) {
+            return Collections.emptyList(); // Trả về danh sách rỗng thay vì null
+        }
+        return doctors.stream()
                 .map(this::covertToResponse)
                 .collect(Collectors.toList());
     }
@@ -72,6 +77,9 @@ public class DoctorService implements IDoctorService {
     }
 
     private DoctorResponse covertToResponse(Doctor doctor) {
+        if (doctor == null) {
+            return null; // Trả về null hoặc một DoctorResponse rỗng nếu đầu vào là null
+        }
         DoctorResponse dto = new DoctorResponse();
         dto.setId(doctor.getId());
         dto.setDoctorcode(doctor.getDoctorcode());
@@ -82,16 +90,30 @@ public class DoctorService implements IDoctorService {
         dto.setDateOfBirth(doctor.getStaff().getUser().getDateOfBirth());
         dto.setAvatar_url(doctor.getStaff().getUser().getAvatar_url());
         dto.setGender(doctor.getStaff().getUser().getGender());
-        dto.setDepartmentId(doctor.getStaff().getDepartment().getId());
-        dto.setDepartment(doctor.getStaff().getDepartment().getName());
+
         dto.setPositionId(doctor.getStaff().getStaff_position().getId());
         dto.setPosition(doctor.getStaff().getStaff_position().getPosition());
-        dto.setSpecialtyId(doctor.getSpecialty().getId());
-        dto.setSpecialty(doctor.getSpecialty().getName());
+
         dto.setExperienceYears(doctor.getExperienceYears());
         dto.setCertificationName(doctor.getCertificationName());
         dto.setIssuedBy(doctor.getIssuedBy());
         dto.setIssueDate(doctor.getIssueDate());
+
+        if(doctor.getSpecialty() != null) {
+            dto.setSpecialtyId(doctor.getSpecialty().getId());
+            dto.setSpecialty(doctor.getSpecialty().getName());
+        }else {
+            dto.setSpecialtyId(null);
+            dto.setSpecialty("N/A");
+        }
+
+        if(doctor.getStaff().getDepartment() != null) {
+            dto.setDepartmentId(doctor.getStaff().getDepartment().getId());
+            dto.setDepartment(doctor.getStaff().getDepartment().getName());
+        }else {
+            dto.setDepartmentId(null);
+            dto.setDepartment("N/A");
+        }
         return dto;
     }
 
