@@ -30,7 +30,7 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    //Lấy danh sách hồ sơ ngoại trú của bác sĩ với phân trang và lọc
+    //Lấy danh sách phiếu thanh toán với phân trang và lọc
     @GetMapping
     public ResponseEntity<PaginatedResponseDTO<PaymentResponse>> getDoctorMedicalRecords(
             @RequestParam(required = false) String keyword,

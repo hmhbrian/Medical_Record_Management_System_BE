@@ -26,7 +26,8 @@ public class DoctorController {
 
     @GetMapping
     public ResponseEntity<List<DoctorResponse>> getAll() {
-        return ResponseEntity.ok(doctorService.getAll());
+        List<DoctorResponse> doctors = doctorService.getAll();
+        return ResponseEntity.ok(doctors);
     }
 
     @PutMapping("/{id}")

@@ -7,15 +7,15 @@ import java.time.LocalDate;
 
 @Data
 public class DoctorResponse extends BaseUserResponse {
-    public int id;
+    public Integer id;
     public String doctorcode;
-    public int departmentId;
+    public Integer departmentId;
     public String department;
-    public int positionId;
+    public Integer positionId;
     public String position;
-    public int specialtyId;
+    public Integer specialtyId;
     public String specialty;
-    public int experienceYears;
+    public Integer experienceYears;
     public String certificationName;
     public String issuedBy;
     public LocalDate issueDate;
