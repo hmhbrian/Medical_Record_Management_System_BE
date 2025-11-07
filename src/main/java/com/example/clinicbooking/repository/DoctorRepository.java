@@ -9,7 +9,24 @@ import java.util.Optional;
 
 public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     List<Doctor> findBySpecialtyId(Integer specialty);
-    Optional<Doctor> findById(Integer doctorId);
+
+    @Query("""
+        SELECT d FROM Doctor d 
+        JOIN FETCH d.staff s 
+        LEFT JOIN FETCH s.user 
+        LEFT JOIN FETCH s.staff_position p
+        LEFT JOIN FETCH s.department dept
+    """)
+    List<Doctor> findAllWithDetails();
+
+    @Query("""
+        SELECT d FROM Doctor d 
+        JOIN FETCH d.staff s 
+        JOIN FETCH s.user 
+        WHERE d.id = :doctorId
+    """)
+    Optional<Doctor> findByIdWithDetails(Integer doctorId);
+
     @Query("""
         select d.id
         from Staff s
@@ -17,8 +34,11 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
         where s.user.id = :userId
     """)
     Integer findIdByUserId(Integer userId);
+
     Integer countBySpecialtyId(Integer specialtyId);
+
     Optional<Doctor> findByStaff_User_Id(Integer userId);
+
     @Query("""
         select s.department.id
         from Specialty s
