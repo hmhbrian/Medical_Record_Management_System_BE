@@ -50,7 +50,7 @@ public class DoctorService implements IDoctorService {
 
     @Override
     public List<DoctorResponse> getAll() {
-        List<Doctor> doctors = doctorRepo.findAll();
+        List<Doctor> doctors = doctorRepo.findAllWithDetails();
         if (doctors.isEmpty()) {
             return Collections.emptyList(); // Trả về danh sách rỗng thay vì null
         }
@@ -88,8 +88,7 @@ public class DoctorService implements IDoctorService {
         Optional<Staff> staffOptional = Optional.ofNullable(doctor.getStaff());
 
         // Sử dụng Optional để bọc đối tượng User
-        Optional<User> userOptional = staffOptional
-                .map(Staff::getUser);
+        Optional<User> userOptional = staffOptional.map(Staff::getUser);
 
         // Truy cập các trường của User một cách an toàn
         if (userOptional.isPresent()) {
@@ -168,12 +167,14 @@ public class DoctorService implements IDoctorService {
 
         try {
             // Use Optional directly instead of stream
-            Doctor doctor = doctorRepo.findById(doctorId)
+            Doctor doctor = doctorRepo.findByIdWithDetails(doctorId)
                     .orElseThrow(() -> new InvalidInputException("Doctor not found with ID: " + doctorId));
             return covertToResponse(doctor);
-        } catch (Exception e) {
+        } catch (InvalidInputException e) {
+            throw new InvalidInputException("Doctor không tồn tại." + e.getMessage());
+        }catch (Exception e) {
             e.printStackTrace();
-            throw new InvalidInputException("Lỗi khi lấy bác sĩ");
+            throw new InvalidInputException("Lỗi xử lý dữ liệu bác sĩ (ID: " + doctorId + "). Vui lòng kiểm tra log.");
         }
     }
     @Override
