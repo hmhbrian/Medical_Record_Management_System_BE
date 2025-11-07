@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,6 +130,10 @@ public class AppointmentService {
     public List<AppointmentDTO> getAppointmentsByPatient(int patientId) {
         return appointmentRepository.findByPatientId(patientId)
                 .stream()
+                .sorted(Comparator.comparing(
+                        appointment -> appointment.getDoctorSchedule(),
+                        Comparator.comparing(DoctorSchedules::getDate).reversed() // Sắp xếp theo date giảm dần
+                ))
                 .map(this::covertToResponse)
                 .collect(Collectors.toList());
     }

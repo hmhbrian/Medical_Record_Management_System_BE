@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,42 +79,73 @@ public class DoctorService implements IDoctorService {
 
     private DoctorResponse covertToResponse(Doctor doctor) {
         if (doctor == null) {
-            return null; // Trả về null hoặc một DoctorResponse rỗng nếu đầu vào là null
+            return null;
         }
+
         DoctorResponse dto = new DoctorResponse();
+
+        // Sử dụng Optional để bọc đối tượng Staff và tránh NPE
+        Optional<Staff> staffOptional = Optional.ofNullable(doctor.getStaff());
+
+        // Sử dụng Optional để bọc đối tượng User
+        Optional<User> userOptional = staffOptional
+                .map(Staff::getUser);
+
+        // Truy cập các trường của User một cách an toàn
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            dto.setFullname(user.getFullname());
+            dto.setEmail(user.getEmail());
+            dto.setAddress(user.getAddress());
+            dto.setPhoneNumber(user.getPhoneNumber());
+            dto.setDateOfBirth(user.getDateOfBirth());
+            dto.setAvatar_url(user.getAvatar_url());
+            dto.setGender(user.getGender());
+        } else {
+            // Thiết lập giá trị mặc định nếu User không tồn tại (Quan trọng để tránh lỗi 500)
+            dto.setFullname("Tên không xác định");
+            dto.setEmail(null);
+            dto.setAddress(null);
+            dto.setPhoneNumber(null);
+            dto.setDateOfBirth(null);
+            dto.setAvatar_url(null);
+            dto.setGender(1);
+        }
+
+        //Xử lý an toàn cho StaffPosition ---
+        staffOptional.map(Staff::getStaff_position)
+                .ifPresent(position -> {
+                    dto.setPositionId(position.getId());
+                    dto.setPosition(position.getPosition());
+                });
+
+        //Ánh xạ các trường của Doctor---
         dto.setId(doctor.getId());
         dto.setDoctorcode(doctor.getDoctorcode());
-        dto.setFullname(doctor.getStaff().getUser().getFullname());
-        dto.setEmail(doctor.getStaff().getUser().getEmail());
-        dto.setAddress(doctor.getStaff().getUser().getAddress());
-        dto.setPhoneNumber(doctor.getStaff().getUser().getPhoneNumber());
-        dto.setDateOfBirth(doctor.getStaff().getUser().getDateOfBirth());
-        dto.setAvatar_url(doctor.getStaff().getUser().getAvatar_url());
-        dto.setGender(doctor.getStaff().getUser().getGender());
-
-        dto.setPositionId(doctor.getStaff().getStaff_position().getId());
-        dto.setPosition(doctor.getStaff().getStaff_position().getPosition());
-
         dto.setExperienceYears(doctor.getExperienceYears());
         dto.setCertificationName(doctor.getCertificationName());
         dto.setIssuedBy(doctor.getIssuedBy());
         dto.setIssueDate(doctor.getIssueDate());
 
+        //Xử lý an toàn cho Specialty ---
         if(doctor.getSpecialty() != null) {
             dto.setSpecialtyId(doctor.getSpecialty().getId());
             dto.setSpecialty(doctor.getSpecialty().getName());
-        }else {
+        } else {
             dto.setSpecialtyId(null);
             dto.setSpecialty("N/A");
         }
 
-        if(doctor.getStaff().getDepartment() != null) {
-            dto.setDepartmentId(doctor.getStaff().getDepartment().getId());
-            dto.setDepartment(doctor.getStaff().getDepartment().getName());
-        }else {
-            dto.setDepartmentId(null);
-            dto.setDepartment("N/A");
-        }
+        // Xử lý an toàn cho Department (Thông qua Staff) ---
+        staffOptional.map(Staff::getDepartment)
+                .ifPresentOrElse(department -> {
+                    dto.setDepartmentId(department.getId());
+                    dto.setDepartment(department.getName());
+                }, () -> {
+                    dto.setDepartmentId(null);
+                    dto.setDepartment("N/A");
+                });
+
         return dto;
     }
 
