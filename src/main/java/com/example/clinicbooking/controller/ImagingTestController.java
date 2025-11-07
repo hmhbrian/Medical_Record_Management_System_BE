@@ -1,7 +1,6 @@
 package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.ImagingTest.ImagingReportResponse;
-import com.example.clinicbooking.DTO.LabTest.LabTestDetailResponse;
 import com.example.clinicbooking.service.ImagingTestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

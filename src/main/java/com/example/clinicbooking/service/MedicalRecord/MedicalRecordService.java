@@ -1,13 +1,10 @@
 package com.example.clinicbooking.service.MedicalRecord;
 
 import com.example.clinicbooking.DTO.ApiResponse;
+import com.example.clinicbooking.DTO.MedicalRecord.*;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisDataResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisUpdateRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10Response;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordMetricsResponse;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordRequest;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10Request;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.*;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
@@ -96,13 +93,13 @@ public class MedicalRecordService {
     }
 
     // Lấy tất cả hồ sơ ngoại trú theo id bệnh nhân
-    public List<MedicalRecordResponse> getRecordsByPatientId(Integer patientId) {
+    public List<MedicalRecordPatientResponse> getRecordsByPatientId(Integer patientId) {
         Patient patient = patientRepo.findById(patientId)
                 .orElseThrow(() -> new InvalidInputException("Patient not found with ID: " + patientId));
 
         return recordRepo.findByPatientId(patientId)
                 .stream()
-                .map(this::covertToResponse)
+                .map(this::covertToPatientResponse)
                 .collect(Collectors.toList());
     }
 
@@ -587,6 +584,23 @@ public class MedicalRecordService {
         dto.setAppointmentId(medicalRecord.getAppointment().getId());
         dto.setPatient(patientSummary);
         dto.setStatus(medicalRecord.getStatus().name());
+        return dto;
+    }
+
+    private MedicalRecordPatientResponse covertToPatientResponse(MedicalRecord medicalRecord) {
+        MedicalRecordPatientResponse dto = new MedicalRecordPatientResponse();
+        dto.setRecordId(medicalRecord.getId());
+        dto.setRecordCode(medicalRecord.getCode());
+        dto.setInitialSymptoms(medicalRecord.getInitialSymptoms());
+        dto.setDiagnosis(medicalRecord.getDiagnosis());
+        dto.setVisitNumber(medicalRecord.getVisitNumber());
+        dto.setVisitDate(medicalRecord.getVisitDate());
+        dto.setAppointmentId(medicalRecord.getAppointment().getId());
+        dto.setStatus(medicalRecord.getStatus().name());
+
+        dto.setDoctorName(medicalRecord.getDoctor().getStaff().getUser().getFullname());
+        dto.setDoctorSpecialty(medicalRecord.getDoctor().getSpecialty().getName());
+
         return dto;
     }
 

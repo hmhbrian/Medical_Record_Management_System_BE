@@ -1,4 +1,4 @@
-package com.example.clinicbooking.DTO.LabTest;
+package com.example.clinicbooking.DTO.LabTest.Detail;
 
 import lombok.Data;
 
@@ -11,5 +11,6 @@ public class LabTestDetailResponse {
     private String testName;
     private LocalDateTime resultDate;
     private String result;
+    private String status;
     private List<ParameterDetailResponse> parameters;
 }

@@ -2,13 +2,12 @@ package com.example.clinicbooking.controller;
 
 
 import com.example.clinicbooking.DTO.ApiResponse;
-import com.example.clinicbooking.DTO.LabTest.LabTestDetailResponse;
+import com.example.clinicbooking.DTO.LabTest.Detail.LabTestDetailRequest;
+import com.example.clinicbooking.DTO.LabTest.Detail.LabTestDetailResponse;
 import com.example.clinicbooking.DTO.LabTest.LabTestOfStaffResponse;
 import com.example.clinicbooking.DTO.LabTest.LabTestWaitingRequest;
 import com.example.clinicbooking.DTO.LabTest.LabTestWaitingResponse;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
-import com.example.clinicbooking.DTO.Payment.PaymentResponse;
-import com.example.clinicbooking.DTO.Payment.PaymentSearchRequest;
 import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.LabTest.LabTestService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,6 +34,28 @@ public class LabTestController {
         Integer currentUserId = cud.getId();
 
         return ResponseEntity.ok(labTestService.assignLabTest(labTestId, currentUserId));
+    }
+
+    @PutMapping("/{labTestId}/result")
+    public ApiResponse<?> updateLabTestResults(
+            @PathVariable Integer labTestId,
+            @RequestBody LabTestDetailRequest updateDTO
+    ) {
+        //Lấy id User đang đăng nhập
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+        Integer currentUserId = cud.getId();
+
+        // 2. Gọi Service
+        labTestService.updateLabTestResults(labTestId, updateDTO, currentUserId);
+
+        String message = updateDTO.getFinalizeResult()
+                ? "Hoàn tất và lưu kết quả xét nghiệm thành công."
+                : "Lưu tạm kết quả xét nghiệm thành công.";
+
+        return new ApiResponse<>(true, message, null);
     }
 
     @GetMapping("/waiting")
@@ -96,7 +117,14 @@ public class LabTestController {
     public ResponseEntity<LabTestDetailResponse> getLabTestDetails(
             @PathVariable("labTestId") Integer labTestId) {
 
-        LabTestDetailResponse response = labTestService.getLabTestDetails(labTestId);
+        //Lấy id User đang đăng nhập
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+        Integer currentUserId = cud.getId();
+
+        LabTestDetailResponse response = labTestService.getLabTestDetails(labTestId, currentUserId);
         return ResponseEntity.ok(response);
     }
 

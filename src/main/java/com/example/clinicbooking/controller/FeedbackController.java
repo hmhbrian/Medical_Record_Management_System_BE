@@ -1,5 +1,6 @@
 package com.example.clinicbooking.controller;
 
+import com.example.clinicbooking.DTO.FeedbackReponse;
 import com.example.clinicbooking.entity.Feedback;
 import com.example.clinicbooking.service.FeedbackService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +24,7 @@ public class FeedbackController {
 
     // Get all feedbacks
     @GetMapping
-    public List<Feedback> getAllFeedbacks() {
+    public List<FeedbackReponse> getAllFeedbacks() {
         return feedbackService.getAllFeedbacks();
     }
 

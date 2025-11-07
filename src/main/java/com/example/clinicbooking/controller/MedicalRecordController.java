@@ -1,12 +1,9 @@
 package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.ApiResponse;
+import com.example.clinicbooking.DTO.MedicalRecord.*;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisDataResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisUpdateRequest;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordMetricsResponse;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordRequest;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceOrderResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceOrdersRequest;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
@@ -82,7 +79,7 @@ public class MedicalRecordController {
 
     // Lấy hồ sơ ngoại trú theo bệnh nhân
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<MedicalRecordResponse>> getByPatient(@PathVariable Integer patientId) {
+    public ResponseEntity<List<MedicalRecordPatientResponse>> getByPatient(@PathVariable Integer patientId) {
         return ResponseEntity.ok(recordService.getRecordsByPatientId(patientId));
     }
 
