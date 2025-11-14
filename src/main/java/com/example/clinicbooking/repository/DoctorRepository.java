@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     List<Doctor> findBySpecialtyId(Integer specialty);
@@ -46,4 +47,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
         where d.id = :doctorId
     """)
     Integer findDepartmentIdByDoctorId(Integer doctorId);
+
+    // Lấy danh sách bác sĩ theo tập hợp specialtyIds
+    List<Doctor> findBySpecialtyIdIn(Set<Integer> specialtyIds);
 }

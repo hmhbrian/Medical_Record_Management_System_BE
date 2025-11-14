@@ -61,8 +61,6 @@ public class MedicalRecordService {
 
     // Tạo mới hồ sơ ngoại trú
     public MedicalRecord CreateMedicalRecord(MedicalRecordRequest request) {
-        MedicalRecord record = new MedicalRecord();
-
         Patient patient = patientRepo.findById(request.getPatientId())
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
         Doctor doctor = doctorRepo.findById(request.getDoctorId())
@@ -70,24 +68,26 @@ public class MedicalRecordService {
         Appointment appointment = appointmentRepo.findById(request.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        LocalDate today = LocalDate.now();
-        int visitNumber = recordRepo.countVisitNumber(doctor.getId(), today) + 1;
-        MedicalRecordStatus status = MedicalRecordStatus.WAITING;
+        // Kiểm tra xem đã có hồ sơ cho cuộc hẹn này chưa
+        MedicalRecord existingRecord = recordRepo.findByAppointment(appointment)
+                .orElse(null);
+        if(existingRecord != null) {
+            throw new InvalidInputException("Hồ sơ ngoại trú cho cuộc hẹn này đã tồn tại!");
+        }
+        MedicalRecord record = new MedicalRecord();
 
         record.setPatient(patient);
         record.setDoctor(doctor);
         record.setAppointment(appointment);
-        record.setVisitDate(today);
-        record.setVisitNumber(visitNumber);
         record.setInitialSymptoms(request.getInitialSymptoms());
-        record.setStatus(status);
+        record.setStatus(MedicalRecordStatus.WAITING);
 
         // Cập nhật trạng thái cuộc hẹn -> chờ khám
-        AppointmentStatus appointmentStatus = new AppointmentStatus();
-        appointmentStatus.setAppointment(appointment);
-        appointmentStatus.setStatus(3); // Chờ khám
-        appointmentStatus.setUpdateAt(LocalDateTime.now());
-        appointmentStatusRepository.save(appointmentStatus);
+//        AppointmentStatus appointmentStatus = new AppointmentStatus();
+//        appointmentStatus.setAppointment(appointment);
+//        appointmentStatus.setStatus(3); // Chờ khám
+//        appointmentStatus.setUpdateAt(LocalDateTime.now());
+//        appointmentStatusRepository.save(appointmentStatus);
 
         return recordRepo.save(record);
     }
@@ -579,8 +579,8 @@ public class MedicalRecordService {
         dto.setRecordCode(medicalRecord.getCode());
         dto.setInitialSymptoms(medicalRecord.getInitialSymptoms());
         dto.setDiagnosis(medicalRecord.getDiagnosis());
-        dto.setVisitNumber(medicalRecord.getVisitNumber());
-        dto.setVisitDate(medicalRecord.getVisitDate());
+        dto.setVisitNumber(medicalRecord.getAppointment().getVisitNumber());
+        dto.setVisitDate(medicalRecord.getAppointment().getVisitDateTime());
         dto.setAppointmentId(medicalRecord.getAppointment().getId());
         dto.setPatient(patientSummary);
         dto.setStatus(medicalRecord.getStatus().name());
@@ -593,8 +593,8 @@ public class MedicalRecordService {
         dto.setRecordCode(medicalRecord.getCode());
         dto.setInitialSymptoms(medicalRecord.getInitialSymptoms());
         dto.setDiagnosis(medicalRecord.getDiagnosis());
-        dto.setVisitNumber(medicalRecord.getVisitNumber());
-        dto.setVisitDate(medicalRecord.getVisitDate());
+        dto.setVisitNumber(medicalRecord.getAppointment().getVisitNumber());
+        dto.setVisitDate(medicalRecord.getAppointment().getVisitDateTime());
         dto.setAppointmentId(medicalRecord.getAppointment().getId());
         dto.setStatus(medicalRecord.getStatus().name());
 

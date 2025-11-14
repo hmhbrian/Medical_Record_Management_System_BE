@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer>,
                                                 JpaSpecificationExecutor<Appointment> {
@@ -16,6 +17,15 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     List<Appointment> findByDoctorScheduleId(int doctorScheduleId);
     List<Appointment> findByDoctorId(int doctorId);
     List<Appointment> findByDoctorIdAndDoctorSchedule_DateEqualsOrderByScheduleSlotAsc(Integer doctorId, LocalDate date);
+
+    @Query("SELECT a FROM Appointment a " +
+            "JOIN FETCH a.patient p " +
+            "JOIN FETCH a.doctor d " +
+            "JOIN FETCH d.staff s " +
+            "JOIN FETCH s.user us " +
+            "JOIN FETCH p.user up " +
+            "WHERE a.id = :id")
+    Optional<Appointment> findByIdWithDetails(@Param("id") int appointmentId);
 
     @Query("SELECT a FROM Appointment a WHERE a.doctorSchedule.date BETWEEN :startDate AND :endDate")
     List<Appointment> findByAppointmentDateBetween(
@@ -39,4 +49,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
         order by p.user.fullname
     """)
     List<PatientInScheduleResponse> findPatientByDoctorScheduleId(@Param("scheduleId") int doctorScheduleId);
+
+
+
+    // Truy vấn để đếm số lần khám cho một bác sĩ trong một ngày
+//    @Query("SELECT COUNT(a) FROM Appointment a " +
+//            "WHERE a.doctor.id = :doctorId AND FUNCTION('DATE',a.visitDateTime) = :visitDate")
+    @Query("SELECT COUNT(a) FROM Appointment a " +
+           "WHERE a.doctor.id = :doctorId AND a.doctorSchedule.id = :doctorScheduleId")
+    Integer countVisitNumber(@Param("doctorId") Integer doctorId, @Param("doctorScheduleId") Integer doctorScheduleId);
 }

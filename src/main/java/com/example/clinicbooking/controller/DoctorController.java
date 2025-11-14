@@ -1,5 +1,7 @@
 package com.example.clinicbooking.controller;
 
+import com.example.clinicbooking.DTO.Appointment.DoctorFilterByComplaintRequest;
+import com.example.clinicbooking.DTO.Doctor.DoctorByComplaintResponse;
 import com.example.clinicbooking.DTO.Doctor.DoctorRequest;
 import com.example.clinicbooking.DTO.Doctor.DoctorResponse;
 import com.example.clinicbooking.service.IDoctorService;
@@ -7,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Doctors", description = "Quản lý bác sĩ")
@@ -51,5 +54,19 @@ public class DoctorController {
     public ResponseEntity<DoctorResponse> getDoctorsById(@PathVariable("id") Integer doctorId) {
         DoctorResponse doctors = doctorService.getDoctorsById(doctorId);
         return ResponseEntity.ok(doctors);
+    }
+
+    @GetMapping("/filter-by-chief-complaint")
+    public ResponseEntity<List<DoctorByComplaintResponse>> getDoctorsByComplaint(
+            @RequestParam String chiefComplaint,
+            @RequestParam(required = false) String date
+    ) {
+        DoctorFilterByComplaintRequest request = new DoctorFilterByComplaintRequest();
+        request.setChiefComplaint(chiefComplaint);
+        request.setDate(date);
+
+        List<DoctorByComplaintResponse> result = doctorService.getAvailableDoctorsByComplaint(request);
+        //List<DoctorByComplaintResponse> doctors = new ArrayList<>();
+        return ResponseEntity.ok(result);
     }
 }

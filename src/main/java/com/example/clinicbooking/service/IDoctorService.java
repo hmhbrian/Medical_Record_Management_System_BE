@@ -1,5 +1,7 @@
 package com.example.clinicbooking.service;
 
+import com.example.clinicbooking.DTO.Appointment.DoctorFilterByComplaintRequest;
+import com.example.clinicbooking.DTO.Doctor.DoctorByComplaintResponse;
 import com.example.clinicbooking.DTO.Doctor.DoctorRequest;
 import com.example.clinicbooking.DTO.Doctor.DoctorResponse;
 
@@ -10,4 +12,5 @@ public interface IDoctorService extends IUserService<DoctorResponse, DoctorReque
     DoctorResponse getDoctorsById(Integer doctorId);
     DoctorResponse update(Integer id, DoctorRequest request);
     void delete(Integer id);
+    List<DoctorByComplaintResponse> getAvailableDoctorsByComplaint(DoctorFilterByComplaintRequest request);
 }

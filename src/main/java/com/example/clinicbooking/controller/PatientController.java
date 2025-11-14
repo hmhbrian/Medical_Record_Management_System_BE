@@ -28,8 +28,8 @@ public class PatientController {
     public ResponseEntity<List<PatientResponse>> getAll() {
         return ResponseEntity.ok(patientService.getAll());
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<PatientResponse> getbyUserId(@PathVariable("id") Integer userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<PatientResponse> getbyUserId(@PathVariable Integer userId) {
         PatientResponse patient = patientService.getbyUserId(userId);
         return ResponseEntity.ok(patient);
     }

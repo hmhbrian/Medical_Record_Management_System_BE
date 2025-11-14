@@ -202,9 +202,11 @@ public class RoomService {
             }
             existingRoom.setName(request.getName());
         }
-
-        if(request.getRoomCapacity() != existingRoom.getCapacity() && request.getRoomCapacity() >= 0) {
+        Integer currentCapacity = existingRoom.getCapacity();
+        if(request.getRoomCapacity() != null && request.getRoomCapacity().equals(currentCapacity) && request.getRoomCapacity() >= 0) {
             existingRoom.setCapacity(request.getRoomCapacity());
+        }else{
+            existingRoom.setCapacity(2);
         }
 
         if (request.getRoomNumber() != null) {

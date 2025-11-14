@@ -27,6 +27,12 @@ public class Appointment {
 
     private LocalDateTime presentTime;
     @OneToOne
-    @JoinColumn(name = "schedule_slot_id", nullable = false)
+    @JoinColumn(name = "schedule_slot_id", nullable = true)
     private ScheduleSlot scheduleSlot;
+    @Column(name = "visit_date_time")
+    private LocalDateTime visitDateTime;
+    @Column(name = "visit_type")
+    private String visitType;
+    @Column(name = "visit_number")
+    private Integer visitNumber;
 }

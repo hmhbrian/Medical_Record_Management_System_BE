@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface AppointmentStatusRepository extends JpaRepository<AppointmentStatus, Integer> {
     //Lấy trạng thái mới nhất của cuộc hẹn
     Optional<AppointmentStatus> findTopByAppointmentIdOrderByUpdateAtDesc(int id);
+    //Lấy trạng thái đầu tiên của cuộc hẹn
+    Optional<AppointmentStatus> findTopByAppointmentIdOrderByUpdateAtAsc(int id);
     //Lấy trạng thái chờ xác nhân của cuộc hẹn
     Optional<AppointmentStatus> findByAppointmentIdAndStatus(int id, int status);
     // Lấy toàn bộ lịch sử trạng thái (để hiển thị danh sách) và lấy luôn thông tin người cập nhật

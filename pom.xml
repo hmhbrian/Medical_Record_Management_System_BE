@@ -154,6 +154,12 @@
 			<version>3.27.0</version> <!-- Phiên bản tương thích với Java 17 -->
 			<scope>runtime</scope>
 		</dependency>
+		<!-- Firebase Admin SDK -->
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.2.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

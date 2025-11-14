@@ -9,6 +9,7 @@ import com.example.clinicbooking.config.CurrentUser;
 import com.example.clinicbooking.config.JwtService;
 import com.example.clinicbooking.entity.Staff;
 import com.example.clinicbooking.entity.User;
+import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.StaffRepository;
 import com.example.clinicbooking.repository.UserRepository;
 import com.example.clinicbooking.security.CustomUserDetails;
@@ -52,11 +53,13 @@ public class AuthController {
         String phone = normalizeText(request.getPhoneNumber());
         String raw   = normalizeText(request.getPassword());
 
-        User user = userRepo.findByPhoneNumber(phone)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sai thông tin"));
+        User user = userRepo.findByPhoneNumber(phone).orElse(null);
+        if(user == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Số điện thoại không tồn tại");
+        }
 
         if (!passwordEncoder.matches(raw, user.getPass())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid PhoneNumber or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai số điện thoại hoặc mật khẩu");
         }
 
         String position = null;

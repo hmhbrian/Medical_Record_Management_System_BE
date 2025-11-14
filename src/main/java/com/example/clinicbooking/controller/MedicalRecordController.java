@@ -38,7 +38,7 @@ public class MedicalRecordController {
             @RequestParam(required = false) String curentDate,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(defaultValue = "visitNumber") String SortBy,
+            @RequestParam(defaultValue = "id") String SortBy,
             @RequestParam(defaultValue = "ASC") String SortDir) {
         MedicalRecordSearchRequest request = new MedicalRecordSearchRequest();
         request.setQuery(keyword);
