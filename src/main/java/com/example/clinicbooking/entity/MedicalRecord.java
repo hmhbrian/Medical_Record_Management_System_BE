@@ -22,10 +22,6 @@ public class MedicalRecord {
     @OneToOne
     @JoinColumn(name = "appointment_id")
     private Appointment appointment;
-    @Column(name = "visit_date")
-    private LocalDate visitDate;
-    @Column(name = "visit_number")
-    private Integer visitNumber;
     @Column(name = "initial_symptoms")
     private String initialSymptoms;
     private String diagnosis;

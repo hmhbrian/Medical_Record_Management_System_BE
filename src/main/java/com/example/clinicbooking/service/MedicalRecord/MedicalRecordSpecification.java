@@ -1,15 +1,15 @@
 package com.example.clinicbooking.service.MedicalRecord;
 
 import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
-import com.example.clinicbooking.entity.Doctor;
-import com.example.clinicbooking.entity.MedicalRecord;
-import com.example.clinicbooking.entity.Patient;
-import com.example.clinicbooking.entity.User;
+import com.example.clinicbooking.entity.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class MedicalRecordSpecification {
     public static Specification<MedicalRecord> filterRecords(MedicalRecordSearchRequest request, int doctorId) {
@@ -26,13 +26,28 @@ public class MedicalRecordSpecification {
                 spec = spec.and((r, q, cb) -> cb.equal(r.get("status"), request.getStatus()));
             }
 
-            // 3. Lọc theo Ngày khám
-            if (request.getCurrentDate() != null) {
-                // Giả sử request.getFromDate() đã được chuyển đổi sang LocalDate
-                LocalDate current = LocalDate.parse(request.getCurrentDate());
-                spec = spec.and((r, q, cb) -> cb.equal(r.get("visitDate"), current));
+            //Lọc theo ngày khám
+            // Lấy ngày hiện tại để làm mặc định nếu không có ngày tìm kiếm
+            LocalDate defaultDate = LocalDate.now();
 
+            //Xác định ngày tìm kiếm (Search Date)
+            // Nếu request.getCurrentDate() có giá trị, dùng nó. Ngược lại, dùng ngày hiện tại.
+            LocalDate searchLocalDate;
+            if (request.getCurrentDate() != null && !request.getCurrentDate().isEmpty()) {
+                try {
+                    // Chuyển chuỗi ngày thành LocalDate
+                    searchLocalDate = LocalDate.parse(request.getCurrentDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+                } catch (Exception e) {
+                    // Xử lý lỗi hoặc sử dụng ngày mặc định nếu định dạng sai
+                    searchLocalDate = defaultDate;
+                }
+            } else {
+                // Nếu không có ngày tìm kiếm, sử dụng ngày hiện tại (hoặc bỏ qua lọc nếu không muốn mặc định)
+                searchLocalDate = defaultDate;
             }
+
+            // 3. Lọc theo Ngày khám
+            spec = spec.and(filterByDateRange(searchLocalDate));
 
             // 4. Tìm kiếm chung (Query)
             if (request.getQuery() != null && !request.getQuery().isEmpty()) {
@@ -56,6 +71,21 @@ public class MedicalRecordSpecification {
             }
 
             return spec.toPredicate(root, query, criteriaBuilder);
+        };
+    }
+
+    // Hàm hỗ trợ tạo Specification để lọc trường LocalDateTime trong phạm vi một ngày.
+    private static Specification<MedicalRecord> filterByDateRange(LocalDate date) {
+        return (root, query, criteriaBuilder) -> {
+            // Tính thời điểm bắt đầu của ngày (ví dụ: 2025-11-01 00:00:00)
+            LocalDateTime startOfDay = date.atStartOfDay();
+            // Tính thời điểm kết thúc của ngày (ví dụ: 2025-11-01 23:59:59.999...)
+            LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+
+            // JOIN tới Appointment để tìm theo ngày khám
+            Join<MedicalRecord, Appointment> appointmentJoin = root.join("appointment", JoinType.INNER);
+
+            return criteriaBuilder.between(appointmentJoin.get("visitDateTime"), startOfDay, endOfDay);
         };
     }
 }
