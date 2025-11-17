@@ -1,7 +1,7 @@
-package com.example.clinicbooking.service.LabTest;
+package com.example.clinicbooking.service.ImagingTest;
 
+import com.example.clinicbooking.DTO.ImagingTest.ImagingTestWaitingRequest;
 import com.example.clinicbooking.DTO.LabTest.LabTestWaitingRequest;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.entity.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -12,21 +12,19 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-//lọc theo ngày hiện tại, trạng thái(bắt buộc), tên xét nghiệm, chuyên khoa
-public class LabTestSpecification {
-    public static Specification<LabTests> filterLabTests(LabTestWaitingRequest request, String status, Integer LabStaffId) {
+public class ImagingTestSpecification {
+    public static Specification<ImagingTests> filterImagingTests(ImagingTestWaitingRequest request, String status, Integer ImagingStaffId) {
         return (root, query, criteriaBuilder) -> {
-            // KHỞI TẠO spec MẶC ĐỊNH LÀ TRUE
-            Specification<LabTests> spec = Specification.where(null);
-            //Tìm theo status
-            if(status != null) {
-                spec = spec.and((r, q, cb) -> cb.equal(r.get("status"), status));
-            }
 
-            if(LabStaffId != null){
+            //1.Tìm theo status
+            Specification<ImagingTests> spec = Specification.where(
+                    (r, q, cb) -> cb.equal(r.get("status"), status)
+            );
+
+            if(ImagingStaffId != null){
                 //lọc theo kỹ thuật viên
-                Join<LabTests, LabTechnician> labTechJoin = root.join("labTechnician", JoinType.INNER);
-                spec = spec.and((r, q, cb) -> cb.equal(labTechJoin.get("id"), LabStaffId));
+                Join<ImagingTests, ImagingStaff> imagingStaffJoin = root.join("imagingStaff", JoinType.INNER);
+                spec = spec.and((r, q, cb) -> cb.equal(imagingStaffJoin.get("id"), ImagingStaffId));
             }
 
             // Lấy ngày hiện tại để làm mặc định nếu không có ngày tìm kiếm
@@ -53,7 +51,7 @@ public class LabTestSpecification {
 
             //3. lọc theo bác sĩ
 
-            Join<LabTests, Doctor> doctorJoin = root.join("doctor", JoinType.INNER);
+            Join<ImagingTests, Doctor> doctorJoin = root.join("doctor", JoinType.INNER);
             if(request.getDoctorId() != null){
                 spec = spec.and((r, q, cb) -> cb.equal(doctorJoin.get("id"), request.getDoctorId()));
 
@@ -70,21 +68,21 @@ public class LabTestSpecification {
                 String likeQuery = "%" + request.getKeyword().toLowerCase() + "%";
 
                 // JOIN tới Patient và User để tìm theo Tên và Mã bệnh nhân
-                Join<LabTests, MedicalRecord> recordJoin = root.join("record", JoinType.INNER);
+                Join<ImagingTests, MedicalRecord> recordJoin = root.join("record", JoinType.INNER);
                 Join<MedicalRecord, Patient> patientJoin = recordJoin.join("patient", JoinType.INNER);
                 Join<Patient, User> userJoin = patientJoin.join("user", JoinType.INNER);
 
                 // JOIN tới testType để tìm theo tên xét nghiệm
-                Join<LabTests, TestTypes> testTypeJoin = root.join("testTypes",JoinType.INNER);
+                Join<ImagingTests, ImagingTypes> imagingTypeJoin = root.join("imagingTypes",JoinType.INNER);
 
-                Specification<LabTests> searchSpec = (rootSearch, querySearch, criteriaBuilderSearch) -> {
+                Specification<ImagingTests> searchSpec = (rootSearch, querySearch, criteriaBuilderSearch) -> {
                     return criteriaBuilderSearch.or(
                             // Tìm theo Mã Bệnh nhân
                             criteriaBuilderSearch.like(criteriaBuilderSearch.lower(patientJoin.get("patientCode")), likeQuery),
                             // Tìm theo Tên Bệnh nhân
                             criteriaBuilderSearch.like(criteriaBuilderSearch.lower(userJoin.get("fullName")), likeQuery),
                             // Tìm theo tên xét nghiệm
-                            criteriaBuilderSearch.like(criteriaBuilderSearch.lower(testTypeJoin.get("testName")), likeQuery)
+                            criteriaBuilderSearch.like(criteriaBuilderSearch.lower(imagingTypeJoin.get("imagingName")), likeQuery)
                     );
                 };
                 spec = spec.and(searchSpec);
@@ -95,7 +93,7 @@ public class LabTestSpecification {
     }
 
     // Hàm hỗ trợ tạo Specification để lọc trường LocalDateTime trong phạm vi một ngày.
-    private static Specification<LabTests> filterByDateRange(LocalDate date) {
+    private static Specification<ImagingTests> filterByDateRange(LocalDate date) {
         return (root, query, criteriaBuilder) -> {
             // Tính thời điểm bắt đầu của ngày (ví dụ: 2025-11-01 00:00:00)
             LocalDateTime startOfDay = date.atStartOfDay();

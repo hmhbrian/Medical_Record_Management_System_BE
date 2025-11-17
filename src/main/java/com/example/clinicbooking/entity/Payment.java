@@ -13,6 +13,8 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name ="payment_code")
+    private String paymentCode;
 
     // Liên kết tới Hồ sơ Bệnh án
     @ManyToOne(fetch = FetchType.EAGER)

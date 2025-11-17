@@ -92,6 +92,23 @@ public class MedicalRecordService {
         return recordRepo.save(record);
     }
 
+    // Hàm kiểm tra và cập nhật trạng thái Hồ sơ Ngoại trú khi tất cả dịch vụ đã hoàn thành
+    public void checkAndTransitionRecordStatus(MedicalRecord record) {
+        //Đếm tổng số dịch vụ đang chờ hoặc đang tiến hành
+        long pendingCount = imagingTestRepo.countByRecordAndStatusIn(record, List.of(ServiceStatus.PENDING_PAYMENT, ServiceStatus.PAID, ServiceStatus.IN_PROGRESS));
+        long pendingLabCount = labTestRepo.countByRecordAndStatusIn(record, List.of(ServiceStatus.PENDING_PAYMENT, ServiceStatus.PAID, ServiceStatus.IN_PROGRESS));
+
+        long totalPending = pendingCount + pendingLabCount;
+
+        if (totalPending == 0) {
+            // Nếu không còn dịch vụ nào đang chờ/tiến hành
+            if (record.getStatus() == MedicalRecordStatus.PENDING_RESULTS) {
+                record.setStatus(MedicalRecordStatus.PENDING_APPROVAL);
+                recordRepo.save(record);
+            }
+        }
+    }
+
     // Lấy tất cả hồ sơ ngoại trú theo id bệnh nhân
     public List<MedicalRecordPatientResponse> getRecordsByPatientId(Integer patientId) {
         Patient patient = patientRepo.findById(patientId)
@@ -270,55 +287,6 @@ public class MedicalRecordService {
             existingExamination.setStatus(ServiceStatus.IN_PROGRESS); // Trạng thái: Chờ thanh toán
 
             resultExaminationRepo.save(existingExamination); //payment sẽ tạo khi có toa thuốc
-
-            //Tạo payment
-//            BigDecimal servicePrice = new BigDecimal(String.valueOf(examination.getPrice()));
-//
-//            double insuranceRateService = 0.8; // Giả định tỷ lệ hỗ trợ BHYT
-//            double insuranceRatePatient = record.getPatient().getInsuranceRate(); // Lấy tỷ lệ BHYT của bệnh nhân
-//
-//            // Lấy tỷ lệ hỗ trợ BHYT áp dụng thấp hơn giữa dịch vụ và bệnh nhân
-//            double finalRateDouble = Math.min(insuranceRateService, insuranceRatePatient);
-//
-//            //Dùng BigDecimal để tính toán chính xác tiền tệ
-//            BigDecimal insuranceRate = new BigDecimal(finalRateDouble);
-//
-//            //Đặt scale cho tiền tệ: scale = 0 (cho VND), 2 (cho USD/EUR)
-//            int scale = 0;
-//            RoundingMode roundingMode = RoundingMode.HALF_UP;
-//
-//            // Tính số tiền BHYT chi trả
-//            BigDecimal insuranceCovered = servicePrice
-//                    .multiply(insuranceRate)
-//                    .setScale(scale, roundingMode); // Áp dụng làm tròn
-//
-//            // Tính số tiền bệnh nhân phải trả
-//            BigDecimal patientOwed = servicePrice.subtract(insuranceCovered);
-//
-//            //Tạo bản ghi Payment
-//            Payment payment = new Payment();
-//            payment.setRecord(record);
-//            payment.setTotalAmount(servicePrice);
-//            payment.setInsuranceCoverage(insuranceCovered); // Gán tổng tiền BHYT ước tính
-//            payment.setPatientPayment(patientOwed);       // Gán tổng tiền bệnh nhân phải trả ước tính
-//            payment.setStatus("PENDING_PAYMENT");
-//            payment.setCreatedAt(LocalDateTime.now());
-//
-//            payment = paymentRepo.save(payment);
-//
-//            //Tạo bản ghi PaymentDetail
-//            PaymentDetail detail = new PaymentDetail();
-//            detail.setPayment(payment);
-//            detail.setServiceType("EXAMINATION");
-//            detail.setServiceId(newExamination.getId());
-//            detail.setDescription(examination.getExaminationName());
-//            detail.setTotalAmount(servicePrice);
-//            detail.setCreatedAt(LocalDateTime.now());
-//
-//            // Gán chi tiết tiền BHYT và bệnh nhân phải trả cho từng mục
-//            detail.setInsuranceCoveredAmount(insuranceCovered);
-//            detail.setPatientPaidAmount(patientOwed);
-//            paymentDetailRepo.save(detail);
         }
 
 

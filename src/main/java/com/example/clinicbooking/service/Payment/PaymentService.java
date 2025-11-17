@@ -170,6 +170,7 @@ public class PaymentService {
     private PaymentResponse covertToResponse(Payment payment) {
         PaymentResponse dto = new PaymentResponse();
         dto.setPaymentId(payment.getId());
+        dto.setPaymentCode(payment.getPaymentCode());
         dto.setRecordCode(payment.getRecord().getCode());
         dto.setPatientId(payment.getRecord().getPatient().getId());
         dto.setPatientCode(payment.getRecord().getPatient().getPatientCode());
@@ -179,7 +180,7 @@ public class PaymentService {
         dto.setTotalAmount(payment.getTotalAmount());
         dto.setInsuranceCoverage(payment.getInsuranceCoverage());
         dto.setPatientPaymentTotal(payment.getPatientPayment());
-        dto.setCreateAt(payment.getCreatedAt());
+        dto.setCreatedAt(payment.getCreatedAt());
         return dto;
     }
 
@@ -204,14 +205,20 @@ public class PaymentService {
 
         // 4. Tạo đối tượng Response cuối cùng
         PaymentDetailResponse response = new PaymentDetailResponse();
+        response.setPaymentId(payment.getId());
+        response.setPaymentCode(payment.getPaymentCode());
+
         response.setRecordCode(payment.getRecord().getCode());
-        response.setPatientName(patientName);
+        response.setPatientCode(payment.getRecord().getPatient().getPatientCode());
+        response.setPatientName(payment.getRecord().getPatient().getUser().getFullname());
         response.setStatus(payment.getStatus().name());
         response.setTotalAmount(payment.getTotalAmount());
         response.setInsuranceCoverage(payment.getInsuranceCoverage());
         response.setPatientPaymentTotal(payment.getPatientPayment());
-        response.setItemPayments(itemDetails);
 
+        response.setCreatedAt(payment.getCreatedAt());
+        response.setPaidAt(payment.getPaymentDate());
+        response.setItemPayments(itemDetails);
         return response;
     }
 

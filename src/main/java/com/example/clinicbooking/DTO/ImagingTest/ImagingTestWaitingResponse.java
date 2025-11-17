@@ -1,18 +1,16 @@
-package com.example.clinicbooking.DTO.LabTest;
+package com.example.clinicbooking.DTO.ImagingTest;
 
 import com.example.clinicbooking.DTO.Patient.PatientSummary;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-public class LabTestWaitingResponse {
-    private Integer labTestId;
-    private String labTestName;
+public class ImagingTestWaitingResponse {
+    private Integer imagingTestId;
+    private String imagingTestName;
     private LocalDateTime requestedDate;
     private String status;
     private String doctorInChargeName;
-    private String specialty;
     private PatientSummary patient;
 }

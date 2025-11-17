@@ -11,6 +11,7 @@ import com.example.clinicbooking.DTO.Patient.PatientSummary;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
+import com.example.clinicbooking.service.MedicalRecord.MedicalRecordService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,7 @@ public class LabTestService {
     private final MedicalRecordRepository medicalRecordRepo;
     private final TestTypeRepository testTypeRepo;
     private final StaffRepository staffRepo;
+    private final MedicalRecordService medicalRecordService;
 
     //=========POST METHODS=========
     //XÁC NHẬN ĐẢM NHẬN XÉT NGHIỆM
@@ -126,17 +128,10 @@ public class LabTestService {
             throw new AccessDeniedException("Bạn không được phép cập nhật chi tiết xét nghiệm này.");
         }
 
-        // 2. Cập nhật LabTest (thông tin tổng hợp)
-        labTest.setResult(updateDTO.getResult());
-        if (updateDTO.getFinalizeResult()) {
-            // Hoàn tất: Cập nhật ngày kết quả và trạng thái thành COMPLETED
-            labTest.setResultDate(LocalDateTime.now());
-            labTest.setStatus(ServiceStatus.COMPLETED);
-        }
         // Nếu là Lưu tạm (finalizeResult=false), trạng thái vẫn là IN_PROGRESS và resultDate không đổi.
         labTestRepo.save(labTest);
 
-        // 3. Cập nhật LabTest Details (Danh sách chi tiết)
+        // 2. Cập nhật LabTest Details (Danh sách chi tiết)
         // Lấy tất cả detailId từ DTO để tìm kiếm hàng loạt (tối ưu hơn việc tìm từng dòng)
         List<Integer> detailIds = updateDTO.getParameters().stream()
                 .map(ParameterDetailRequest::getDetailId)
@@ -161,6 +156,15 @@ public class LabTestService {
                 .collect(Collectors.toList());
 
         labTestDetailRepo.saveAll(updatedDetails); // Lưu tất cả các thay đổi chi tiết
+
+        // 3. Cập nhật LabTest (thông tin tổng hợp)
+        labTest.setResult(updateDTO.getResult());
+        if (updateDTO.getFinalizeResult()) {
+            // Hoàn tất: Cập nhật ngày kết quả và trạng thái thành COMPLETED
+            labTest.setResultDate(LocalDateTime.now());
+            labTest.setStatus(ServiceStatus.COMPLETED);
+            medicalRecordService.checkAndTransitionRecordStatus(labTest.getRecord());
+        }
     }
 
     //=========GET METHODS=========
@@ -204,6 +208,9 @@ public class LabTestService {
         response.setStatus(labTest.getStatus().name());
         response.setResultDate(labTest.getResultDate());
         response.setResult(labTest.getResult()); // Ghi chú chung
+        response.setRequestedDate(labTest.getRequestedDate());
+        response.setPatientName(labTest.getRecord().getPatient().getUser().getFullname());
+        response.setDoctorInChargeName(labTest.getDoctor().getStaff().getUser().getFullname());
 
         // Ánh xạ chi tiết các chỉ số
         List<ParameterDetailResponse> parameterDtos = details.stream()
@@ -269,6 +276,7 @@ public class LabTestService {
         dto.setLabTestName(labTests.getTestTypes().getTestName());
         dto.setRequestedDate(labTests.getRequestedDate());
         dto.setDoctorInChargeName(labTests.getDoctor().getStaff().getUser().getFullname());
+        dto.setSpecialty(labTests.getDoctor().getSpecialty().getName());
         dto.setStatus(labTests.getStatus().name());
 
         PatientSummary patientDto = new PatientSummary();
@@ -292,7 +300,7 @@ public class LabTestService {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         // 2. Xây dựng Specification (logic lọc)
-        Specification<LabTests> spec = LabTestSpecification.filterLabTests(request,ServiceStatus.IN_PROGRESS.name(), labTechnician.getId());
+        Specification<LabTests> spec = LabTestSpecification.filterLabTests(request,null, labTechnician.getId());
 
         // 3. Thực hiện truy vấn
         Page<LabTests> labTestsPage = labTestRepo.findAll(spec, pageable);
@@ -319,6 +327,7 @@ public class LabTestService {
         dto.setLabTestName(labTests.getTestTypes().getTestName());
         dto.setRequestedDate(labTests.getRequestedDate());
         dto.setDoctorInChargeName(labTests.getDoctor().getStaff().getUser().getFullname());
+        dto.setSpecialty(labTests.getDoctor().getSpecialty().getName());
         dto.setStatus(labTests.getStatus().name());
         dto.setResult(labTests.getResult());
         dto.setResultDate(labTests.getResultDate());

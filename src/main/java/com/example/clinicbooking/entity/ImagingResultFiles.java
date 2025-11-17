@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -22,9 +23,9 @@ public class ImagingResultFiles {
     @Column(name = "file_type", nullable = false)
     private String FileType;
     private String description;
-    @Column(name = "is_main_image", nullable = false)
-    private Boolean IsMainImage;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
     @OneToOne
-    @JoinColumn(name = "imaging_tests_id")
+    @JoinColumn(name = "imaging_test_id")
     private ImagingTests imagingTests;
 }

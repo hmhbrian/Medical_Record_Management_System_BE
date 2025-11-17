@@ -63,8 +63,8 @@ public class MedicalRecordController {
     // Tạo mới hồ sơ ngoại trú
     @PostMapping
     public ResponseEntity<ApiResponse<?>> create(@RequestBody MedicalRecordRequest request) {
-        recordService.CreateMedicalRecord(request);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Hồ sơ ngoại trú được tạo thành công", null));
+        MedicalRecord medicalRecord = recordService.CreateMedicalRecord(request);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Hồ sơ ngoại trú được tạo thành công", medicalRecord.getId()));
     }
 
     // Cập nhật trạng thái hồ sơ ngoại trú thành "Đang tiến hành"

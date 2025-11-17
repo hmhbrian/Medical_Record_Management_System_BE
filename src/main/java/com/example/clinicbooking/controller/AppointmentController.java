@@ -218,7 +218,7 @@ public class AppointmentController {
 
     // Lấy danh sách lịch hẹn của bác sĩ trong ngày
     @GetMapping("/doctor")
-    public ResponseEntity<List<QueueDoctorResponse>> getAppointmentsByDoctor(String FindDate) {
+    public ResponseEntity<List<QueueResponse>> getAppointmentsByDoctor(String FindDate) {
         LocalDate Date = LocalDate.parse(FindDate, DateTimeFormatter.ISO_LOCAL_DATE);
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(Date));
     }

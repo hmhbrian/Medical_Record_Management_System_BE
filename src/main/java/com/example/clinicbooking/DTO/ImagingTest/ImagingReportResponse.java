@@ -11,6 +11,7 @@ public class ImagingReportResponse {
     private String imagingName;
     private LocalDateTime resultDate;
     private String reportText;
+    private String status;
     // Danh sách các tệp hình ảnh liên quan
     private List<ImagingFileDTO> resultFiles;
 }

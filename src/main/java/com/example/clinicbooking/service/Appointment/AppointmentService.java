@@ -296,7 +296,7 @@ public class AppointmentService {
     }
 
     //Lấy danh sách lịch hẹn của một bác sĩ cụ thể, không giới hạn thời gian.
-    public List<QueueDoctorResponse> getAppointmentsByDoctor(LocalDate fromDate) {
+    public List<QueueResponse> getAppointmentsByDoctor(LocalDate fromDate) {
         //Lấy id doctor từ user đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
@@ -306,7 +306,7 @@ public class AppointmentService {
 
         return appointmentRepository.findByDoctorIdAndDoctorSchedule_DateEqualsOrderByScheduleSlotAsc(doctorId, fromDate)
                 .stream()
-                .map(this::covertToQueueDoctorResponse)
+                .map(this::covertToQueueResponse)
                 .collect(Collectors.toList());
     }
 
@@ -529,13 +529,19 @@ public class AppointmentService {
             appointmentTime = "Không có khung giờ";
         }
         dto.setAppointmentId(appointment.getId());
-        dto.setCode(appointment.getCode());
+        dto.setAppointmentCode(appointment.getCode());
+
+        dto.setDoctorId(appointment.getDoctor().getId());
         dto.setDoctorName(appointment.getDoctor().getStaff().getUser().getFullname());
         dto.setDoctorSpecialty(appointment.getDoctor().getSpecialty().getName());
+
+        dto.setPatientId(appointment.getPatient().getId());
         dto.setPatientName(appointment.getPatient().getUser().getFullname());
         dto.setPatientYearOfBirth(appointment.getPatient().getUser().getDateOfBirth());
         dto.setPatientGender(appointment.getPatient().getUser().getGender() == 1 ? "Nữ" : "Nam");
         dto.setPatientAge(appointment.getPatient().getUser().getAge());
+        dto.setPatientPhone(appointment.getPatient().getUser().getPhoneNumber());
+
         dto.setRoomName(appointment.getDoctorSchedule().getRoom().getName());
         dto.setAppointmentTime(appointmentTime);
         dto.setPatientType(appointment.getVisitType());

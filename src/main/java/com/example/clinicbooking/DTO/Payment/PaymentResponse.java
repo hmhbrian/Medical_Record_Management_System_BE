@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 public class PaymentResponse {
     private Integer paymentId;
+    private String paymentCode;
     private String recordCode;
     private Integer patientId;
     private String patientName;
@@ -19,6 +20,6 @@ public class PaymentResponse {
     private BigDecimal totalAmount;
     private BigDecimal insuranceCoverage;
     private BigDecimal patientPaymentTotal;
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
     private String status;
 }
