@@ -34,7 +34,7 @@ public class ImagingTestController {
         return ResponseEntity.ok(imagingTestService.assignImagingTest(imagingTestId, currentUserId));
     }
 
-    @PostMapping("/{imagingTestId}/upload-results")
+    @PutMapping("/{imagingTestId}/upload-results")
     public ApiResponse<?> uploadResults(
             @PathVariable Integer imagingTestId,
             @ModelAttribute ImagingResultUploadRequest request // Sử dụng @ModelAttribute cho form-data

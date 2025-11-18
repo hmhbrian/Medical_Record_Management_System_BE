@@ -19,7 +19,7 @@ public class FcmTokenController {
     @Autowired
     private FcmTokenService fcmTokenService;
     @PostMapping("/token")
-    public ResponseEntity<ApiResponse<?>> createRoomType(@RequestBody FcmTokenRequest fcmTokenRq) {
+    public ResponseEntity<ApiResponse<?>> createToken(@RequestBody FcmTokenRequest fcmTokenRq) {
         return ResponseEntity.ok(fcmTokenService.saveToken(fcmTokenRq));
     }
 }

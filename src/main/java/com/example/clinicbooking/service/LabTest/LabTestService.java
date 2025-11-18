@@ -41,6 +41,7 @@ public class LabTestService {
     private final TestTypeRepository testTypeRepo;
     private final StaffRepository staffRepo;
     private final MedicalRecordService medicalRecordService;
+    private final UserRepository userRepo;
 
     //=========POST METHODS=========
     //XÁC NHẬN ĐẢM NHẬN XÉT NGHIỆM
@@ -170,32 +171,37 @@ public class LabTestService {
     //=========GET METHODS=========
     //LẤY CHI TIẾT KẾT QUẢ XÉT NGHIỆM
     public LabTestDetailResponse getLabTestDetails(Integer labTestId, Integer currentUserId) {
-
+        User user = userRepo.findById(currentUserId).orElseThrow(() -> new InvalidInputException("Người dùng không tồn tại."));
         // 1. Lấy thông tin Lab Test tổng quát
         LabTests labTest = labTestRepo.findById(labTestId)
                 .orElseThrow(() -> new InvalidInputException("Xét nghiệm không tồn tại."));
 
         //Lấy thông tin nhân viên hiện tại để kiểm tra quyền truy cập
-        Staff staff = staffRepo.findByUserId(currentUserId)
-                .orElseThrow(() -> new InvalidInputException("Nhân viên không tồn tại."));
+        if(user.getRole() != 1) {
+            Staff staff = staffRepo.findByUserId(currentUserId)
+                    .orElseThrow(() -> new InvalidInputException("Nhân viên không tồn tại."));
+            //Chỉ NVXN Đảm nhận (LabTechnicianId) mới được xem chi tiết.
+            if(staff.getStaff_position().getPosition().equals("Lab Technician")) {
+                Integer labTechnicianId = labTechnicianRepo.findIdByUserId(currentUserId);
+                LabTechnician labTechnician = labTechnicianRepo.findById(labTechnicianId)
+                        .orElseThrow(() -> new InvalidInputException("Nhân viên xét nghiệm không tồn tại."));
 
-        //Chỉ NVXN Đảm nhận (LabTechnicianId) mới được xem chi tiết.
-        if(staff.getStaff_position().getPosition().equals("Lab Technician")) {
-            Integer labTechnicianId = labTechnicianRepo.findIdByUserId(currentUserId);
-            LabTechnician labTechnician = labTechnicianRepo.findById(labTechnicianId)
-                    .orElseThrow(() -> new InvalidInputException("Nhân viên xét nghiệm không tồn tại."));
+                if (labTest.getLabTechnician() == null || labTest.getLabTechnician().getId() != labTechnician.getId()) {
+                    throw new AccessDeniedException("Bạn không được phép xem chi tiết xét nghiệm này.");
+                }
+            }
 
-            if (labTest.getLabTechnician() == null || labTest.getLabTechnician().getId() != labTechnician.getId()) {
-                throw new AccessDeniedException("Bạn không được phép xem chi tiết xét nghiệm này.");
+            //Bác sĩ chỉ được xem kết quả khi đã có
+            if(staff.getStaff_position().getPosition().equals("Doctor")) {
+                // Đảm bảo kết quả đã có
+                if (labTest.getResultDate() == null || labTest.getStatus() != ServiceStatus.COMPLETED) {
+                    throw new InvalidInputException("Kết quả xét nghiệm chưa có.");
+                }
             }
         }
 
-        //Bác sĩ chỉ được xem kết quả khi đã có
-        if(staff.getStaff_position().getPosition().equals("Doctor")) {
-            // Đảm bảo kết quả đã có
-            if (labTest.getResultDate() == null || labTest.getStatus() != ServiceStatus.COMPLETED) {
-                throw new InvalidInputException("Kết quả xét nghiệm chưa có.");
-            }
+        if (labTest.getResultDate() == null || labTest.getStatus() != ServiceStatus.COMPLETED) {
+            throw new InvalidInputException("Kết quả xét nghiệm chưa có.");
         }
 
         // 2. Lấy chi tiết các chỉ số từ bảng lab_test_details
