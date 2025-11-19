@@ -60,7 +60,7 @@ public class ImagingTestController {
         }
         Integer currentUserId = cud.getId();
 
-        ImagingReportResponse response = imagingTestService.getLabTestDetails(imagingTestId, currentUserId);
+        ImagingReportResponse response = imagingTestService.getImagingTestDetails(imagingTestId, currentUserId);
         return ResponseEntity.ok(response);
     }
 

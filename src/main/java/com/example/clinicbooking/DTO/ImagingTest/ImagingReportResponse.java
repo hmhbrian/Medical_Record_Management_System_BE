@@ -10,8 +10,12 @@ public class ImagingReportResponse {
     private Integer imagingTestId;
     private String imagingName;
     private LocalDateTime resultDate;
+    private LocalDateTime requestDate;
+    private String doctorInChargeName;
     private String reportText;
     private String status;
+    private String patientCode;
+    private String patientName;
     // Danh sách các tệp hình ảnh liên quan
     private List<ImagingFileDTO> resultFiles;
 }

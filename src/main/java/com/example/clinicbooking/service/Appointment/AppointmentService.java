@@ -91,6 +91,13 @@ public class AppointmentService {
         Appointment appointment = appointmentRepository.findByIdWithDetails(appointmentId)
                 .orElseThrow(() -> new InvalidInputException("Appointment not found with id: " + appointmentId));
 
+        // Kiểm tra trạng thái hiện tại
+        AppointmentStatus appointmentStatus = appointmentStatusRepository.findTopByAppointmentIdOrderByUpdateAtDesc(appointmentId)
+                .orElseThrow(() -> new InvalidInputException("Appointment status not found for appointment id: " + appointmentId));
+        // Chỉ cho phép xác nhận nếu trạng thái hiện tại là "Chờ xác nhận" (1)
+        if(appointmentStatus.getStatus() > 2)
+            throw new InvalidInputException("Cuộc hẹn này đã qua giai đoạn xác nhận.");
+
         // Tạo mới trạng thái
         AppointmentStatus status = new AppointmentStatus();
         status.setAppointment(appointment);
@@ -545,8 +552,10 @@ public class AppointmentService {
         dto.setRoomName(appointment.getDoctorSchedule().getRoom().getName());
         dto.setAppointmentTime(appointmentTime);
         dto.setPatientType(appointment.getVisitType());
-        dto.setVisitDateTime(appointment.getVisitDateTime());
-        dto.setVisitNumber(appointment.getVisitNumber());
+        if(appointment.getVisitDateTime() != null && appointment.getVisitNumber() != null){
+            dto.setVisitDateTime(appointment.getVisitDateTime());
+            dto.setVisitNumber(appointment.getVisitNumber());
+        }
         dto.setShift(appointment.getDoctorSchedule().getShiftType().getName_type());
 
 

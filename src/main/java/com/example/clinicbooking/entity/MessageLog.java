@@ -20,10 +20,10 @@ public class MessageLog {
     private FcmToken token;
     @Column(nullable = false)
     private String status;
-    @Column(nullable = false, name = "error_message")
+    @Column(nullable = true, name = "error_message")
     private String errorMessage;
-    @Column(nullable = false, name = "send_at")
-    private LocalDateTime sendAt;
-    @Column(nullable = false, name = "received_at")
+    @Column(nullable = false, name = "sent_at")
+    private LocalDateTime sentAt;
+    @Column(nullable = true, name = "received_at")
     private LocalDateTime receivedAt;
 }

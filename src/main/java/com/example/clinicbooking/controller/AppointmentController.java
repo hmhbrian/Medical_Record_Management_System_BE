@@ -8,7 +8,6 @@ import com.example.clinicbooking.entity.Appointment;
 import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.Appointment.AppointmentService;
 import com.example.clinicbooking.service.FCMService;
-import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -123,7 +122,7 @@ public class AppointmentController {
         //Gửi thông báo (Gửi vào queue hoặc chạy async nếu cần)
         try {
             fcmService.sendAppointmentConfirmation(request);
-        } catch (FirebaseMessagingException e) {
+        } catch (Exception e) {
             System.err.println("Failed to send notification: " + e.getMessage());
         }
 
@@ -154,7 +153,7 @@ public class AppointmentController {
         //Gửi thông báo (Gửi vào queue hoặc chạy async nếu cần)
         try {
             fcmService.sendAppointmentConfirmation(request);
-        } catch (FirebaseMessagingException e) {
+        } catch (Exception e) {
             System.err.println("Failed to send notification: " + e.getMessage());
         }
 

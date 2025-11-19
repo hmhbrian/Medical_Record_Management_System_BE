@@ -38,6 +38,7 @@ public class ImagingTestService {
     private final StaffRepository staffRepo;
     private final SupabaseStorageService storageService;
     private final MedicalRecordService medicalRecordService;
+    private final UserRepository userRepo;
 
     //=========POST METHODS=========
     //XÁC NHẬN ĐẢM NHẬN XÉT NGHIỆM
@@ -203,7 +204,7 @@ public class ImagingTestService {
         return dto;
     }
 
-    // HIỂN THỊ XÉT NGHIỆM MÀ NHÂN VIÊN ĐẢM NHIỆM THEO BỘ LỌC VỚI PHÂN TRANG
+    // HIỂN THỊ DỊCH VỤ MÀ NHÂN VIÊN ĐẢM NHIỆM THEO BỘ LỌC VỚI PHÂN TRANG
     public PaginatedResponseDTO<ImagingTestOfStaffResponse> searchImagingTestOfStaff(ImagingTestWaitingRequest request, Integer currentUserId) {
         // Lấy thông tin kỹ thuật viên dựa trên userId
         ImagingStaff imagingStaff = imagingStaffRepo.findIdByUserId(currentUserId)
@@ -254,32 +255,40 @@ public class ImagingTestService {
     }
 
     //LẤY CHI TIẾT KẾT QUẢ XÉT NGHIỆM
-    public ImagingReportResponse getLabTestDetails(Integer labTestId, Integer currentUserId) {
+    public ImagingReportResponse getImagingTestDetails(Integer imagingTestId, Integer currentUserId) {
+        User user = userRepo.findById(currentUserId).orElseThrow(() -> new InvalidInputException("Người dùng không tồn tại."));
 
         // 1. Lấy thông tin Lab Test tổng quát
-        ImagingTests imagingTest = imagingTestsRepo.findById(labTestId)
+        ImagingTests imagingTest = imagingTestsRepo.findById(imagingTestId)
                 .orElseThrow(() -> new InvalidInputException("Dịch vụ không tồn tại."));
 
-        //Lấy thông tin nhân viên hiện tại để kiểm tra quyền truy cập
-        Staff staff = staffRepo.findByUserId(currentUserId)
-                .orElseThrow(() -> new InvalidInputException("Nhân viên không tồn tại."));
-
-        //Chỉ NVXN Đảm nhận (LabTechnicianId) mới được xem chi tiết.
-        if(staff.getStaff_position().getPosition().equals("Medical Imaging Technician")) {
-            ImagingStaff imagingStaff = imagingStaffRepo.findIdByUserId(currentUserId)
+        if(user.getRole() != 1){
+            //Lấy thông tin nhân viên hiện tại để kiểm tra quyền truy cập
+            Staff staff = staffRepo.findByUserId(currentUserId)
                     .orElseThrow(() -> new InvalidInputException("Nhân viên không tồn tại."));
 
-            if (imagingTest.getImagingStaff() == null || imagingTest.getImagingStaff().getId() != imagingStaff.getId()) {
-                throw new AccessDeniedException("Bạn không được phép xem chi tiết dịch vụ này.");
+            //Chỉ NVXN Đảm nhận (LabTechnicianId) mới được xem chi tiết.
+            if(staff.getStaff_position().getPosition().equals("Medical Imaging Technician")) {
+                ImagingStaff imagingStaff = imagingStaffRepo.findIdByUserId(currentUserId)
+                        .orElseThrow(() -> new InvalidInputException("Nhân viên không tồn tại."));
+
+                if (imagingTest.getImagingStaff() == null || imagingTest.getImagingStaff().getId() != imagingStaff.getId()) {
+                    throw new AccessDeniedException("Bạn không được phép xem chi tiết dịch vụ này.");
+                }
+            }
+
+            //Bác sĩ chỉ được xem kết quả khi đã có
+            if(staff.getStaff_position().getPosition().equals("Doctor")) {
+                // Đảm bảo kết quả đã có
+                if (imagingTest.getResultDate() == null || imagingTest.getStatus() != ServiceStatus.COMPLETED) {
+                    throw new InvalidInputException("Kết quả chưa có.");
+                }
             }
         }
 
-        //Bác sĩ chỉ được xem kết quả khi đã có
-        if(staff.getStaff_position().getPosition().equals("Doctor")) {
-            // Đảm bảo kết quả đã có
-            if (imagingTest.getResultDate() == null || imagingTest.getStatus() != ServiceStatus.COMPLETED) {
-                throw new InvalidInputException("Kết quả chưa có.");
-            }
+        // Đảm bảo kết quả đã có
+        if (imagingTest.getResultDate() == null || imagingTest.getStatus() != ServiceStatus.COMPLETED) {
+            throw new InvalidInputException("Kết quả chưa có.");
         }
 
         // 2. Lấy chi tiết các chỉ số từ bảng imaging_result_files
@@ -292,6 +301,10 @@ public class ImagingTestService {
         response.setStatus(imagingTest.getStatus().name());
         response.setResultDate(imagingTest.getResultDate());
         response.setReportText(imagingTest.getResult()); // Ghi chú chung
+        response.setRequestDate(imagingTest.getRequestedDate());
+        response.setPatientName(imagingTest.getRecord().getPatient().getUser().getFullname());
+        response.setPatientCode(imagingTest.getRecord().getPatient().getPatientCode());
+        response.setDoctorInChargeName(imagingTest.getDoctor().getStaff().getUser().getFullname());
 
         // Ánh xạ chi tiết các chỉ số
         List<ImagingFileDTO> imagingFiles = details.stream()
