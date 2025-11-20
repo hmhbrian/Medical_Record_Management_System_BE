@@ -235,6 +235,7 @@ public class PaymentService {
         return dto;
     }
 
+    // Thực hiện thanh toán.
     @Transactional
     public Payment processPayment(Integer paymentId, PaymentProcessRequest request) {
 
