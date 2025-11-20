@@ -174,17 +174,11 @@ public class AppointmentController {
 
     // Check-in lịch hẹn (receptionist)
     @PutMapping("/{appointmentId}/check-in")
-    public ResponseEntity<ApiResponse<?>> CheckInAppointment(@PathVariable int appointmentId) {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
-            throw new AccessDeniedException("Unauthorized");
-        }
-        Integer currentUserId = cud.getId();
-
+    public ResponseEntity<ApiResponse<?>> CheckInAppointment(@PathVariable int appointmentId, @RequestBody int UpdatedByUserId) {
         // Check-in lịch hẹn
         Appointment appointment = appointmentService.CheckInAppointment(
                 appointmentId,
-                currentUserId
+                UpdatedByUserId
         );
 
         return ResponseEntity.ok(new ApiResponse<>(true, "Check-in lịch hẹn thành công!", null));

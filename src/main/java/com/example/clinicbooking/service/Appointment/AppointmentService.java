@@ -150,9 +150,9 @@ public class AppointmentService {
         Appointment appointment = appointmentRepository.findByIdWithDetails(appointmentId)
                 .orElseThrow(() -> new InvalidInputException("Appointment not found with id: " + appointmentId));
 
-        Optional<AppointmentStatus> statusOpt = appointmentStatusRepository
-                .findTopByAppointmentIdOrderByUpdateAtDesc(appointment.getId());
-        if(statusOpt.get().getStatus() != 2 && appointment.getVisitType().equals("scheduled")) {
+        AppointmentStatus appointmentStatus = appointmentStatusRepository.findTopByAppointmentIdOrderByUpdateAtDesc(appointmentId)
+                .orElseThrow(() -> new InvalidInputException("Appointment status not found for appointment id: " + appointmentId));
+        if(appointmentStatus.getStatus() != 2 && appointment.getVisitType().equals("scheduled")) {
             throw new InvalidInputException("Cuộc hẹn phải ở trạng thái 'Đã xác nhận' để có thể check-in.");
         }
 
@@ -161,6 +161,9 @@ public class AppointmentService {
                 appointment.getDoctor().getId(),
                 appointment.getDoctorSchedule().getId()
         );
+        if(currentVisitNumber == null) {
+            currentVisitNumber = 0;
+        }
         Integer newQueueNumber = currentVisitNumber + 1;
 
         // Cập nhật thông tin check-in
