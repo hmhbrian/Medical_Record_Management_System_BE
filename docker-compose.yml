@@ -38,6 +38,10 @@ services:
       # Nếu bạn vẫn giữ basic user ở staging
       SEC_NAME: admin
       SEC_PASS: 123456
+      #supabase
+      SUPABASE_URL: https://jzfjnxlskhghjjsvecqj.supabase.co
+      SUPABASE_SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6ZmpueGxza2hnaGpqc3ZlY3FqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzQ3Mjg0NywiZXhwIjoyMDYzMDQ4ODQ3fQ.BJ7IOLWCLOTnK_AupQ4i9IXkWOVp0btNHs67Ai6ZdRk
+      SUPABASE_STORAGE_BUCKETNAME: hospital
     ports:
       - "8080:8080"
 
