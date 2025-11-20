@@ -2,7 +2,9 @@ package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.Patient.PatientRequest;
 import com.example.clinicbooking.DTO.Patient.PatientResponse;
+import com.example.clinicbooking.service.IPatientService;
 import com.example.clinicbooking.service.IUserService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,12 +14,9 @@ import java.util.List;
 @Tag(name = "Patients", description = "Quản lý bệnh nhân")
 @RestController
 @RequestMapping("/api/patients")
+@AllArgsConstructor
 public class PatientController {
-    private final IUserService<PatientResponse,PatientRequest> patientService;
-
-    public PatientController(IUserService<PatientResponse,PatientRequest> patientService) {
-        this.patientService = patientService;
-    }
+    private final IPatientService patientService;
 
     @PostMapping
     public ResponseEntity<PatientResponse> create(@RequestBody PatientRequest request) {
@@ -43,5 +42,10 @@ public class PatientController {
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         patientService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<PatientResponse> search(@RequestParam String keyword) {
+        return ResponseEntity.ok(patientService.searchPatients(keyword));
     }
 }

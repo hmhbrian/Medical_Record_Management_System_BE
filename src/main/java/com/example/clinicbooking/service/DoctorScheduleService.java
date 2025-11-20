@@ -174,6 +174,7 @@ public class DoctorScheduleService {
     private DoctorScheduleResponse convertToResponse(DoctorSchedules schedule) {
         DoctorScheduleResponse response = new DoctorScheduleResponse();
         response.setId(schedule.getId());
+        response.setDate(schedule.getDate());
         response.setShift(schedule.getShiftType().getName_type());
         response.setLocation(schedule.getRoom().getName());
         response.setMaxPatients(schedule.getMaxPatients());

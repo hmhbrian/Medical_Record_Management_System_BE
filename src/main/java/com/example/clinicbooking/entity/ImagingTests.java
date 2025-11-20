@@ -33,8 +33,6 @@ public class ImagingTests {
     private LocalDateTime requestedDate;
     @Column(name = "result_date")
     private LocalDateTime resultDate;
-    @Column(name = "image_url", columnDefinition = "TEXT")
-    private String imagePath;
     @Enumerated(EnumType.STRING) // Dùng Enum cho trạng thái để dễ quản lý
     @Column(nullable = false)
     private ServiceStatus status;

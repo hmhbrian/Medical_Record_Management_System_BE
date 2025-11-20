@@ -91,6 +91,13 @@ public class AppointmentService {
         Appointment appointment = appointmentRepository.findByIdWithDetails(appointmentId)
                 .orElseThrow(() -> new InvalidInputException("Appointment not found with id: " + appointmentId));
 
+        // Kiểm tra trạng thái hiện tại
+        AppointmentStatus appointmentStatus = appointmentStatusRepository.findTopByAppointmentIdOrderByUpdateAtDesc(appointmentId)
+                .orElseThrow(() -> new InvalidInputException("Appointment status not found for appointment id: " + appointmentId));
+        // Chỉ cho phép xác nhận nếu trạng thái hiện tại là "Chờ xác nhận" (1)
+        if(appointmentStatus.getStatus() > 2)
+            throw new InvalidInputException("Cuộc hẹn này đã qua giai đoạn xác nhận.");
+
         // Tạo mới trạng thái
         AppointmentStatus status = new AppointmentStatus();
         status.setAppointment(appointment);
@@ -154,10 +161,11 @@ public class AppointmentService {
                 appointment.getDoctor().getId(),
                 appointment.getDoctorSchedule().getId()
         );
+        Integer newQueueNumber = currentVisitNumber + 1;
 
         // Cập nhật thông tin check-in
         appointment.setVisitDateTime(LocalDateTime.now());
-        appointment.setVisitNumber(currentVisitNumber > 0 ? currentVisitNumber + 1 : 1);
+        appointment.setVisitNumber(newQueueNumber);
         appointmentRepository.save(appointment);
 
         // Tạo mới trạng thái
@@ -216,7 +224,9 @@ public class AppointmentService {
                 request.getDoctorId(),
                 request.getDoctorScheduleId()
         ); // Nếu chưa có ai, số lớn nhất là 0
-
+        if(maxQueueNumber == null) {
+            maxQueueNumber = 0;
+        }
         Integer newQueueNumber = maxQueueNumber + 1;
 
         // 3. Tạo Bản ghi Appointment (Visit)
@@ -270,6 +280,13 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
+    public AppointmentDTO getAppointmentDetails(int appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(
+                () -> new InvalidInputException("Appointment not found with id: " + appointmentId)
+        );
+        return covertToResponse(appointment);
+    }
+
     //Lấy tất cả các lịch hẹn thuộc một ca làm việc cụ thể của bác sĩ.
     public List<AppointmentDTO> getAppointmentsByDoctorSchedule(int doctorScheduleId) {
         return appointmentRepository.findByDoctorScheduleId(doctorScheduleId)
@@ -296,7 +313,7 @@ public class AppointmentService {
     }
 
     //Lấy danh sách lịch hẹn của một bác sĩ cụ thể, không giới hạn thời gian.
-    public List<QueueDoctorResponse> getAppointmentsByDoctor(LocalDate fromDate) {
+    public List<QueueResponse> getAppointmentsByDoctor(LocalDate fromDate) {
         //Lấy id doctor từ user đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
@@ -306,7 +323,7 @@ public class AppointmentService {
 
         return appointmentRepository.findByDoctorIdAndDoctorSchedule_DateEqualsOrderByScheduleSlotAsc(doctorId, fromDate)
                 .stream()
-                .map(this::covertToQueueDoctorResponse)
+                .map(this::covertToQueueResponse)
                 .collect(Collectors.toList());
     }
 
@@ -529,18 +546,26 @@ public class AppointmentService {
             appointmentTime = "Không có khung giờ";
         }
         dto.setAppointmentId(appointment.getId());
-        dto.setCode(appointment.getCode());
+        dto.setAppointmentCode(appointment.getCode());
+
+        dto.setDoctorId(appointment.getDoctor().getId());
         dto.setDoctorName(appointment.getDoctor().getStaff().getUser().getFullname());
         dto.setDoctorSpecialty(appointment.getDoctor().getSpecialty().getName());
+
+        dto.setPatientId(appointment.getPatient().getId());
         dto.setPatientName(appointment.getPatient().getUser().getFullname());
         dto.setPatientYearOfBirth(appointment.getPatient().getUser().getDateOfBirth());
         dto.setPatientGender(appointment.getPatient().getUser().getGender() == 1 ? "Nữ" : "Nam");
         dto.setPatientAge(appointment.getPatient().getUser().getAge());
+        dto.setPatientPhone(appointment.getPatient().getUser().getPhoneNumber());
+
         dto.setRoomName(appointment.getDoctorSchedule().getRoom().getName());
         dto.setAppointmentTime(appointmentTime);
         dto.setPatientType(appointment.getVisitType());
-        dto.setVisitDateTime(appointment.getVisitDateTime());
-        dto.setVisitNumber(appointment.getVisitNumber());
+        if(appointment.getVisitDateTime() != null && appointment.getVisitNumber() != null){
+            dto.setVisitDateTime(appointment.getVisitDateTime());
+            dto.setVisitNumber(appointment.getVisitNumber());
+        }
         dto.setShift(appointment.getDoctorSchedule().getShiftType().getName_type());
 
 

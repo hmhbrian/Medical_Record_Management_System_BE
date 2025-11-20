@@ -27,7 +27,7 @@ public class FCMService {
 
     // GỬI THÔNG BÁO LỊCH HẸN
     @Transactional
-    public void sendAppointmentConfirmation(NotificationRequest request) throws FirebaseMessagingException {
+    public void sendAppointmentConfirmation(NotificationRequest request) {
 
         User user = userRepo.findById(request.getUserId()).orElse(null);
         if (user == null) {
@@ -35,15 +35,14 @@ public class FCMService {
             return;
         }
 
-        //LƯU LỊCH SỬ TIN NHẮN (MESSAGES)
+        // 1. LƯU LỊCH SỬ TIN NHẮN (MESSAGES)
         Message savedMessage = saveNewMessage(request);
 
-        // TRUY VẤN TOKEN
+        // 2. TRUY VẤN TOKEN
         List<FcmToken> tokens = fcmTokenRepo.findAllByUserAndIsActive(user,true);
 
         if (tokens.isEmpty()) {
             System.out.println("No active FCM tokens found for User: " + user.getId());
-            // KHÔNG gửi thông báo, nhưng Message đã được lưu.
             return;
         }
 
@@ -53,25 +52,66 @@ public class FCMService {
         });
         System.out.println("-------------------------------------------------");
 
-        List<String> tokenStrings = tokens.stream().map(FcmToken::getToken).toList();
+        // 3. VÒNG LẶP GỬI ĐƠN LẺ TỪNG TOKEN VÀ XỬ LÝ PHẢN HỒI
+        List<MessageLog> logsToSave = new ArrayList<>();
+        List<FcmToken> tokensToDeactivate = new ArrayList<>();
+        boolean isAnySendSuccessful = false;
+        LocalDateTime sentTime = LocalDateTime.now();
 
-        //XÂY DỰNG VÀ GỬI MULTICAST
-        MulticastMessage message = buildMulticastMessage(request, tokenStrings);
+        for (FcmToken token : tokens) {
 
-        BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
+            MessageLog log = new MessageLog();
+            log.setMessage(savedMessage);
+            log.setToken(token);
+            log.setSentAt(sentTime);
 
-        //LƯU LOG KẾT QUẢ VÀ TẠO ENTRY NOTIFICATION
-        processFCMResponse(response, savedMessage, tokens, user);
+            try {
+                // XÂY DỰNG MESSAGE ĐƠN LẺ VÀ GỬI
+                com.google.firebase.messaging.Message singleMessage = buildSingleMessage(request, token.getToken());
+
+                FirebaseMessaging.getInstance().send(singleMessage);
+
+                // Gửi thành công
+                log.setStatus("SUCCESS");
+                isAnySendSuccessful = true;
+
+            } catch (FirebaseMessagingException e) {
+                // Gửi thất bại
+                String errorCode = (e.getMessagingErrorCode() != null) ? e.getMessagingErrorCode().name() : "UNKNOWN_ERROR";
+                log.setStatus("FAILED");
+                log.setErrorMessage(errorCode + ": " + e.getMessage());
+
+                // Xử lý lỗi token không hợp lệ
+                if (MessagingErrorCode.UNREGISTERED.name().equals(errorCode)) {
+                    System.err.println("Token " + token.getToken().substring(0, 10) + "... is UNREGISTERED. Marking as inactive.");
+                    token.setActive(false);
+                    tokensToDeactivate.add(token);
+                }
+                System.err.println("FCM Error for token " + token.getToken().substring(0, 10) + "... : " + e.getMessage());
+
+            } finally {
+                logsToSave.add(log);
+            }
+        }
+
+        // 4. LƯU LOG, CẬP NHẬT TOKEN VÀ TẠO ENTRY NOTIFICATION
+        if (!logsToSave.isEmpty()) {
+            messageLogRepo.saveAll(logsToSave);
+        }
+
+        if (!tokensToDeactivate.isEmpty()) {
+            fcmTokenRepo.saveAll(tokensToDeactivate);
+        }
+
+        // TẠO ENTRY NOTIFICATION (Nếu có ít nhất một lần gửi thành công)
+        if (isAnySendSuccessful) {
+            Notifications newNotification = new Notifications();
+            newNotification.setUser(user);
+            newNotification.setMessage(savedMessage);
+            newNotification.setSentAt(sentTime);
+            notificationRepo.save(newNotification);
+        }
     }
-
-//    private Notifications createPendingNotification(User user, Message message) {
-//        Notifications notif = new Notifications();
-//        notif.setUser(user);
-//        notif.setMessage(message);
-//
-//        // Ghi vào CSDL trước khi gửi lên Firebase
-//        return notificationRepo.save(notif);
-//    }
 
     private Message saveNewMessage(NotificationRequest request) {
         Message msg = new Message();
@@ -91,16 +131,16 @@ public class FCMService {
         return messagesRepo.save(msg);
     }
 
-    private MulticastMessage buildMulticastMessage(NotificationRequest request, List<String> tokenStrings) {
+    private com.google.firebase.messaging.Message buildSingleMessage(NotificationRequest request, String token) {
         Notification notification = Notification.builder()
                 .setTitle(request.getTitle())
                 .setBody(request.getBody())
                 .build();
 
-        return MulticastMessage.builder()
+        return com.google.firebase.messaging.Message.builder()
                 .setNotification(notification)
                 .putAllData(request.getData())
-                .addAllTokens(tokenStrings)
+                .setToken(token) // Chỉ định TOKEN CỤ THỂ
                 .build();
     }
 
@@ -117,7 +157,7 @@ public class FCMService {
             MessageLog log = new MessageLog();
             log.setMessage(message);
             log.setToken(token);
-            log.setSendAt(sentTime);
+            log.setSentAt(sentTime);
 
             if (sendResponse.isSuccessful()) {
                 log.setStatus("SUCCESS");

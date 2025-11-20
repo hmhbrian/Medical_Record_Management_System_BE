@@ -11,10 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class PatientService implements IUserService<PatientResponse,PatientRequest> {
+public class PatientService implements IPatientService {
     private final UserRepository userRepo;
     private final PatientRepository patientRepo;
     private final PasswordEncoder passwordEncoder;
@@ -119,6 +120,22 @@ public class PatientService implements IUserService<PatientResponse,PatientReque
         User user = patient.getUser();
         patientRepo.delete(patient);
         userRepo.delete(user);
+    }
+
+    public PatientResponse searchPatients(String keyword) {
+        // Chuẩn bị từ khóa cho điều kiện LIKE (nếu không sử dụng JpaRepository query method)
+        // Tuy nhiên, JpaRepository query method đã xử lý toán tử LIKE cho chúng ta.
+        // Chỉ cần truyền cùng một từ khóa cho cả 3 tham số.
+
+        // Vì phương thức JpaRepository đã định nghĩa rõ ràng
+        // findByPatientCodeContainingIgnoreCaseOrUser_PhoneNumberContainingIgnoreCaseOrUser_FullnameContainingIgnoreCase
+        // nên ta chỉ cần truyền cùng 1 keyword cho cả 3 tham số.
+        Optional<Patient> patient = patientRepo.findByPatientCodeContainingIgnoreCaseOrUser_PhoneNumberContainingIgnoreCaseOrUser_FullnameContainingIgnoreCase(
+                keyword,
+                keyword,
+                keyword
+        );
+        return covertToResponse(patient.get());
     }
 
     private PatientResponse covertToResponse(Patient patient) {

@@ -8,7 +8,6 @@ import com.example.clinicbooking.entity.Appointment;
 import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.Appointment.AppointmentService;
 import com.example.clinicbooking.service.FCMService;
-import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -123,7 +122,7 @@ public class AppointmentController {
         //Gửi thông báo (Gửi vào queue hoặc chạy async nếu cần)
         try {
             fcmService.sendAppointmentConfirmation(request);
-        } catch (FirebaseMessagingException e) {
+        } catch (Exception e) {
             System.err.println("Failed to send notification: " + e.getMessage());
         }
 
@@ -154,7 +153,7 @@ public class AppointmentController {
         //Gửi thông báo (Gửi vào queue hoặc chạy async nếu cần)
         try {
             fcmService.sendAppointmentConfirmation(request);
-        } catch (FirebaseMessagingException e) {
+        } catch (Exception e) {
             System.err.println("Failed to send notification: " + e.getMessage());
         }
 
@@ -218,8 +217,14 @@ public class AppointmentController {
 
     // Lấy danh sách lịch hẹn của bác sĩ trong ngày
     @GetMapping("/doctor")
-    public ResponseEntity<List<QueueDoctorResponse>> getAppointmentsByDoctor(String FindDate) {
+    public ResponseEntity<List<QueueResponse>> getAppointmentsByDoctor(String FindDate) {
         LocalDate Date = LocalDate.parse(FindDate, DateTimeFormatter.ISO_LOCAL_DATE);
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(Date));
+    }
+
+    @GetMapping("/{appointmentId}")
+    public ResponseEntity<ApiResponse<AppointmentDTO>> getAppointmentDetail(@PathVariable Integer appointmentId) {
+        AppointmentDTO response = appointmentService.getAppointmentDetails(appointmentId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Lấy chi tiết lịch hẹn thành công!",response));
     }
 }
