@@ -332,6 +332,7 @@ public class DoctorService implements IDoctorService {
                     dto.setMaxPatients(ds.getMaxPatients());
                     dto.setBookedPatients(ds.getBookedPatients());
                     dto.setLocation(ds.getRoom().getRoomNumber());
+                    dto.setDate(ds.getDate());
 
                     // Giả định bạn có liên kết từ DoctorSchedules -> ShiftType (chứa StartTime, EndTime, ShiftName)
                     if (ds.getShiftType() != null) {

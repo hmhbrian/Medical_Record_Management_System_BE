@@ -284,13 +284,12 @@ public class ImagingTestService {
                     throw new InvalidInputException("Kết quả chưa có.");
                 }
             }
+        }else{
+            // Đảm bảo kết quả đã có
+            if (imagingTest.getResultDate() == null || imagingTest.getStatus() != ServiceStatus.COMPLETED) {
+                throw new InvalidInputException("Kết quả chưa có.");
+            }
         }
-
-        // Đảm bảo kết quả đã có
-        if (imagingTest.getResultDate() == null || imagingTest.getStatus() != ServiceStatus.COMPLETED) {
-            throw new InvalidInputException("Kết quả chưa có.");
-        }
-
         // 2. Lấy chi tiết các chỉ số từ bảng imaging_result_files
         List<ImagingResultFiles> details = imagingResultFilesRepo.findAllByImagingTests(imagingTest);
 

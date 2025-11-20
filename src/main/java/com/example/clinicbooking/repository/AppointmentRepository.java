@@ -55,7 +55,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     // Truy vấn để đếm số lần khám cho một bác sĩ trong một ngày
 //    @Query("SELECT COUNT(a) FROM Appointment a " +
 //            "WHERE a.doctor.id = :doctorId AND FUNCTION('DATE',a.visitDateTime) = :visitDate")
-    @Query("SELECT COUNT(a) FROM Appointment a " +
+    @Query("SELECT MAX(a.visitNumber) FROM Appointment a " +
            "WHERE a.doctor.id = :doctorId AND a.doctorSchedule.id = :doctorScheduleId")
     Integer countVisitNumber(@Param("doctorId") Integer doctorId, @Param("doctorScheduleId") Integer doctorScheduleId);
 }

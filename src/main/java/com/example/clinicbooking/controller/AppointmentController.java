@@ -221,4 +221,10 @@ public class AppointmentController {
         LocalDate Date = LocalDate.parse(FindDate, DateTimeFormatter.ISO_LOCAL_DATE);
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(Date));
     }
+
+    @GetMapping("/{appointmentId}")
+    public ResponseEntity<ApiResponse<AppointmentDTO>> getAppointmentDetail(@PathVariable Integer appointmentId) {
+        AppointmentDTO response = appointmentService.getAppointmentDetails(appointmentId);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Lấy chi tiết lịch hẹn thành công!",response));
+    }
 }

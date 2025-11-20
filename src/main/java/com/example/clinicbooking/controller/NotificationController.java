@@ -10,9 +10,7 @@ import org.springframework.data.repository.Repository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,5 +44,24 @@ public class NotificationController {
 
         List<NotificationResponse> response = notificationService.getNotificationsByUserId(currentUserId);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{notificationId}/read")
+    public ResponseEntity<?> markNotificationAsRead(
+            @PathVariable int notificationId,
+            @RequestParam int userId) { // Cần xác thực người dùng sở hữu thông báo
+
+        try {
+            // Truyền ID thông báo và ID người dùng để đảm bảo tính bảo mật
+            notificationService.markAsRead(notificationId, userId);
+
+            return ResponseEntity.ok().body("Notification marked as read successfully.");
+
+        } catch (IllegalArgumentException e) {
+            // Xử lý lỗi nếu không tìm thấy thông báo hoặc người dùng không sở hữu
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An unexpected error occurred.");
+        }
     }
 }

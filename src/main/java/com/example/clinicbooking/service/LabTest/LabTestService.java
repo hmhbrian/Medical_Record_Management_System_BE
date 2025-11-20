@@ -198,10 +198,10 @@ public class LabTestService {
                     throw new InvalidInputException("Kết quả xét nghiệm chưa có.");
                 }
             }
-        }
-
-        if (labTest.getResultDate() == null || labTest.getStatus() != ServiceStatus.COMPLETED) {
-            throw new InvalidInputException("Kết quả xét nghiệm chưa có.");
+        }else{
+            if (labTest.getResultDate() == null || labTest.getStatus() != ServiceStatus.COMPLETED) {
+                throw new InvalidInputException("Kết quả xét nghiệm chưa có.");
+            }
         }
 
         // 2. Lấy chi tiết các chỉ số từ bảng lab_test_details

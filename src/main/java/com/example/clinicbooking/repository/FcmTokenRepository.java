@@ -9,9 +9,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FcmTokenRepository extends JpaRepository<FcmToken, Integer> {
     @Query("SELECT t FROM FcmToken t WHERE t.user = :user AND t.isActive = :active")
     List<FcmToken> findAllByUserAndIsActive(@Param("user") User user, @Param("active") boolean active);
+
+    Optional<FcmToken> findByUserAndToken(User user, String token);
+
 }

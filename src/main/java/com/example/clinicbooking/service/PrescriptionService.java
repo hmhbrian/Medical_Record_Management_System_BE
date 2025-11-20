@@ -65,6 +65,8 @@ public class PrescriptionService {
         // Cập nhật trạng thái
         if (dto.isSend()) {
             prescription.setStatus(PrescriptionStatus.PENDING_PAYMENT); // Hoặc PENDING_DISPENSE nếu miễn phí
+            record.setStatus(MedicalRecordStatus.COMPLETED);
+            recordRepo.save(record);
         } else {
             prescription.setStatus(PrescriptionStatus.DRAFT);
         }

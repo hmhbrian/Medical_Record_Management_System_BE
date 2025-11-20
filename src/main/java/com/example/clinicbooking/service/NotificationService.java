@@ -8,6 +8,7 @@ import com.example.clinicbooking.repository.NotificationRepository;
 import com.example.clinicbooking.repository.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -77,5 +78,25 @@ public class NotificationService {
         }
 
         return dto;
+    }
+
+    @Transactional
+    public void markAsRead(int notificationId, int receiverId) {
+
+        // Tìm thông báo theo ID
+        Notifications notification = notificationRepo.findById(notificationId)
+                .orElseThrow(() -> new IllegalArgumentException("Notification not found with ID: " + notificationId));
+
+        // Xác thực quyền sở hữu
+        // Đảm bảo ID người nhận (receiver_id) trong DB khớp với userId gửi lên
+        if (notification.getUser().getId() != receiverId) {
+            throw new IllegalArgumentException("User ID mismatch. Cannot update a notification you don't own.");
+        }
+
+        // 3. Cập nhật trạng thái nếu chưa đọc
+        if (!notification.isRead()) {
+            notification.setRead(true);
+            notificationRepo.save(notification);
+        }
     }
 }

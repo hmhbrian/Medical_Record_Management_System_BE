@@ -161,10 +161,11 @@ public class AppointmentService {
                 appointment.getDoctor().getId(),
                 appointment.getDoctorSchedule().getId()
         );
+        Integer newQueueNumber = currentVisitNumber + 1;
 
         // Cập nhật thông tin check-in
         appointment.setVisitDateTime(LocalDateTime.now());
-        appointment.setVisitNumber(currentVisitNumber > 0 ? currentVisitNumber + 1 : 1);
+        appointment.setVisitNumber(newQueueNumber);
         appointmentRepository.save(appointment);
 
         // Tạo mới trạng thái
@@ -223,7 +224,9 @@ public class AppointmentService {
                 request.getDoctorId(),
                 request.getDoctorScheduleId()
         ); // Nếu chưa có ai, số lớn nhất là 0
-
+        if(maxQueueNumber == null) {
+            maxQueueNumber = 0;
+        }
         Integer newQueueNumber = maxQueueNumber + 1;
 
         // 3. Tạo Bản ghi Appointment (Visit)
@@ -275,6 +278,13 @@ public class AppointmentService {
                 ))
                 .map(this::covertToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public AppointmentDTO getAppointmentDetails(int appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(
+                () -> new InvalidInputException("Appointment not found with id: " + appointmentId)
+        );
+        return covertToResponse(appointment);
     }
 
     //Lấy tất cả các lịch hẹn thuộc một ca làm việc cụ thể của bác sĩ.
