@@ -177,7 +177,7 @@ public class LabTestService {
                 .orElseThrow(() -> new InvalidInputException("Xét nghiệm không tồn tại."));
 
         //Lấy thông tin nhân viên hiện tại để kiểm tra quyền truy cập
-        if(user.getRole() != 1) {
+        if(user.getRole() == 2){ //Nếu là nhân viên
             Staff staff = staffRepo.findByUserId(currentUserId)
                     .orElseThrow(() -> new InvalidInputException("Nhân viên không tồn tại."));
             //Chỉ NVXN Đảm nhận (LabTechnicianId) mới được xem chi tiết.

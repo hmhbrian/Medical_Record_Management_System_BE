@@ -20,6 +20,7 @@ public class Medicine {
     private String unit;
     private double minimum_quantity;
     private double current_quantity;
+    private double reserved_quantity;
     private Double price;
     @Temporal(TemporalType.DATE)
     private Date expirationDate;

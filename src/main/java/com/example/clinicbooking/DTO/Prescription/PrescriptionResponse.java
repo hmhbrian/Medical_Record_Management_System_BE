@@ -1,5 +1,6 @@
 package com.example.clinicbooking.DTO.Prescription;
 
+import com.example.clinicbooking.DTO.Prescription.Detail.PrescriptionDetailsResponse;
 import lombok.Data;
 
 import java.util.List;

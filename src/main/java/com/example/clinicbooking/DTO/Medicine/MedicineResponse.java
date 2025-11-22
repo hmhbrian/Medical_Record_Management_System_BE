@@ -13,6 +13,7 @@ public class MedicineResponse {
     public String unit;
     public double minimum_quantity;
     public double current_quantity;
+    public double reserved_quantity;
     public Double price;
     public Date expirationDate;
     public Date productionDate;
@@ -30,6 +31,7 @@ public class MedicineResponse {
         res.unit = m.getUnit();
         res.current_quantity = m.getCurrent_quantity();
         res.minimum_quantity = m.getMinimum_quantity();
+        res.reserved_quantity = m.getReserved_quantity();
         res.expirationDate = m.getExpirationDate();
         res.productionDate = m.getProductionDate();
         res.price = m.getPrice();

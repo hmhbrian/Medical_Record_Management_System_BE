@@ -331,13 +331,15 @@ public class AppointmentService {
     }
 
     //lấy danh sách lịch hẹn với các tiêu chí tìm kiếm và phân trang
-    public Page<AppointmentDTO> searchAppointments(AppointmentSearchRequest req) {
+    public PaginatedResponseDTO<AppointmentDTO> searchAppointments(AppointmentSearchRequest req) {
         // Parse sort
-        Pageable pageable = PageRequest.of(
-                Optional.ofNullable(req.getPage()).orElse(0),
-                Optional.ofNullable(req.getSize()).orElse(10),
-                Sort.by(Sort.Direction.DESC, "presentTime")
-        );
+//        Pageable pageable = PageRequest.of(
+//                Optional.ofNullable(req.getPage()).orElse(0),
+//                Optional.ofNullable(req.getSize()).orElse(10),
+//                Sort.by(Sort.Direction.DESC, "presentTime")
+//        );
+        Sort sort = Sort.by(Sort.Direction.fromString(req.getSortDir()), req.getSortBy());
+        Pageable pageable = PageRequest.of(req.getPage(), req.getSize(), sort);
 
         Specification<Appointment> spec = buildSearchAppointmentSpec(
                 req.getKeyword(),
@@ -347,11 +349,19 @@ public class AppointmentService {
         );
 
         Page<Appointment> page = appointmentRepository.findAll(spec, pageable);
+
         List<AppointmentDTO> data = page.getContent().stream()
                 .map(this::covertToResponse)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(data, pageable, page.getTotalElements());
+        //return new PageImpl<>(data, pageable, page.getTotalElements());
+        return new PaginatedResponseDTO<AppointmentDTO>(
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                data
+        );
     }
 
     //lấy danh sách hàng đợi khám bệnh với các tiêu chí tìm kiếm và phân trang
@@ -425,6 +435,7 @@ public class AppointmentService {
         dto.setRoomName(appointment.getDoctorSchedule().getRoom().getName());
         dto.setAppointmentDate(appointment.getDoctorSchedule().getDate().toString());
         dto.setAppointmentTime(appointmentTime);
+        dto.setAppointmentType(appointment.getVisitType());
         dto.setDoctorScheduleId(appointment.getDoctorSchedule().getId());
 
         Optional<AppointmentStatus> statusOpt = appointmentStatusRepository
@@ -461,12 +472,20 @@ public class AppointmentService {
             }
         };
 
-        //Reason của riêng trạng thái "Chờ xác nhận" (kể cả hiện tại đã đổi trạng thái)
-        String pendingReason = appointmentStatusRepository
-                .findByAppointmentIdAndStatus(appointment.getId(), 1)
-                .map(AppointmentStatus::getReason)
-                .orElse("");
-        dto.setReason(pendingReason);
+        //Reason của riêng trạng thái "Chờ xác nhận" đối với scheduled và "Chờ khám" đối với walk-in
+        AppointmentStatus latestStatus;
+        if(appointment.getVisitType().equals("scheduled")) {
+            latestStatus = appointmentStatusRepository
+                    .findByAppointmentIdAndStatus(appointment.getId(), 1).orElse(null);
+        } else {
+            latestStatus = appointmentStatusRepository
+                    .findByAppointmentIdAndStatus(appointment.getId(), 3).orElse(null);
+        }
+
+        if(latestStatus != null)
+            dto.setReason(latestStatus.getReason());
+        else
+            dto.setReason("");
 
         //danh sách lịch sử trạng thái để hiển thị rõ ràng
         var history = appointmentStatusRepository

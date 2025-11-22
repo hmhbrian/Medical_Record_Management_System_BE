@@ -262,7 +262,7 @@ public class ImagingTestService {
         ImagingTests imagingTest = imagingTestsRepo.findById(imagingTestId)
                 .orElseThrow(() -> new InvalidInputException("Dịch vụ không tồn tại."));
 
-        if(user.getRole() != 1){
+        if(user.getRole() == 2){ //Nếu là nhân viên
             //Lấy thông tin nhân viên hiện tại để kiểm tra quyền truy cập
             Staff staff = staffRepo.findByUserId(currentUserId)
                     .orElseThrow(() -> new InvalidInputException("Nhân viên không tồn tại."));

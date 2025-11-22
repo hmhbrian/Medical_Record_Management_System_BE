@@ -14,4 +14,6 @@ public class AppointmentSearchRequest {
     private LocalDate fromDate;      // chỉ lấy các lịch có date >= fromDate
     private Integer page = 0;        // mặc định trang 0
     private Integer size = 10;       // mặc định 10 bản ghi
+    private String sortBy = "visitDateTime";
+    private String sortDir = "DESC";
 }
