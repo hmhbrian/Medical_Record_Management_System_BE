@@ -23,7 +23,7 @@ public class PrescriptionDetails {
     private String dosage;
     @Column(name = "notes", nullable = false)
     private String notes;
-    private Integer quantity;
+    private Integer quantity;// Số lượng cuối cùng
     @Column(name="daily_quantity")
     private Integer dailyQuantity;
     private boolean is_substitutable;

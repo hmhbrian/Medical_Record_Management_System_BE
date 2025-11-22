@@ -1,17 +1,13 @@
 package com.example.clinicbooking.service.Payment;
 
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceDetail;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
-import com.example.clinicbooking.DTO.Patient.PatientSummary;
 import com.example.clinicbooking.DTO.Payment.*;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.InvoiceService;
-import com.example.clinicbooking.service.MedicalRecord.MedicalRecordSpecification;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;

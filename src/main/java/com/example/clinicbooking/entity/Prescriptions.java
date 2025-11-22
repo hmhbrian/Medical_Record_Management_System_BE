@@ -29,6 +29,8 @@ public class Prescriptions {
     private PharmacyStaff pharmacyStaff;
     @Column(name = "prescription_date", nullable = false)
     private LocalDateTime prescriptionDate;
+    @Column(name = "dispensed_at", nullable = true)
+    private LocalDateTime dispensedAt;
     @Enumerated(EnumType.STRING) // Dùng Enum cho trạng thái để dễ quản lý
     @Column(nullable = false)
     private PrescriptionStatus status;

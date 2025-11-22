@@ -79,7 +79,10 @@ public class SpecialtyService {
 
     //LẤY DANH SÁCH CHUYÊN KHOA THEO DEPARTMENT ID
     public List<SpecialtyResponse> getSpecialtiesByDepartment(int departmentId) {
-        List<Specialty> specialties = specialtyRepository.findSpecialtiesByDepartment_Id(departmentId);
+        Department department = departmentRepo.findById(departmentId)
+                .orElseThrow(() -> new InvalidInputException("Department not found with id: " + departmentId));
+
+        List<Specialty> specialties = specialtyRepository.findSpecialtiesByDepartment(department);
         return specialties.stream()
                 .map(this::covertToResponse)
                 .collect(Collectors.toList());

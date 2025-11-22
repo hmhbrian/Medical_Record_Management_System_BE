@@ -2,6 +2,7 @@ package com.example.clinicbooking.DTO.Appointment;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +30,10 @@ public class AppointmentDTO {
     private String appointmentDate;
     private LocalDateTime presentTime;
     private String appointmentTime;
+    private String appointmentType; //hẹn trực tiếp/ trực tuyến
     private String reason; //reason của trạng thái "Chờ xác nhận"
     private int statusId; // 1: Chờ xác nhận, 2: Đã xác nhận, 3:Hoàn thành, 4: Hủy.
     private String status;
+    private BigDecimal totalPrice;
     private List<StatusHistoryItemDTO> statusHistory; // danh sách lịch sử trạng thái
 }

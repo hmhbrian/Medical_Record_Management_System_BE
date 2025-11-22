@@ -33,7 +33,7 @@ public class AppointmentController {
 
     //Lấy danh sách lịch hẹn với phân trang và lọc
     @GetMapping("/find-all")
-    public ResponseEntity<ApiResponse<Page<AppointmentDTO>>> searchAppointments(
+    public ResponseEntity<ApiResponse<PaginatedResponseDTO<AppointmentDTO>>> searchAppointments(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) Integer departmentId,
@@ -50,7 +50,7 @@ public class AppointmentController {
         req.setSize(size);
 
         //return ResponseEntity.ok(appointmentService.searchAppointments(req));
-        Page<AppointmentDTO> result = appointmentService.searchAppointments(req);
+        PaginatedResponseDTO<AppointmentDTO> result = appointmentService.searchAppointments(req);
         return ResponseEntity.ok(new ApiResponse<>(true, "Lấy danh sách lịch hẹn thành công!", result));
 
     }
@@ -114,7 +114,7 @@ public class AppointmentController {
         request.setBody("Bác sĩ " + appointment.getDoctor().getStaff().getUser().getFullname() + " đã chấp nhận lịch hẹn.");
 
         Map<String, String> data = new HashMap<>();
-        data.put("type", "APPOINTMENT_CONFIRMED");
+        data.put("type", "APPOINTMENT_DETAIL");
         data.put("id",String.valueOf(appointmentId));
         request.setData(data);
         request.setSentBy(appointment.getDoctor().getStaff().getUser().getFullname());
@@ -145,7 +145,7 @@ public class AppointmentController {
         request.setBody("Bác sĩ " + appointment.getDoctor().getStaff().getUser().getFullname() + " đã từ chối lịch hẹn.");
 
         Map<String, String> data = new HashMap<>();
-        data.put("type", "APPOINTMENT_CANCELED");
+        data.put("type", "APPOINTMENT_DETAIL");
         data.put("id",String.valueOf(appointmentId));
         request.setData(data);
         request.setSentBy(appointment.getDoctor().getStaff().getUser().getFullname());
