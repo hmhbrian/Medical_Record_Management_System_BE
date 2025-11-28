@@ -1,4 +1,4 @@
-package com.example.clinicbooking.DTO.Payment;
+package com.example.clinicbooking.DTO.Payment.DetailForCashier;
 
 import lombok.Data;
 

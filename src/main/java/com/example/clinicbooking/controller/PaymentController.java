@@ -1,16 +1,13 @@
 package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.ApiResponse;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordResponse;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
-import com.example.clinicbooking.DTO.Payment.PaymentDetailResponse;
+import com.example.clinicbooking.DTO.Payment.DetailForCashier.PaymentDetailResponse;
 import com.example.clinicbooking.DTO.Payment.PaymentProcessRequest;
 import com.example.clinicbooking.DTO.Payment.PaymentResponse;
 import com.example.clinicbooking.DTO.Payment.PaymentSearchRequest;
 import com.example.clinicbooking.entity.Payment;
 import com.example.clinicbooking.exceptions.InvalidInputException;
-import com.example.clinicbooking.service.MedicalRecord.MedicalRecordService;
 import com.example.clinicbooking.service.Payment.PaymentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.sf.jasperreports.engine.JRException;

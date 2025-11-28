@@ -3,7 +3,7 @@ package com.example.clinicbooking.DTO.MedicalRecord;
 import lombok.Data;
 
 @Data
-public class MedicalRecordSearchRequest {
+public class MedicalRecordSearchAllRequest {
     // Phân trang và Sắp xếp
     private Integer page = 0;
     private Integer size = 10;
@@ -18,4 +18,8 @@ public class MedicalRecordSearchRequest {
 
     // Tìm kiếm chung (Tên, Mã BN, Mã HS)
     private String query;
+    // Lọc theo Bác sĩ
+    private Integer doctorId;
+    // Lọc theo Chuyên khoa
+    private Integer specialtyId;
 }

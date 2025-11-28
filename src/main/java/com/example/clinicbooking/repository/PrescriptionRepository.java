@@ -14,4 +14,5 @@ import java.util.Optional;
 public interface PrescriptionRepository extends JpaRepository<Prescriptions, Integer>, JpaSpecificationExecutor<Prescriptions> {
     Optional<Prescriptions> findByRecordAndStatusNotIn(MedicalRecord record, List<PrescriptionStatus> excludedStatuses);
     Optional<Prescriptions> findByRecord(MedicalRecord record);
+    boolean existsByRecord(MedicalRecord record);
 }

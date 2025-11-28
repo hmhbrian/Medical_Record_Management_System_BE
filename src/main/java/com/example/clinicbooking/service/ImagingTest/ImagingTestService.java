@@ -79,9 +79,6 @@ public class ImagingTestService {
             throw new InvalidInputException("Vui lòng cung cấp ít nhất một tệp hình ảnh để tải lên.");
         }
 
-        // Đảm bảo số lượng files và metadata khớp nhau
-        int fileCount = request.getFiles().size();
-
         // 1. Xác thực Imaging Test
         ImagingTests imagingTest = imagingTestsRepo.findById(imagingTestId)
                 .orElseThrow(() -> new InvalidInputException("Dịch vụ chẩn đoán hình ảnh không tồn tại."));
@@ -100,13 +97,44 @@ public class ImagingTestService {
             throw new InvalidInputException("Dịch vụ đang ở trạng thái " + imagingTest.getStatus().name() + ". Không thể tải ảnh mới.");
         }
 
+        // Đảm bảo số lượng files và metadata khớp nhau
+        int fileCount = request.getFiles().size();
+
+        // Kiểm tra mô tả cho từng file
+        if (request.getDescriptions() == null || request.getDescriptions().size() != fileCount) {
+            if (request.getDescriptions() == null || request.getDescriptions().isEmpty()) {
+                throw new InvalidInputException("Vui lòng cung cấp mô tả cho tất cả hình ảnh.");
+            }
+
+            // Tìm hình ảnh thiếu mô tả
+            for (int i = 0; i < fileCount; i++) {
+                if (i >= request.getDescriptions().size() || request.getDescriptions().get(i) == null || request.getDescriptions().get(i).trim().isEmpty()) {
+                    throw new InvalidInputException("Thiếu mô tả cho hình ảnh thứ " + (i + 1) + ".");
+                }
+            }
+        }
+
         // 3. Xử lý Tải File và Lưu vào Database
         for (int i = 0; i < fileCount; i++) {
             MultipartFile file = request.getFiles().get(i);
             String description = request.getDescriptions().get(i);
 
-            //Filename: [RecordCode]_ImagingTest_[ImagingTestID]_[detailId].[extension]
+            // Lấy phần mở rộng của file
             String fileExtension = getFileExtension(file.getOriginalFilename());
+
+            //KIỂM TRA ĐỊNH DẠNG FILE
+            List<String> allowedExtensions = List.of("jpg", "jpeg", "png", "gif");
+
+            if (!allowedExtensions.contains(fileExtension)) {
+                throw new InvalidInputException("Định dạng tệp không hợp lệ. Vui lòng sử dụng các định dạng: " + String.join(", ", allowedExtensions).toUpperCase() + ".");
+            }
+            //kiểm tra ContentType
+            String contentType = file.getContentType();
+            if (contentType == null || (!contentType.startsWith("image/"))) {
+                throw new InvalidInputException("Định dạng tệp không hợp lệ (Content Type: " + contentType + "). Vui lòng chỉ tải lên tệp hình ảnh.");
+            }
+
+            //Filename: [RecordCode]_ImagingTest_[ImagingTestID]_[detailId].[extension]
             String uniqueFileName = String.format("%s_ImagingTest_%d_%d.%s",
                     imagingTest.getRecord().getCode(),
                     imagingTest.getId(),
@@ -157,6 +185,38 @@ public class ImagingTestService {
         return fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
     }
 
+    //Cập nhật trạng thái ImagingTest sang COMPLETED nếu đã có file kết quả.
+    public ApiResponse<?> completeImagingTestStatus(Integer imagingTestId) {
+
+        // 1. Lấy thông tin Imaging Test
+        ImagingTests imagingTest = imagingTestsRepo.findById(imagingTestId)
+                .orElseThrow(() -> new InvalidInputException("Dịch vụ chẩn đoán hình ảnh không tồn tại."));
+
+        // 2. Kiểm tra Trạng thái hiện tại
+        if (imagingTest.getStatus() == ServiceStatus.COMPLETED) {
+            return new ApiResponse<>(true, "Dịch vụ đã hoàn thành trước đó.", null);
+        }
+
+        // 3. KIỂM TRA ĐIỀU KIỆN HOÀN THÀNH (CÓ TỆP KẾT QUẢ)
+        boolean hasResultFiles = imagingResultFilesRepo.existsByImagingTests(imagingTest);
+
+        if (!hasResultFiles || imagingTest.getResult() == null) {
+            // Báo lỗi rõ ràng nếu chưa có kết quả
+            throw new InvalidInputException("Không thể hoàn thành dịch vụ. Vui lòng tải lên ít nhất một hình ảnh kết quả trước.");
+        }
+
+        // 4. Cập nhật Trạng thái và Ngày hoàn thành
+        imagingTest.setStatus(ServiceStatus.COMPLETED);
+        imagingTest.setResultDate(LocalDateTime.now());
+        imagingTestsRepo.save(imagingTest);
+
+        // 5. Cập nhật trạng thái Hồ sơ bệnh án
+        // Gọi hàm kiểm tra tổng thể hồ sơ sau khi dịch vụ này hoàn thành
+        medicalRecordService.checkAndTransitionRecordStatus(imagingTest.getRecord());
+
+        return new ApiResponse<>(true, "Dịch vụ chẩn đoán hình ảnh đã được hoàn thành thành công.", null);
+    }
+
     //=====GET METHODS=====//
     // HIỂN THỊ DỊCH VỤ CẦN THỰC HIỆN THEO BỘ LỌC VỚI PHÂN TRANG
     public PaginatedResponseDTO<ImagingTestWaitingResponse> searchImagingTestWaiting(ImagingTestWaitingRequest request) {
@@ -193,6 +253,7 @@ public class ImagingTestService {
         dto.setImagingTestName(imagingTests.getImagingTypes().getImagingName());
         dto.setRequestedDate(imagingTests.getRequestedDate());
         dto.setDoctorInChargeName(imagingTests.getDoctor().getStaff().getUser().getFullname());
+        dto.setSpecialty(imagingTests.getDoctor().getSpecialty().getName());
         dto.setStatus(imagingTests.getStatus().name());
 
         PatientSummary patientDto = new PatientSummary();
@@ -215,7 +276,7 @@ public class ImagingTestService {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         // 2. Xây dựng Specification (logic lọc)
-        Specification<ImagingTests> spec = ImagingTestSpecification.filterImagingTests(request,ServiceStatus.IN_PROGRESS.name(), imagingStaff.getId());
+        Specification<ImagingTests> spec = ImagingTestSpecification.filterImagingTests(request,null, imagingStaff.getId());
 
         // 3. Thực hiện truy vấn
         Page<ImagingTests> imagingTestsPage = imagingTestsRepo.findAll(spec, pageable);
@@ -241,6 +302,7 @@ public class ImagingTestService {
         dto.setImagingTestName(imagingTests.getImagingTypes().getImagingName());
         dto.setRequestedDate(imagingTests.getRequestedDate());
         dto.setDoctorInChargeName(imagingTests.getDoctor().getStaff().getUser().getFullname());
+        dto.setSpecialty(imagingTests.getDoctor().getSpecialty().getName());
         dto.setStatus(imagingTests.getStatus().name());
         dto.setResult(imagingTests.getResult());
         dto.setResultDate(imagingTests.getResultDate());
@@ -296,14 +358,15 @@ public class ImagingTestService {
         // 3. Ánh xạ sang Response DTO
         ImagingReportResponse response = new ImagingReportResponse();
         response.setImagingTestId(imagingTest.getId());
-        response.setImagingName(imagingTest.getImagingTypes().getImagingName());
+        response.setImagingTestName(imagingTest.getImagingTypes().getImagingName());
         response.setStatus(imagingTest.getStatus().name());
         response.setResultDate(imagingTest.getResultDate());
         response.setReportText(imagingTest.getResult()); // Ghi chú chung
-        response.setRequestDate(imagingTest.getRequestedDate());
+        response.setRequestedDate(imagingTest.getRequestedDate());
         response.setPatientName(imagingTest.getRecord().getPatient().getUser().getFullname());
         response.setPatientCode(imagingTest.getRecord().getPatient().getPatientCode());
         response.setDoctorInChargeName(imagingTest.getDoctor().getStaff().getUser().getFullname());
+        response.setSpecialty(imagingTest.getDoctor().getSpecialty().getName());
 
         // Ánh xạ chi tiết các chỉ số
         List<ImagingFileDTO> imagingFiles = details.stream()

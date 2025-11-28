@@ -6,14 +6,18 @@ import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisDataRe
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisUpdateRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10Response;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10Request;
+import com.example.clinicbooking.DTO.MedicalRecord.Doctor.MedicalRecordResponse;
+import com.example.clinicbooking.DTO.MedicalRecord.Doctor.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.*;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.DTO.Patient.PatientSummary;
+import com.example.clinicbooking.DTO.Prescription.PrescriptionResponseDTO;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
 import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.Payment.PaymentService;
+import com.example.clinicbooking.service.Prescription.PrescriptionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -56,9 +60,12 @@ public class MedicalRecordService {
     private final LabTestsRepository labTestRepo;
     private final ImagingTypeRepository imagingTypeRepo;
     private final ImagingTestsRepository imagingTestRepo;
+    private final PrescriptionRepository prescriptionRepo;
+    private final PrescriptionService prescriptionService;
 
     private final PaymentService paymentService;
 
+    //============POST, PUT===================
     // Tạo mới hồ sơ ngoại trú
     public MedicalRecord CreateMedicalRecord(MedicalRecordRequest request) {
         Patient patient = patientRepo.findById(request.getPatientId())
@@ -90,127 +97,6 @@ public class MedicalRecordService {
 //        appointmentStatusRepository.save(appointmentStatus);
 
         return recordRepo.save(record);
-    }
-
-    // Hàm kiểm tra và cập nhật trạng thái Hồ sơ Ngoại trú khi tất cả dịch vụ đã hoàn thành
-    public void checkAndTransitionRecordStatus(MedicalRecord record) {
-        //Đếm tổng số dịch vụ đang chờ hoặc đang tiến hành
-        long pendingCount = imagingTestRepo.countByRecordAndStatusIn(record, List.of(ServiceStatus.PENDING_PAYMENT, ServiceStatus.PAID, ServiceStatus.IN_PROGRESS));
-        long pendingLabCount = labTestRepo.countByRecordAndStatusIn(record, List.of(ServiceStatus.PENDING_PAYMENT, ServiceStatus.PAID, ServiceStatus.IN_PROGRESS));
-
-        long totalPending = pendingCount + pendingLabCount;
-
-        if (totalPending == 0) {
-            // Nếu không còn dịch vụ nào đang chờ/tiến hành
-            if (record.getStatus() == MedicalRecordStatus.PENDING_RESULTS) {
-                record.setStatus(MedicalRecordStatus.PENDING_APPROVAL);
-                recordRepo.save(record);
-            }
-        }
-    }
-
-    // Lấy tất cả hồ sơ ngoại trú theo id bệnh nhân
-    public List<MedicalRecordPatientResponse> getRecordsByPatientId(Integer patientId) {
-        Patient patient = patientRepo.findById(patientId)
-                .orElseThrow(() -> new InvalidInputException("Patient not found with ID: " + patientId));
-
-        return recordRepo.findByPatientId(patientId)
-                .stream()
-                .map(this::covertToPatientResponse)
-                .collect(Collectors.toList());
-    }
-
-    // Lấy tất cả hồ sơ ngoại trú theo id bác sĩ
-    public List<MedicalRecordResponse> getRecordsByDoctorId(Integer doctorId) {
-        Doctor doctor = doctorRepo.findById(doctorId)
-                .orElseThrow(() -> new InvalidInputException("Doctor not found with ID: " + doctorId));
-
-        return recordRepo.findByDoctorId(doctorId)
-                .stream()
-                .map(this :: covertToResponse)
-                .collect(Collectors.toList());
-    }
-
-    // Lấy tất cả hồ sơ ngoại trú, nhóm theo bệnh nhân
-    public List<MedicalRecord> getAllRecordsGroupedByPatient() {
-        return recordRepo.findAllGroupedByPatient();
-    }
-
-    // Lấy hồ sơ ngoại trú theo ID
-    public Optional<MedicalRecord> getRecordById(Integer id) {
-        MedicalRecord record = recordRepo.findById(id)
-                .orElseThrow(() -> new InvalidInputException("Medical record not found with ID: " + id));
-
-        return recordRepo.findById(id);
-    }
-
-    // Tìm kiếm và phân trang hồ sơ ngoại trú theo các tiêu chí
-    public PaginatedResponseDTO<MedicalRecordResponse> searchRecords(
-            MedicalRecordSearchRequest request) {
-        //0.Lấy id doctor từ user đang đăng nhập
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
-            throw new AccessDeniedException("Unauthorized");
-        }
-        Integer doctorId = doctorRepo.findIdByUserId(cud.getId());
-
-        // 1. Chuẩn bị phân trang và sắp xếp
-        Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDir()), request.getSortBy());
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
-
-        // 2. Xây dựng Specification (logic lọc)
-        Specification<MedicalRecord> spec = MedicalRecordSpecification.filterRecords(request, doctorId);
-
-        // 3. Thực hiện truy vấn
-        Page<MedicalRecord> recordsPage = recordRepo.findAll(spec, pageable);
-
-        // 4. Ánh xạ (Mapping) Entity sang Response DTO
-        List<MedicalRecordResponse> responseRecords = recordsPage.getContent().stream()
-                .map(this::covertToResponse) // Sử dụng hàm covertToResponse để chuyển đổi
-                .collect(Collectors.toList());
-
-        // 5. Trả về Paginated Response
-        return new PaginatedResponseDTO<MedicalRecordResponse>(
-                recordsPage.getNumber(),
-                recordsPage.getSize(),
-                recordsPage.getTotalElements(),
-                recordsPage.getTotalPages(),
-                responseRecords
-        );
-    }
-
-    // Thống kê hồ sơ ngoại trú theo ngày cho bác sĩ đang đăng nhập
-    public MedicalRecordMetricsResponse getMetricsByDate(String dateString) {
-        // Xác định ngày cần thống kê
-        LocalDate currentDate = LocalDate.parse(dateString);
-
-        //Lấy id doctor từ user đang đăng nhập
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
-            throw new AccessDeniedException("Unauthorized");
-        }
-        Integer doctorId = doctorRepo.findIdByUserId(cud.getId());
-
-        // Thực hiện các truy vấn đếm
-        // Tổng số bệnh nhân
-        int total = recordRepo.countByDoctorIdAndVisitDate(doctorId, currentDate);
-
-        // Đếm theo từng trạng thái cụ thể
-        int pendingExam = recordRepo.countByDoctorIdAndVisitDateAndStatus(doctorId, currentDate, MedicalRecordStatus.WAITING);
-        int inProgress = recordRepo.countByDoctorIdAndVisitDateAndStatus(doctorId, currentDate, MedicalRecordStatus.IN_PROGRESS);
-
-        int pendingResult = recordRepo.countByDoctorIdAndVisitDateAndStatus(doctorId, currentDate, MedicalRecordStatus.PENDING_RESULTS);
-        int pendingCompletion = recordRepo.countByDoctorIdAndVisitDateAndStatus(doctorId, currentDate, MedicalRecordStatus.COMPLETED);
-
-        // Đóng gói dữ liệu vào DTO
-        MedicalRecordMetricsResponse metrics = new MedicalRecordMetricsResponse();
-        metrics.setTotalPatientsToday(total);
-        metrics.setPendingExamCount(pendingExam);
-        metrics.setInProgressCount(inProgress);
-        metrics.setPendingResultCount(pendingResult);
-        metrics.setPendingCompletionCount(pendingCompletion);
-
-        return metrics;
     }
 
     // Cập nhật trạng thái hồ sơ ngoại trú
@@ -327,7 +213,225 @@ public class MedicalRecordService {
         recordRepo.save(record);
     }
 
-    // Lấy dữ liệu chẩn đoán cho giao diện người dùng
+    // Tạo Chỉ định Dịch vụ (Xét nghiệm + Hình ảnh) cho hồ sơ bệnh án
+    @Transactional
+    public ApiResponse<?> createServiceOrders(Integer recordId, ServiceOrdersRequest dto) {
+
+        MedicalRecord record = recordRepo.findById(recordId)
+                .orElseThrow(() -> new RuntimeException("Hồ sơ bệnh án không tồn tại."));
+
+        // Danh sách các ID dịch vụ (Service ID) cần thanh toán
+        List<ServiceDetail> serviceItems = new ArrayList<>();
+
+        // --- 1. XỬ LÝ CHỈ ĐỊNH XÉT NGHIỆM (LAB TESTS) ---
+        if (dto.getLabTestCatalogIds() != null && !dto.getLabTestCatalogIds().isEmpty()) {
+            for (Integer catalogId : dto.getLabTestCatalogIds()) {
+                TestTypes testTypes = testTypeRepo.findById(catalogId)
+                        .orElseThrow(() -> new RuntimeException("Mã xét nghiệm không hợp lệ: " + catalogId));
+
+                // A. Tạo bản ghi LabTest
+                LabTests labTest = new LabTests();
+                labTest.setRecord(record);
+                labTest.setDoctor(record.getDoctor());
+                labTest.setTestTypes(testTypes); // Liên kết tới loại xét nghiệm
+                labTest.setRequestedDate(LocalDateTime.now());
+                labTest.setStatus(ServiceStatus.PENDING_PAYMENT); // Trạng thái ban đầu
+
+                labTest = labTestRepo.save(labTest);
+
+                // B. Thêm vào danh sách thanh toán
+                serviceItems.add(new ServiceDetail("LAB_TEST", labTest.getId(), testTypes.getTestName(), testTypes.getPrice()));
+            }
+        }
+
+        // --- 2. XỬ LÝ CHỈ ĐỊNH CHẨN ĐOÁN HÌNH ẢNH (IMAGING) ---
+        if (dto.getImagingTypeIds() != null && !dto.getImagingTypeIds().isEmpty()) {
+            for (Integer typeId : dto.getImagingTypeIds()) {
+                ImagingTypes imagingType = imagingTypeRepo.findById(typeId)
+                        .orElseThrow(() -> new RuntimeException("Id loại chẩn đooán hình ảnh không hợp lệ: " + typeId));
+
+                // A. Tạo bản ghi ImagingTest
+                ImagingTests imagingTest = new ImagingTests();
+                imagingTest.setRecord(record);
+                imagingTest.setDoctor(record.getDoctor());
+                imagingTest.setImagingTypes(imagingType); // Liên kết tới loại hình ảnh
+                imagingTest.setRequestedDate(LocalDateTime.now());
+                imagingTest.setStatus(ServiceStatus.PENDING_PAYMENT);
+
+                imagingTest = imagingTestRepo.save(imagingTest);
+
+                // B. Thêm vào danh sách thanh toán
+                serviceItems.add(new ServiceDetail("IMAGING_TEST", imagingTest.getId(), imagingType.getImagingName(), imagingType.getPrice()));
+            }
+        }
+
+        // --- 3. Tạo phiếu THANH TOÁN TRẢ TRƯỚC (chỉ cho Lab/Imaging) ---
+        if (serviceItems.isEmpty()) {
+            // Trường hợp không có chỉ định nào được gửi
+            return new ApiResponse<>(false, "Không có dịch vụ nào được chỉ định.", null);
+        }
+
+        paymentService.createPaymentOrder(record, serviceItems);
+
+        // Cập nhật trạng thái hồ sơ (Ví dụ: Chuyển từ IN_PROGRESS sang PENDING_PAYMENT_SERVICE)
+        record.setStatus(MedicalRecordStatus.PENDING_PREPAYMENT);
+        recordRepo.save(record);
+
+        return new ApiResponse<>(true, "Chỉ định đã được gửi thành công và chuyển sang thanh toán.",null);
+    }
+
+    // Hàm kiểm tra và cập nhật trạng thái Hồ sơ Ngoại trú khi tất cả dịch vụ đã hoàn thành
+    public void checkAndTransitionRecordStatus(MedicalRecord record) {
+        //Đếm tổng số dịch vụ đang chờ hoặc đang tiến hành
+        long pendingCount = imagingTestRepo.countByRecordAndStatusIn(record, List.of(ServiceStatus.PENDING_PAYMENT, ServiceStatus.PAID, ServiceStatus.IN_PROGRESS));
+        long pendingLabCount = labTestRepo.countByRecordAndStatusIn(record, List.of(ServiceStatus.PENDING_PAYMENT, ServiceStatus.PAID, ServiceStatus.IN_PROGRESS));
+
+        long totalPending = pendingCount + pendingLabCount;
+
+        if (totalPending == 0) {
+            // Nếu không còn dịch vụ nào đang chờ/tiến hành
+            if (record.getStatus() == MedicalRecordStatus.PENDING_RESULTS) {
+                record.setStatus(MedicalRecordStatus.PENDING_APPROVAL);
+                recordRepo.save(record);
+            }
+        }
+    }
+
+    //============GET===================
+    // Thống kê hồ sơ ngoại trú theo ngày cho bác sĩ đang đăng nhập
+    public MedicalRecordMetricsResponse getMetricsByDate(String dateString) {
+        // Xác định ngày cần thống kê
+        LocalDate currentDate = LocalDate.parse(dateString);
+
+        //Lấy id doctor từ user đang đăng nhập
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+        Integer doctorId = doctorRepo.findIdByUserId(cud.getId());
+
+        // Thực hiện các truy vấn đếm
+        // Tổng số bệnh nhân
+        int total = recordRepo.countByDoctorIdAndVisitDate(doctorId, currentDate);
+
+        // Đếm theo từng trạng thái cụ thể
+        int pendingExam = recordRepo.countByDoctorIdAndVisitDateAndStatus(doctorId, currentDate, MedicalRecordStatus.WAITING);
+        int inProgress = recordRepo.countByDoctorIdAndVisitDateAndStatus(doctorId, currentDate, MedicalRecordStatus.IN_PROGRESS);
+
+        int pendingResult = recordRepo.countByDoctorIdAndVisitDateAndStatus(doctorId, currentDate, MedicalRecordStatus.PENDING_RESULTS);
+        int pendingCompletion = recordRepo.countByDoctorIdAndVisitDateAndStatus(doctorId, currentDate, MedicalRecordStatus.COMPLETED);
+
+        // Đóng gói dữ liệu vào DTO
+        MedicalRecordMetricsResponse metrics = new MedicalRecordMetricsResponse();
+        metrics.setTotalPatientsToday(total);
+        metrics.setPendingExamCount(pendingExam);
+        metrics.setInProgressCount(inProgress);
+        metrics.setPendingResultCount(pendingResult);
+        metrics.setPendingCompletionCount(pendingCompletion);
+
+        return metrics;
+    }
+
+    // Tìm kiếm và phân trang hồ sơ ngoại trú theo các tiêu chí
+    public PaginatedResponseDTO<MedicalRecordResponse> searchRecords(
+            MedicalRecordSearchRequest request) {
+        //0.Lấy id doctor từ user đang đăng nhập
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+        Integer doctorId = doctorRepo.findIdByUserId(cud.getId());
+
+        // 1. Chuẩn bị phân trang và sắp xếp
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDir()), request.getSortBy());
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+
+        // 2. Xây dựng Specification (logic lọc)
+        Specification<MedicalRecord> spec = MedicalRecordSpecification.filterRecords(request, doctorId);
+
+        // 3. Thực hiện truy vấn
+        Page<MedicalRecord> recordsPage = recordRepo.findAll(spec, pageable);
+
+        // 4. Ánh xạ (Mapping) Entity sang Response DTO
+        List<MedicalRecordResponse> responseRecords = recordsPage.getContent().stream()
+                .map(this::covertToResponse) // Sử dụng hàm covertToResponse để chuyển đổi
+                .collect(Collectors.toList());
+
+        // 5. Trả về Paginated Response
+        return new PaginatedResponseDTO<MedicalRecordResponse>(
+                recordsPage.getNumber(),
+                recordsPage.getSize(),
+                recordsPage.getTotalElements(),
+                recordsPage.getTotalPages(),
+                responseRecords
+        );
+    }
+
+    //Lấy tất cả hồ sơ ngoại trú theo các tiêu chí (dành cho Admin)
+    public PaginatedResponseDTO<MedicalRecordSummaryDTO> AllRecords(
+            MedicalRecordSearchAllRequest request) {
+
+        // 1. Chuẩn bị phân trang và sắp xếp
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDir()), request.getSortBy());
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+
+        // 2. Xây dựng Specification (logic lọc)
+        Specification<MedicalRecord> spec = AllMedicalRecordSpecification.filterRecords(request);
+
+        // 3. Thực hiện truy vấn
+        Page<MedicalRecord> recordsPage = recordRepo.findAll(spec, pageable);
+
+        // 4. Ánh xạ (Mapping) Entity sang Response DTO
+        List<MedicalRecordSummaryDTO> responseRecords = recordsPage.getContent().stream()
+                .map(this::covertToSummaryResponse) // Sử dụng hàm covertToResponse để chuyển đổi
+                .collect(Collectors.toList());
+
+        // 5. Trả về Paginated Response
+        return new PaginatedResponseDTO<MedicalRecordSummaryDTO>(
+                recordsPage.getNumber(),
+                recordsPage.getSize(),
+                recordsPage.getTotalElements(),
+                recordsPage.getTotalPages(),
+                responseRecords
+        );
+    }
+
+    // Lấy tất cả hồ sơ ngoại trú theo id bệnh nhân
+    public List<MedicalRecordPatientResponse> getRecordsByPatientId(Integer patientId) {
+        Patient patient = patientRepo.findById(patientId)
+                .orElseThrow(() -> new InvalidInputException("Patient not found with ID: " + patientId));
+
+        return recordRepo.findByPatientId(patientId)
+                .stream()
+                .map(this::covertToPatientResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Lấy tất cả hồ sơ ngoại trú theo id bác sĩ
+    public List<MedicalRecordResponse> getRecordsByDoctorId(Integer doctorId) {
+        Doctor doctor = doctorRepo.findById(doctorId)
+                .orElseThrow(() -> new InvalidInputException("Doctor not found with ID: " + doctorId));
+
+        return recordRepo.findByDoctorId(doctorId)
+                .stream()
+                .map(this :: covertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Lấy tất cả hồ sơ ngoại trú, nhóm theo bệnh nhân
+    public List<MedicalRecord> getAllRecordsGroupedByPatient() {
+        return recordRepo.findAllGroupedByPatient();
+    }
+
+    // Lấy hồ sơ ngoại trú theo ID
+    public Optional<MedicalRecord> getRecordById(Integer id) {
+        MedicalRecord record = recordRepo.findById(id)
+                .orElseThrow(() -> new InvalidInputException("Medical record not found with ID: " + id));
+
+        return recordRepo.findById(id);
+    }
+
+    // Lấy dữ liệu chẩn đoán cho giao diện người dùng(tab1)
     public DiagnosisDataResponse getDiagnosisData(Integer recordId) {
 
         // 1. Lấy Medical Record, Patient và User (tối ưu bằng JOIN)
@@ -384,85 +488,7 @@ public class MedicalRecordService {
         return dto;
     }
 
-    // Hàm chuyển đổi Entity MedicalRecordIcd10 sang DTO
-    private Icd10Response convertToIcd10Dto(MedicalRecordIcd10 entity) {
-        Icd10Response dto = new Icd10Response();
-        dto.setId(entity.getIcd10().getId());
-        dto.setCode(entity.getIcd10().getCode());
-        dto.setName(entity.getIcd10().getNameVn());
-        dto.setPrincipal(entity.isPrincipal());
-        dto.setDiagnosisOrder(entity.getDiagnosisOrder());
-        return dto;
-    }
-
-    // Tạo Chỉ định Dịch vụ (Xét nghiệm + Hình ảnh) cho hồ sơ bệnh án
-    @Transactional
-    public ApiResponse<?> createServiceOrders(Integer recordId, ServiceOrdersRequest dto) {
-
-        MedicalRecord record = recordRepo.findById(recordId)
-                .orElseThrow(() -> new RuntimeException("Hồ sơ bệnh án không tồn tại."));
-
-        // Danh sách các ID dịch vụ (Service ID) cần thanh toán
-        List<ServiceDetail> serviceItems = new ArrayList<>();
-
-        // --- 1. XỬ LÝ CHỈ ĐỊNH XÉT NGHIỆM (LAB TESTS) ---
-        if (dto.getLabTestCatalogIds() != null && !dto.getLabTestCatalogIds().isEmpty()) {
-            for (Integer catalogId : dto.getLabTestCatalogIds()) {
-                TestTypes testTypes = testTypeRepo.findById(catalogId)
-                        .orElseThrow(() -> new RuntimeException("Mã xét nghiệm không hợp lệ: " + catalogId));
-
-                // A. Tạo bản ghi LabTest
-                LabTests labTest = new LabTests();
-                labTest.setRecord(record);
-                labTest.setDoctor(record.getDoctor());
-                labTest.setTestTypes(testTypes); // Liên kết tới loại xét nghiệm
-                labTest.setRequestedDate(LocalDateTime.now());
-                labTest.setStatus(ServiceStatus.PENDING_PAYMENT); // Trạng thái ban đầu
-
-                labTest = labTestRepo.save(labTest);
-
-                // B. Thêm vào danh sách thanh toán
-                serviceItems.add(new ServiceDetail("LAB_TEST", labTest.getId(), testTypes.getTestName(), testTypes.getPrice()));
-           }
-        }
-
-        // --- 2. XỬ LÝ CHỈ ĐỊNH CHẨN ĐOÁN HÌNH ẢNH (IMAGING) ---
-        if (dto.getImagingTypeIds() != null && !dto.getImagingTypeIds().isEmpty()) {
-            for (Integer typeId : dto.getImagingTypeIds()) {
-                ImagingTypes imagingType = imagingTypeRepo.findById(typeId)
-                        .orElseThrow(() -> new RuntimeException("Id loại chẩn đooán hình ảnh không hợp lệ: " + typeId));
-
-                // A. Tạo bản ghi ImagingTest
-                ImagingTests imagingTest = new ImagingTests();
-                imagingTest.setRecord(record);
-                imagingTest.setDoctor(record.getDoctor());
-                imagingTest.setImagingTypes(imagingType); // Liên kết tới loại hình ảnh
-                imagingTest.setRequestedDate(LocalDateTime.now());
-                imagingTest.setStatus(ServiceStatus.PENDING_PAYMENT);
-
-                imagingTest = imagingTestRepo.save(imagingTest);
-
-                // B. Thêm vào danh sách thanh toán
-                serviceItems.add(new ServiceDetail("IMAGING_TEST", imagingTest.getId(), imagingType.getImagingName(), imagingType.getPrice()));
-            }
-        }
-
-        // --- 3. Tạo phiếu THANH TOÁN TRẢ TRƯỚC (chỉ cho Lab/Imaging) ---
-        if (serviceItems.isEmpty()) {
-            // Trường hợp không có chỉ định nào được gửi
-            return new ApiResponse<>(false, "Không có dịch vụ nào được chỉ định.", null);
-        }
-
-        paymentService.createPaymentOrder(record, serviceItems);
-
-        // Cập nhật trạng thái hồ sơ (Ví dụ: Chuyển từ IN_PROGRESS sang PENDING_PAYMENT_SERVICE)
-        record.setStatus(MedicalRecordStatus.PENDING_PREPAYMENT);
-        recordRepo.save(record);
-
-        return new ApiResponse<>(true, "Chỉ định đã được gửi thành công và chuyển sang thanh toán.",null);
-    }
-
-    // Lấy danh sách Chỉ định Dịch vụ (Xét nghiệm + Hình ảnh) cho hồ sơ bệnh án
+    // Lấy danh sách Chỉ định Dịch vụ (Xét nghiệm + Hình ảnh) cho hồ sơ bệnh án(tab2)
     public List<ServiceOrderResponse> getServiceOrders(Integer recordId) {
         MedicalRecord record = recordRepo.findById(recordId)
                 .orElseThrow(() -> new InvalidInputException("Hồ sơ bệnh án không tồn tại."));
@@ -487,6 +513,87 @@ public class MedicalRecordService {
         return Stream.concat(labTestDtos, imagingTestDtos)
                 .sorted(Comparator.comparing(ServiceOrderResponse::getRequestDate).reversed())
                 .collect(Collectors.toList());
+    }
+
+    // Lấy chi tiết hồ sơ ngoại trú theo ID
+    public MedicalRecodDetailResponse getMedicalRecordDetail(Integer recordId) {
+
+        MedicalRecord record = recordRepo.findDetailById(recordId)
+                .orElseThrow(() -> new InvalidInputException("Hồ sơ không tồn tại."));
+
+        MedicalRecodDetailResponse detailDto = new MedicalRecodDetailResponse();
+        // 1. Gán thông tin cơ bản
+        detailDto.setRecordId(record.getId());
+        detailDto.setPatientName(record.getPatient().getUser().getFullname());
+        detailDto.setPatientCode(record.getPatient().getPatientCode());
+        detailDto.setVisitDate(record.getAppointment().getVisitDateTime());
+        detailDto.setDiagnosisText(record.getDiagnosis());
+
+        List<MedicalRecordIcd10> savedIcd10s = medicalRecordIcd10Repository.findByRecordIdOrderByDiagnosisOrder(recordId);
+        // Gán ICD-10s
+        List<Icd10Response> icd10Dtos = savedIcd10s.stream()
+                .map(this::convertToIcd10Dto)
+                .collect(Collectors.toList());
+
+        // 2. Gọi các hàm đã tối ưu để tổng hợp dữ liệu:
+        detailDto.setIcd10Diagnoses(icd10Dtos);
+        detailDto.setServiceOrders(this.getServiceOrders(recordId)); // Lab/Imaging
+
+        PrescriptionResponseDTO prescriptionResponseDTO = prescriptionService.getPrescriptionByRecord(record);
+        if(prescriptionResponseDTO != null) {
+            detailDto.setPrescription(prescriptionResponseDTO); // Prescription
+        } else {
+            detailDto.setPrescription(null);
+        }
+
+        detailDto.setInvoices(paymentService.getInvoicesDetail(record)); // Payments
+
+        return detailDto;
+    }
+
+    //============Covert Methods===================
+    private MedicalRecordSummaryDTO covertToSummaryResponse(MedicalRecord record) {
+
+        MedicalRecordSummaryDTO dto = new MedicalRecordSummaryDTO();
+
+        // 1. Thông tin cơ bản
+        dto.setRecordId(record.getId());
+        dto.setRecordCode(record.getCode());
+        dto.setVisitDate(record.getAppointment().getVisitDateTime());
+        dto.setVisitNumber(record.getAppointment().getVisitNumber());
+        dto.setCurrentStatus(record.getStatus().name());
+
+
+        // 2. Thông tin Bệnh nhân (Giả định Entity đã được JOIN FETCH)
+        PatientSummary patientSummary = new PatientSummary();
+        patientSummary.setPatientCode(record.getPatient().getPatientCode());
+        patientSummary.setFullName(record.getPatient().getUser().getFullname());
+        patientSummary.setDateOfBirth(record.getPatient().getUser().getDateOfBirth());
+        patientSummary.setPhoneNumber(record.getPatient().getUser().getPhoneNumber());
+        dto.setPatient(patientSummary);
+
+        // 3. Thông tin Bác sĩ (Giả định Entity đã được JOIN FETCH)
+        dto.setDoctorName(record.getDoctor().getStaff().getUser().getFullname());
+        dto.setDoctorCode(record.getDoctor().getDoctorcode());
+        dto.setSpecialty(record.getDoctor().getSpecialty().getName());
+
+        // 4. Kiểm tra sự tồn tại của Chỉ định Y tế (Sử dụng Repository)
+        dto.setHasLabTests(labTestRepo.existsByRecord(record));
+        dto.setHasImagingTests(imagingTestRepo.existsByRecord(record));
+        dto.setHasPrescription(prescriptionRepo.existsByRecord(record));
+
+        return dto;
+    }
+
+    // Hàm chuyển đổi Entity MedicalRecordIcd10 sang DTO
+    private Icd10Response convertToIcd10Dto(MedicalRecordIcd10 entity) {
+        Icd10Response dto = new Icd10Response();
+        dto.setId(entity.getIcd10().getId());
+        dto.setCode(entity.getIcd10().getCode());
+        dto.setName(entity.getIcd10().getNameVn());
+        dto.setPrincipal(entity.isPrincipal());
+        dto.setDiagnosisOrder(entity.getDiagnosisOrder());
+        return dto;
     }
 
     // Hàm ánh xạ LabTest Entity sang DTO
@@ -555,6 +662,7 @@ public class MedicalRecordService {
         return dto;
     }
 
+    //Chuyển đổi MedicalRecord từ Entity sang DTO Response cho bệnh nhân
     private MedicalRecordPatientResponse covertToPatientResponse(MedicalRecord medicalRecord) {
         MedicalRecordPatientResponse dto = new MedicalRecordPatientResponse();
         dto.setRecordId(medicalRecord.getId());

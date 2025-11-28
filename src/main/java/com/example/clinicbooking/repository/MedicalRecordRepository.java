@@ -41,4 +41,10 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, In
     Optional<MedicalRecord> findByIdWithPatientAndUser(Integer recordId);
 
     Optional<MedicalRecord> findByAppointment(Appointment appointment);
+
+    @Query("SELECT mr FROM MedicalRecord mr " +
+            "JOIN FETCH mr.patient p " +
+            "JOIN FETCH mr.doctor d " +
+            "WHERE mr.id = :recordId")
+    Optional<MedicalRecord> findDetailById(Integer recordId);
 }

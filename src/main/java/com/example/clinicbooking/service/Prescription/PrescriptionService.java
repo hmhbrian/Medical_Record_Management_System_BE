@@ -314,6 +314,39 @@ public class PrescriptionService {
         return response; // Dữ liệu trả về
     }
 
+    public PrescriptionResponseDTO getPrescriptionByRecord(MedicalRecord record) {
+        // List các trạng thái bị loại trừ (ví dụ: CANCELED, COMPLETED)
+        List<PrescriptionStatus> excludedStatuses = List.of(PrescriptionStatus.CANCELED);
+        Prescriptions prescription = prescriptionRepo.findByRecordAndStatusNotIn(record, excludedStatuses)
+                .orElse(null);
+        if(prescription == null){
+            return null;
+        }
+
+        List<PrescriptionDetails> details = detailRepo.findAllByPrescription(prescription); // Cần viết method này
+
+        // 1. Ánh xạ các chi tiết thuốc (Details)
+        List<PrescriptionDetailsResponse> detailDtos = details.stream()
+                .map(this::mapDetailToDTO)
+                .collect(Collectors.toList());
+
+        // 2. Ánh xạ Đơn thuốc chính (Prescriptions)
+        PrescriptionResponseDTO response = new PrescriptionResponseDTO();
+
+        response.setTotalDays(prescription.getTotalDays());
+        response.setStatus(prescription.getStatus().name());
+        if(prescription.getPharmacyStaff() != null && prescription.getPharmacyStaff().getStaff().getUser().getFullname() != null){
+            response.setPharmacistName(prescription.getPharmacyStaff().getStaff().getUser().getFullname());
+            response.setPharmacistCode(prescription.getPharmacyStaff().getPharmacyCode());
+        }else {
+            response.setPharmacistName("Chưa phân công");
+        }
+
+        // Gán danh sách chi tiết đã ánh xạ
+        response.setDetails(detailDtos);
+        return response;
+    }
+
     //Hàm ánh xạ chi tiết từng loại thuốc từ Entity sang DTO.
     private PrescriptionDetailsResponse mapDetailToDTO(PrescriptionDetails detail) {
         PrescriptionDetailsResponse detailDto = new PrescriptionDetailsResponse();
@@ -361,7 +394,7 @@ public class PrescriptionService {
         );
     }
 
-    // Hàm chuyển đổi từ LabTests entity sang LabTestWaitingResponse DTO
+    // Hàm chuyển đổi từ Prescriptions entity sang PrescriptionWaitingResponse DTO
     private PrescriptionWaitingResponse covertToWaitingResponse(Prescriptions prescriptions) {
         PrescriptionWaitingResponse dto = new PrescriptionWaitingResponse();
         dto.setPrescriptionId(prescriptions.getId());
@@ -413,7 +446,7 @@ public class PrescriptionService {
         );
     }
 
-    // Hàm chuyển đổi từ LabTests entity sang LabTestOfStaffResponse DTO
+    // Hàm chuyển đổi từ Prescriptions entity sang PrescriptionOfStaffResponse DTO
     private PrescriptionOfStaffResponse covertToPrescriptionOfStaffResponse(Prescriptions prescriptions) {
         PrescriptionOfStaffResponse dto = new PrescriptionOfStaffResponse();
         dto.setPrescriptionId(prescriptions.getId());
@@ -454,7 +487,15 @@ public class PrescriptionService {
         PrescriptionDetailsOfStaffRp response = new PrescriptionDetailsOfStaffRp();
 
         response.setPrescriptionId(p.getId());
+        response.setPrescriptionCode(p.getCode());
         response.setTotalDays(p.getTotalDays());
+
+        PatientSummary patientDto = new PatientSummary();
+        patientDto.setPhoneNumber(p.getRecord().getPatient().getUser().getPhoneNumber());
+        patientDto.setPatientCode(p.getRecord().getPatient().getPatientCode());
+        patientDto.setFullName(p.getRecord().getPatient().getUser().getFullname());
+        patientDto.setDateOfBirth(p.getRecord().getPatient().getUser().getDateOfBirth());
+        response.setPatient(patientDto);
 
         // Gán danh sách chi tiết đã ánh xạ
         response.setDetails(detailDtos);
