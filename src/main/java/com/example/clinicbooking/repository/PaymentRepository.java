@@ -7,10 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Integer>, JpaSpecificationExecutor<Payment> {
-    Optional<Payment> findByRecord(MedicalRecord record);
+    List<Payment> findAllByRecord(MedicalRecord record);
 
     // Tìm phiếu thanh toán theo loại đối tượng và ID đối tượng
     // Ở đây, đối tượng là đơn thuốc ("PRESCRIPTION")

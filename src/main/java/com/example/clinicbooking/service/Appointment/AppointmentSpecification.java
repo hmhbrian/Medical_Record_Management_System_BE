@@ -1,6 +1,5 @@
 package com.example.clinicbooking.service.Appointment;
 
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.entity.*;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;

@@ -16,4 +16,5 @@ public interface ImagingTestsRepository extends JpaRepository<ImagingTests, Inte
     List<ImagingTests> findAllByRecord(MedicalRecord record);
 
     Integer countByRecordAndStatusIn(MedicalRecord record, Collection<ServiceStatus> statuses);
+    boolean existsByRecord(MedicalRecord record);
 }

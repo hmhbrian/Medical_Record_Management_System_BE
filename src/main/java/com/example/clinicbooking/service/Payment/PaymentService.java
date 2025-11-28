@@ -3,6 +3,10 @@ package com.example.clinicbooking.service.Payment;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceDetail;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.DTO.Payment.*;
+import com.example.clinicbooking.DTO.Payment.DetailForAdmin.InvoiceItemDTO;
+import com.example.clinicbooking.DTO.Payment.DetailForAdmin.InvoiceSummaryResponse;
+import com.example.clinicbooking.DTO.Payment.DetailForCashier.ItemPaymentDetail;
+import com.example.clinicbooking.DTO.Payment.DetailForCashier.PaymentDetailResponse;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
@@ -399,6 +403,50 @@ public class PaymentService {
         // 3. Điền dữ liệu và Xuất PDF
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
         return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
+
+    public List<InvoiceSummaryResponse> getInvoicesDetail(MedicalRecord record) {
+
+        // 1. Lấy tất cả các Payments liên quan đến recordId
+        List<Payment> payments = paymentRepo.findAllByRecord(record);
+
+        return payments.stream()
+                .map(payment -> {
+                    // Lấy chi tiết PaymentDetail cho từng Payment
+                    List<PaymentDetail> details = paymentDetailRepo.findAllByPayment(payment);
+
+                    // Map Payment sang InvoiceSummaryDTO
+                    InvoiceSummaryResponse invoiceDto = new InvoiceSummaryResponse();
+                    invoiceDto.setPaymentId(payment.getId());
+                    invoiceDto.setPaymentStatus(payment.getStatus().name());
+                    invoiceDto.setTotalAmount(payment.getTotalAmount());
+                    invoiceDto.setPatientPaid(payment.getPatientPayment());
+                    invoiceDto.setInsuranceCoverage(payment.getInsuranceCoverage());
+                    invoiceDto.setPaymentDate(payment.getPaymentDate());
+                    if(payment.getCashier() != null && payment.getCashier().getStaff().getUser().getFullname() != null){
+                        invoiceDto.setCashierName(payment.getCashier().getStaff().getUser().getFullname()); // Lấy tên thu ngân
+                        invoiceDto.setCashierCode(payment.getCashier().getCashierCode());
+                    }else {
+                        invoiceDto.setCashierName("Chưa phân công");
+                    }
+
+                    // Map PaymentDetail sang InvoiceItemDTO
+                    List<InvoiceItemDTO> itemDtos = details.stream()
+                            .map(detail -> {
+                                InvoiceItemDTO item = new InvoiceItemDTO();
+                                item.setServiceType(detail.getServiceType());
+                                item.setDescription(detail.getDescription());
+                                item.setInsuranceCoverage(detail.getInsuranceCoveredAmount());
+                                item.setPatientPaymentTotal(detail.getPatientPaidAmount());
+                                item.setTotalAmount(detail.getTotalAmount());
+                                return item;
+                            })
+                            .collect(Collectors.toList());
+
+                    invoiceDto.setItems(itemDtos);
+                    return invoiceDto;
+                })
+                .collect(Collectors.toList());
     }
 }
 

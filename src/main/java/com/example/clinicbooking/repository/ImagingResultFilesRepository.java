@@ -13,4 +13,6 @@ public interface ImagingResultFilesRepository extends JpaRepository<ImagingResul
     List<ImagingResultFiles> findAllByImagingTests(ImagingTests imagingTests);
 
     Optional<ImagingResultFiles> findByImagingTestsAndName(ImagingTests imagingTests, String name);
+
+    boolean existsByImagingTests(ImagingTests imagingTest);
 }

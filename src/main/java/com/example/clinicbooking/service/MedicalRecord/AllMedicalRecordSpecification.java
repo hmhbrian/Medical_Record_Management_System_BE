@@ -1,6 +1,6 @@
 package com.example.clinicbooking.service.MedicalRecord;
 
-import com.example.clinicbooking.DTO.MedicalRecord.Doctor.MedicalRecordSearchRequest;
+import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchAllRequest;
 import com.example.clinicbooking.entity.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -11,17 +11,30 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class MedicalRecordSpecification {
-    public static Specification<MedicalRecord> filterRecords(MedicalRecordSearchRequest request, int doctorId) {
+public class AllMedicalRecordSpecification {
+    public static Specification<MedicalRecord> filterRecords(MedicalRecordSearchAllRequest request) {
         return (root, query, criteriaBuilder) -> {
+
+            // KHỞI TẠO spec MẶC ĐỊNH LÀ TRUE
+            Specification<MedicalRecord> spec = Specification.where(null);
 
             // 1. Lọc bắt buộc theo Doctor ID
             Join<MedicalRecord, Doctor> doctorJoin = root.join("doctor", JoinType.INNER);
-            Specification<MedicalRecord> spec = Specification.where(
-                    (r, q, cb) -> cb.equal(doctorJoin.get("id"), doctorId)
-            );
+            if(request.getDoctorId() != null) {
+                spec = Specification.where(
+                        (r, q, cb) -> cb.equal(doctorJoin.get("id"), request.getDoctorId())
+                );
+            }
 
-            // 2. Lọc theo Trạng thái
+            // 2. Lọc bắt buộc theo Doctor ID
+            Join<Doctor, Specialty> specialtyJoin = doctorJoin.join("specialty", JoinType.INNER);
+            if(request.getDoctorId() != null) {
+                spec = Specification.where(
+                        (r, q, cb) -> cb.equal(specialtyJoin.get("id"), request.getSpecialtyId())
+                );
+            }
+
+            // 3. Lọc theo Trạng thái
             if (request.getStatus() != null && !request.getStatus().isEmpty()) {
                 spec = spec.and((r, q, cb) -> cb.equal(r.get("status"), request.getStatus()));
             }
@@ -46,10 +59,10 @@ public class MedicalRecordSpecification {
                 searchLocalDate = defaultDate;
             }
 
-            // 3. Lọc theo Ngày khám
-            spec = spec.and(filterByDateRange(searchLocalDate));
+            // 4. Lọc theo Ngày khám
+            //spec = spec.and(filterByDateRange(searchLocalDate));
 
-            // 4. Tìm kiếm chung (Query)
+            // 5. Tìm kiếm chung (Query)
             if (request.getQuery() != null && !request.getQuery().isEmpty()) {
                 String likeQuery = "%" + request.getQuery().toLowerCase() + "%";
 

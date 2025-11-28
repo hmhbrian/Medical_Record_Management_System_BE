@@ -1,6 +1,5 @@
 package com.example.clinicbooking.service.Payment;
 
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.Payment.PaymentSearchRequest;
 import com.example.clinicbooking.entity.*;
 import jakarta.persistence.criteria.Join;

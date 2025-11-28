@@ -4,22 +4,22 @@ import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.*;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisDataResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisUpdateRequest;
+import com.example.clinicbooking.DTO.MedicalRecord.Doctor.MedicalRecordResponse;
+import com.example.clinicbooking.DTO.MedicalRecord.Doctor.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceOrderResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceOrdersRequest;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.entity.MedicalRecord;
 import com.example.clinicbooking.entity.MedicalRecordStatus;
 import com.example.clinicbooking.service.MedicalRecord.MedicalRecordService;
+import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 
 @Tag(name = "MedicalRecord", description = "Quản lý hồ sơ ngoại trú")
@@ -29,6 +29,32 @@ public class MedicalRecordController {
 
     @Autowired
     private MedicalRecordService recordService;
+
+    @GetMapping
+    public ResponseEntity<PaginatedResponseDTO<MedicalRecordSummaryDTO>> getMedicalRecords(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String currentDate,
+            @RequestParam(required = false) Integer doctorId,
+            @RequestParam(required = false) Integer specialtyId,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "id") String SortBy,
+            @RequestParam(defaultValue = "DESC") String SortDir) {
+        MedicalRecordSearchAllRequest request = new MedicalRecordSearchAllRequest();
+        request.setQuery(keyword);
+        request.setStatus(status);
+        request.setCurrentDate(currentDate);
+        request.setDoctorId(doctorId);
+        request.setSpecialtyId(specialtyId);
+        request.setSize(size);
+        request.setPage(page);
+        request.setSortDir(SortDir);
+        request.setSortBy(SortBy);
+
+        PaginatedResponseDTO<MedicalRecordSummaryDTO> response = recordService.AllRecords(request);
+        return ResponseEntity.ok(response);
+    }
 
     //Lấy danh sách hồ sơ ngoại trú của bác sĩ với phân trang và lọc
     @GetMapping("/OfDoctor")
@@ -97,10 +123,9 @@ public class MedicalRecordController {
 
     // Lấy hồ sơ ngoại trú theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<MedicalRecord> getById(@PathVariable Integer id) {
-        return recordService.getRecordById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<MedicalRecodDetailResponse>> getById(@PathVariable Integer id) {
+        MedicalRecodDetailResponse response = recordService.getMedicalRecordDetail(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Lấy chi tiết hồ sơ ngoại trú thành công", response));
     }
 
     //Cập nhật chẩn đoán cho hồ sơ ngoại trú.

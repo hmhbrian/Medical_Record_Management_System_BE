@@ -49,6 +49,11 @@ public class ImagingTestController {
         return imagingTestService.uploadAndSaveImagingResults(imagingTestId, request, currentUserId);
     }
 
+    @PutMapping("/{imagingTestId}/complete-status")
+    public ApiResponse<?> completeImagingTestStatus(@PathVariable Integer imagingTestId) {
+        return imagingTestService.completeImagingTestStatus(imagingTestId);
+    }
+
     @GetMapping("/{imagingtestId}/detail")
     public ResponseEntity<ImagingReportResponse> getLabTestDetails(
             @PathVariable("imagingtestId") Integer imagingTestId) {

@@ -16,10 +16,14 @@ public class ImagingTestSpecification {
     public static Specification<ImagingTests> filterImagingTests(ImagingTestWaitingRequest request, String status, Integer ImagingStaffId) {
         return (root, query, criteriaBuilder) -> {
 
+            Specification<ImagingTests> spec = Specification.where(null);
+
             //1.Tìm theo status
-            Specification<ImagingTests> spec = Specification.where(
-                    (r, q, cb) -> cb.equal(r.get("status"), status)
-            );
+            if(status != null){
+                spec = Specification.where(
+                        (r, q, cb) -> cb.equal(r.get("status"), status)
+                );
+            }
 
             if(ImagingStaffId != null){
                 //lọc theo kỹ thuật viên

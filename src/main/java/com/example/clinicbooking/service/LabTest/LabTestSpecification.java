@@ -1,7 +1,6 @@
 package com.example.clinicbooking.service.LabTest;
 
 import com.example.clinicbooking.DTO.LabTest.LabTestWaitingRequest;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchRequest;
 import com.example.clinicbooking.entity.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;

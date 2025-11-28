@@ -8,10 +8,11 @@ import java.util.List;
 @Data
 public class ImagingReportResponse {
     private Integer imagingTestId;
-    private String imagingName;
+    private String imagingTestName;
     private LocalDateTime resultDate;
-    private LocalDateTime requestDate;
+    private LocalDateTime requestedDate;
     private String doctorInChargeName;
+    private String specialty;
     private String reportText;
     private String status;
     private String patientCode;

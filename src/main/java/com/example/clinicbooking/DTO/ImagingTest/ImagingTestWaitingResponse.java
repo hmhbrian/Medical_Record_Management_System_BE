@@ -12,5 +12,6 @@ public class ImagingTestWaitingResponse {
     private LocalDateTime requestedDate;
     private String status;
     private String doctorInChargeName;
+    private String specialty;
     private PatientSummary patient;
 }

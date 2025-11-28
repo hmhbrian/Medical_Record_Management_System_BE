@@ -1,10 +1,8 @@
-package com.example.clinicbooking.DTO.MedicalRecord;
+package com.example.clinicbooking.DTO.MedicalRecord.Doctor;
 
 import com.example.clinicbooking.DTO.Patient.PatientSummary;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data

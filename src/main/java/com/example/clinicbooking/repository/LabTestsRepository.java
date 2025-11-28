@@ -15,4 +15,5 @@ import java.util.Optional;
 public interface LabTestsRepository extends JpaRepository<LabTests, Integer>, JpaSpecificationExecutor<LabTests> {
     List<LabTests> findAllByRecord(MedicalRecord record);
     Integer countByRecordAndStatusIn(MedicalRecord record, Collection<ServiceStatus> statuses);
+    boolean existsByRecord(MedicalRecord record);
 }
