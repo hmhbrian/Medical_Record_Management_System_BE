@@ -13,5 +13,5 @@ public class DiagnosisUpdateRequest {
     private Integer examinationServiceId;
 
     // Danh sách đầy đủ các mã ICD-10 được chọn (Bao gồm cả mã chính và mã phụ)
-    private List<Icd10Request> icd10List;
+    private List<Icd10_DiagnosisRequest> icd10List;
 }

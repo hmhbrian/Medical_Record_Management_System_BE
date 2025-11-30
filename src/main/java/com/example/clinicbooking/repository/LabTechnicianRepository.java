@@ -13,4 +13,12 @@ public interface LabTechnicianRepository extends JpaRepository<LabTechnician, In
         where s.user.id = :userId
     """)
     Integer findIdByUserId(Integer userId);
+
+    @Query("""
+        select l
+        from Staff s
+        join LabTechnician l on s.id = l.staff.id
+        where s.user.id = :userId
+    """)
+    LabTechnician findByUserId(Integer userId);
 }

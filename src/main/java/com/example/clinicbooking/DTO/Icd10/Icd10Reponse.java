@@ -12,4 +12,5 @@ public class Icd10Reponse {
     private String code;
     private String nameVn;
     private String nameEn;
+    private String category;
 }

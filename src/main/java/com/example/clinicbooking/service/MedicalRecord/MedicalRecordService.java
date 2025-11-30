@@ -5,7 +5,7 @@ import com.example.clinicbooking.DTO.MedicalRecord.*;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisDataResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.DiagnosisUpdateRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10Response;
-import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10Request;
+import com.example.clinicbooking.DTO.MedicalRecord.DiagnosisData.Icd10_DiagnosisRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.Doctor.MedicalRecordResponse;
 import com.example.clinicbooking.DTO.MedicalRecord.Doctor.MedicalRecordSearchRequest;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.*;
@@ -184,8 +184,8 @@ public class MedicalRecordService {
         //Thêm các chẩn đoán ICD-10 mới từ DTO
         if (dto.getIcd10List() != null && !dto.getIcd10List().isEmpty()) {
             // Sắp xếp danh sách: Mã chính (true) lên đầu, Mã phụ (false) theo sau
-            List<Icd10Request> sortedIcd10List = dto.getIcd10List().stream()
-                    .sorted(Comparator.comparing(Icd10Request::isPrincipal).reversed())
+            List<Icd10_DiagnosisRequest> sortedIcd10List = dto.getIcd10List().stream()
+                    .sorted(Comparator.comparing(Icd10_DiagnosisRequest::isPrincipal).reversed())
                     .collect(Collectors.toList());
 
             final AtomicInteger orderCounter = new AtomicInteger(0);
@@ -527,6 +527,8 @@ public class MedicalRecordService {
         detailDto.setPatientName(record.getPatient().getUser().getFullname());
         detailDto.setPatientCode(record.getPatient().getPatientCode());
         detailDto.setVisitDate(record.getAppointment().getVisitDateTime());
+        detailDto.setDoctorName(record.getDoctor().getStaff().getUser().getFullname());
+        detailDto.setDoctorCode(record.getDoctor().getDoctorcode());
         detailDto.setDiagnosisText(record.getDiagnosis());
 
         List<MedicalRecordIcd10> savedIcd10s = medicalRecordIcd10Repository.findByRecordIdOrderByDiagnosisOrder(recordId);

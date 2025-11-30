@@ -10,5 +10,6 @@ public class PrescriptionDetailsResponse {
     private Integer dailyQuantity; // Số lượng dùng trong một ngày
     private Integer quantity; // Số lượng cuối cùng
     private String notes;
+    private String unit;
     private Boolean isSubstitutable = false;
 }

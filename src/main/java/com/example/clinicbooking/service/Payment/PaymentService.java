@@ -49,6 +49,8 @@ public class PaymentService {
     private final PrescriptionRepository prescriptionRepo;
     private final ImagingTestsRepository imagingTestsRepo;
     private final LabTestsRepository labTestRepo;
+    private final UserRepository userRepo;
+    private final AppointmentStatusRepository appointmentStatusRepo;
 
     /**
      * logic tạo/cập nhật Payment và PaymentDetail.
@@ -218,6 +220,7 @@ public class PaymentService {
 
         response.setCreatedAt(payment.getCreatedAt());
         response.setPaidAt(payment.getPaymentDate());
+        response.setPaymentMethod(payment.getPaymentMethod());
         response.setItemPayments(itemDetails);
         return response;
     }
@@ -332,6 +335,19 @@ public class PaymentService {
         } else {
             // Nếu không có dịch vụ nào cần chờ kết quả, hồ sơ được coi là hoàn tất
             record.setStatus(MedicalRecordStatus.COMPLETED);
+
+            // Cập nhật trạng thái cuộc hẹn sau khi hoàn thành đơn thuốc(hoàn tất khám)
+            Appointment appointment = record.getAppointment();
+            if(appointment != null){
+                User cudUser = userRepo.findById(cud.getId())
+                        .orElseThrow(() -> new InvalidInputException("User not found with ID: " + cud.getId()));
+                AppointmentStatus appointmentStatus = new AppointmentStatus();
+                appointmentStatus.setStatus(5); // Trạng thái "Đã hoàn thành"
+                appointmentStatus.setAppointment(appointment);
+                appointmentStatus.setUpdateAt(LocalDateTime.now());
+                appointmentStatus.setUpdate_by(cudUser);
+                appointmentStatusRepo.save(appointmentStatus);
+            }
         }
 
         medicalRecordRepos.save(record);
@@ -418,6 +434,7 @@ public class PaymentService {
                     // Map Payment sang InvoiceSummaryDTO
                     InvoiceSummaryResponse invoiceDto = new InvoiceSummaryResponse();
                     invoiceDto.setPaymentId(payment.getId());
+                    invoiceDto.setPaymentCode(payment.getPaymentCode());
                     invoiceDto.setPaymentStatus(payment.getStatus().name());
                     invoiceDto.setTotalAmount(payment.getTotalAmount());
                     invoiceDto.setPatientPaid(payment.getPatientPayment());

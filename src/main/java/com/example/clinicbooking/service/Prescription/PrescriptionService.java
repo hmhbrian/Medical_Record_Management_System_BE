@@ -1,9 +1,7 @@
 package com.example.clinicbooking.service.Prescription;
 
 import com.example.clinicbooking.DTO.ApiResponse;
-import com.example.clinicbooking.DTO.LabTest.LabTestOfStaffResponse;
-import com.example.clinicbooking.DTO.LabTest.LabTestWaitingRequest;
-import com.example.clinicbooking.DTO.LabTest.LabTestWaitingResponse;
+import com.example.clinicbooking.DTO.Dashboard.DashboardOverview;
 import com.example.clinicbooking.DTO.MedicalRecord.ServiceData.ServiceDetail;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.DTO.Patient.PatientSummary;
@@ -14,7 +12,6 @@ import com.example.clinicbooking.DTO.Prescription.Detail.PrescriptionDetailsResp
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.*;
-import com.example.clinicbooking.service.LabTest.LabTestSpecification;
 import com.example.clinicbooking.service.Payment.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +22,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +43,7 @@ public class PrescriptionService {
     private final PaymentService paymentService;
     private final PharmacyStaffRepository pharmacyStaffRepo;
 
+    //=======POST/PUT========
     //Lưu hoặc Gửi Đơn thuốc
     @Transactional
     public ApiResponse<?> saveOrSendPrescription(Integer recordId, PrescriptionRequest dto) {
@@ -77,8 +78,6 @@ public class PrescriptionService {
         // Cập nhật trạng thái
         if (dto.isSend()) {
             prescription.setStatus(PrescriptionStatus.PENDING_PAYMENT); // Hoặc PENDING_DISPENSE nếu miễn phí
-            record.setStatus(MedicalRecordStatus.COMPLETED);
-            recordRepo.save(record);
         } else {
             prescription.setStatus(PrescriptionStatus.DRAFT);
         }
@@ -221,6 +220,7 @@ public class PrescriptionService {
         return new ApiResponse<>(true, "Xác nhận toa thuốc thành công", null);
     }
 
+    //HOÀN THÀNH CẤP PHÁT TOA THUỐC
     @Transactional
     public void completeDispensing(int prescriptionId, Integer currentUserId) {
         //0.Lấy thông tin PharmacyStaff
@@ -246,8 +246,8 @@ public class PrescriptionService {
         // 2. Cập nhật trạng thái đơn thuốc
         prescription.setStatus(PrescriptionStatus.COMPLETED);
         prescription.setDispensedAt(LocalDateTime.now()); // Lưu thời điểm hoàn thành
-
         prescriptionRepo.save(prescription);
+
 
         // 3. Cập nhật tồn kho cho từng chi tiết thuốc
         List<PrescriptionDetails> details = detailRepo.findAllByPrescription(prescription);
@@ -362,6 +362,7 @@ public class PrescriptionService {
         detailDto.setDailyQuantity(detail.getDailyQuantity());
         detailDto.setNotes(detail.getNotes());
         detailDto.setIsSubstitutable(detail.is_substitutable());
+        detailDto.setUnit(detail.getMedicine().getUnit());
 
         return detailDto;
     }
@@ -488,7 +489,10 @@ public class PrescriptionService {
 
         response.setPrescriptionId(p.getId());
         response.setPrescriptionCode(p.getCode());
+        response.setPrescriptionDate(p.getPrescriptionDate());
         response.setTotalDays(p.getTotalDays());
+        response.setDoctorName(p.getDoctor().getStaff().getUser().getFullname());
+        response.setSpecialty(p.getDoctor().getSpecialty().getName());
 
         PatientSummary patientDto = new PatientSummary();
         patientDto.setPhoneNumber(p.getRecord().getPatient().getUser().getPhoneNumber());

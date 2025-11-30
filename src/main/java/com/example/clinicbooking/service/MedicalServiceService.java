@@ -275,4 +275,5 @@ public class MedicalServiceService {
     private void conflict(String message) {
         throw new ResponseStatusException(HttpStatus.CONFLICT, message);
     }
+
 }

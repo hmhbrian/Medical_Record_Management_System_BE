@@ -60,7 +60,7 @@ public class AllMedicalRecordSpecification {
             }
 
             // 4. Lọc theo Ngày khám
-            //spec = spec.and(filterByDateRange(searchLocalDate));
+            spec = spec.and(filterByDateRange(searchLocalDate));
 
             // 5. Tìm kiếm chung (Query)
             if (request.getQuery() != null && !request.getQuery().isEmpty()) {

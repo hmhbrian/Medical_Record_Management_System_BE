@@ -15,6 +15,8 @@ public class MedicalRecodDetailResponse {
     private Integer recordId;
     private String patientName;
     private String patientCode;
+    private String doctorName;
+    private String doctorCode;
     private LocalDateTime visitDate;
     // 1. Chẩn đoán
     private String diagnosisText;

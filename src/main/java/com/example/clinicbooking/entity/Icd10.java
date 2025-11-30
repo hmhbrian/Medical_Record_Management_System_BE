@@ -1,11 +1,15 @@
 package com.example.clinicbooking.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "icd10_catalog")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Icd10 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
