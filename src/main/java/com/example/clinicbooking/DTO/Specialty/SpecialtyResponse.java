@@ -12,5 +12,7 @@ public class SpecialtyResponse {
     private String name;
     private String description;
     private String icon;
+    private String departmentName;
+    private int departmentId;
     private int numberOfDoctors;
 }

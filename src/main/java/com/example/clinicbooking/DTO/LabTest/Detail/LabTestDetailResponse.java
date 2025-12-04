@@ -15,5 +15,6 @@ public class LabTestDetailResponse {
     private LocalDateTime requestedDate;
     private String doctorInChargeName;
     private String patientName;
+    private String patientCode;
     private List<ParameterDetailResponse> parameters;
 }

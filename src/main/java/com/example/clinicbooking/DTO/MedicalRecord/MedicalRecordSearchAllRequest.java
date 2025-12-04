@@ -7,8 +7,8 @@ public class MedicalRecordSearchAllRequest {
     // Phân trang và Sắp xếp
     private Integer page = 0;
     private Integer size = 10;
-    private String sortBy = "visitNumber";
-    private String sortDir = "ASC"; // ASC hoặc DESC
+    private String sortBy = "id";
+    private String sortDir = "DESC"; // ASC hoặc DESC
 
     // Lọc theo Thời gian
     private String currentDate; // Dạng YYYY-MM-DD

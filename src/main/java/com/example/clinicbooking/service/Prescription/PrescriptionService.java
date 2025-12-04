@@ -505,4 +505,59 @@ public class PrescriptionService {
         response.setDetails(detailDtos);
         return response; // Dữ liệu trả về
     }
+
+    public PaginatedResponseDTO<PrescriptionSummaryDTO> searchAllPrescription(PrescriptionSearchRequest request) {
+        // 1. Chuẩn bị phân trang và sắp xếp
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDir()), request.getSortBy());
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+
+        // 2. Xây dựng Specification (logic lọc)
+        Specification<Prescriptions> spec = PrescriptionSpecification.filterAllPrescriptions(request);
+
+        // 3. Thực hiện truy vấn
+        Page<Prescriptions> prescriptionsPage = prescriptionRepo.findAll(spec, pageable);
+
+        // 4. Ánh xạ (Mapping) Entity sang Response DTO
+        List<PrescriptionSummaryDTO> responsePrescription = prescriptionsPage.getContent().stream()
+                .map(this::convertToSummaryDTO) // Sử dụng hàm covertToResponse để chuyển đổi
+                .collect(Collectors.toList());
+
+        // 5. Trả về Paginated Response
+        return new PaginatedResponseDTO<PrescriptionSummaryDTO>(
+                prescriptionsPage.getNumber(),
+                prescriptionsPage.getSize(),
+                prescriptionsPage.getTotalElements(),
+                prescriptionsPage.getTotalPages(),
+                responsePrescription
+        );
+    }
+
+    private PrescriptionSummaryDTO convertToSummaryDTO(Prescriptions p) {
+        PrescriptionSummaryDTO dto = new PrescriptionSummaryDTO();
+        dto.setId(p.getId());
+        dto.setCode(p.getCode());
+        dto.setPrescriptionDate(p.getPrescriptionDate());
+        dto.setStatus(p.getStatus().name());
+        dto.setDispenseDate(p.getDispensedAt());
+
+        // Thông tin Bác sĩ kê đơn (Ai kê)
+        dto.setDoctorName(p.getDoctor().getStaff().getUser().getFullname());
+        dto.setDoctorCode(p.getDoctor().getDoctorcode());
+        dto.setSpecialty(p.getDoctor().getSpecialty().getName());
+
+        // Thông tin Cấp phát (Ai cấp)
+        if (p.getPharmacyStaff() != null) {
+            // Giả định PharmacyStaff cũng có User -> Staff -> Fullname
+            dto.setPharmacistName(p.getPharmacyStaff().getStaff().getUser().getFullname());
+            dto.setPharmacistCode(p.getPharmacyStaff().getPharmacyCode());
+        }
+
+        // Thông tin Bệnh nhân (Bệnh nhân nào)
+        if (p.getRecord() != null) {
+            dto.setPatientName(p.getRecord().getPatient().getUser().getFullname());
+            dto.setRecordCode(p.getRecord().getCode());
+        }
+
+        return dto;
+    }
 }

@@ -68,6 +68,30 @@ public class PrescriptionController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Lấy đơn thuốc thành công.", prescription));
     }
 
+    @GetMapping
+    public ResponseEntity<PaginatedResponseDTO<PrescriptionSummaryDTO>> getAllPrescription(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer specialtyId,
+            @RequestParam(required = false) String searchDate,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "prescriptionDate") String SortBy,
+            @RequestParam(defaultValue = "ASC") String SortDir) {
+        PrescriptionSearchRequest request = new PrescriptionSearchRequest();
+        request.setKeyword(keyword);
+        request.setSpecialtyId(specialtyId);
+        request.setFindDate(searchDate);
+        request.setStatus(status);
+        request.setSize(size);
+        request.setPage(page);
+        request.setSortDir(SortDir);
+        request.setSortBy(SortBy);
+
+        PaginatedResponseDTO<PrescriptionSummaryDTO> response = prescriptionService.searchAllPrescription(request);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/waiting")
     public ResponseEntity<PaginatedResponseDTO<PrescriptionWaitingResponse>> getPrescriptionWaiting(
             @RequestParam(required = false) String keyword,

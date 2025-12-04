@@ -22,11 +22,10 @@ public class OrderSpecification {
             // 1. Join theo Doctor ID
             Join<Order, Doctor> doctorJoin = root.join("doctor", JoinType.INNER);
 
-            // 2. Lọc bắt buộc theo specialty ID
-            Join<Doctor, Specialty> specialtyJoin = doctorJoin.join("specialty", JoinType.INNER);
-            if(request.getSpecialtyId() != null) {
+            // 2. Lọc bắt buộc theo doctor ID
+            if(request.getDoctorId() != null) {
                 spec = Specification.where(
-                        (r, q, cb) -> cb.equal(specialtyJoin.get("id"), request.getSpecialtyId())
+                        (r, q, cb) -> cb.equal(doctorJoin.get("id"), request.getDoctorId())
                 );
             }
 
@@ -49,17 +48,13 @@ public class OrderSpecification {
 
                 // JOIN tới Patient và User để tìm theo Tên và Mã bệnh nhân
                 Join<Order, MedicalRecord> recordJoin = root.join("medicalRecord", JoinType.INNER);
-                Join<Doctor, Staff> doctorStaffJoin = doctorJoin.join("staff", JoinType.INNER);
-                Join<Staff, User> doctorJoinUser = doctorStaffJoin.join("user", JoinType.INNER);
 
                 Specification<Order> searchSpec = (rootSearch, querySearch, criteriaBuilderSearch) -> {
                     return criteriaBuilderSearch.or(
                             // Tìm theo Mã hồ sơ
                             criteriaBuilderSearch.like(criteriaBuilderSearch.lower(recordJoin.get("code")), likeQuery),
                             // Tìm theo Tên dịch vụ
-                            criteriaBuilderSearch.like(criteriaBuilderSearch.lower(rootSearch.get("serviceName")), likeQuery),
-                            // Tìm theo tên bác sĩ
-                            criteriaBuilderSearch.like(criteriaBuilderSearch.lower(doctorJoinUser.get("fullname")), likeQuery)
+                            criteriaBuilderSearch.like(criteriaBuilderSearch.lower(rootSearch.get("serviceName")), likeQuery)
                     );
                 };
                 spec = spec.and(searchSpec);

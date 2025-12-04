@@ -32,8 +32,8 @@ public class OrderController {
     public ResponseEntity<PaginatedResponseDTO<OrderResponse>> getOrders(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) String currentDate,
-            @RequestParam(required = false) Integer specialtyId,
+            @RequestParam(required = false) String searchDate,
+            @RequestParam(required = false) Integer doctorId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(defaultValue = "requestedAt") String SortBy,
@@ -41,8 +41,8 @@ public class OrderController {
         OrderRequest request = new OrderRequest();
         request.setKeyword(keyword);
         request.setStatus(status);
-        request.setFindDate(currentDate);
-        request.setSpecialtyId(specialtyId);
+        request.setFindDate(searchDate);
+        request.setDoctorId(doctorId);
         request.setSize(size);
         request.setPage(page);
         request.setSortDir(SortDir);

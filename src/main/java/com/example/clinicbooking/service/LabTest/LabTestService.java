@@ -220,6 +220,7 @@ public class LabTestService {
         response.setResult(labTest.getResult()); // Ghi chú chung
         response.setRequestedDate(labTest.getRequestedDate());
         response.setPatientName(labTest.getRecord().getPatient().getUser().getFullname());
+        response.setPatientCode(labTest.getRecord().getPatient().getPatientCode());
         response.setDoctorInChargeName(labTest.getDoctor().getStaff().getUser().getFullname());
 
         // Ánh xạ chi tiết các chỉ số

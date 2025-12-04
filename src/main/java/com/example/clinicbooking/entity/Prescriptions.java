@@ -16,9 +16,6 @@ public class Prescriptions {
     @Column(name = "total_days")
     private Integer TotalDays;
     @ManyToOne
-    @JoinColumn(name = "inpatient_record_id", nullable = true) // <-- Cần có nullable = true
-    private InpatientRecord inpatientRecord;
-    @ManyToOne
     @JoinColumn(name = "record_id", nullable = true)
     private MedicalRecord record;
     @ManyToOne

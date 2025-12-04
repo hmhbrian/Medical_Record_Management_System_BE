@@ -94,6 +94,8 @@ public class SpecialtyService {
         dto.setId(specialty.getId());
         dto.setName(specialty.getName());
         dto.setDescription(specialty.getDescription());
+        dto.setDepartmentId(specialty.getDepartment().getId());
+        dto.setDepartmentName(specialty.getDepartment().getName());
         dto.setIcon(specialty.getIcon());
 
         //số lượng bác sĩ theo specialty

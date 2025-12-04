@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class OrderRequest {
     private String status;
-    private Integer specialtyId;
+    private Integer doctorId;
     private String keyword;
     private String findDate;
 
