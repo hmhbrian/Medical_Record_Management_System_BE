@@ -19,5 +19,6 @@ public class PaymentDetailResponse {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime paidAt;
+    private String paymentMethod;
     private List<ItemPaymentDetail> itemPayments;
 }

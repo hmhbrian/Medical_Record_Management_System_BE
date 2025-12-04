@@ -91,6 +91,7 @@ public class Icd10Service {
         dto.setCode(icd10.getCode());
         dto.setNameVn(icd10.getNameVn());
         dto.setNameEn(icd10.getNameEn());
+        dto.setCategory(icd10.getCategory());
         return dto;
     }
 }

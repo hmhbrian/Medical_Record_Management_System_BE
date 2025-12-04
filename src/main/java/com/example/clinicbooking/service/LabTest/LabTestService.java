@@ -1,6 +1,7 @@
 package com.example.clinicbooking.service.LabTest;
 
 import com.example.clinicbooking.DTO.ApiResponse;
+import com.example.clinicbooking.DTO.Dashboard.DashboardOverview;
 import com.example.clinicbooking.DTO.LabTest.*;
 import com.example.clinicbooking.DTO.LabTest.Detail.LabTestDetailRequest;
 import com.example.clinicbooking.DTO.LabTest.Detail.LabTestDetailResponse;
@@ -22,7 +23,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -216,6 +220,7 @@ public class LabTestService {
         response.setResult(labTest.getResult()); // Ghi chú chung
         response.setRequestedDate(labTest.getRequestedDate());
         response.setPatientName(labTest.getRecord().getPatient().getUser().getFullname());
+        response.setPatientCode(labTest.getRecord().getPatient().getPatientCode());
         response.setDoctorInChargeName(labTest.getDoctor().getStaff().getUser().getFullname());
 
         // Ánh xạ chi tiết các chỉ số

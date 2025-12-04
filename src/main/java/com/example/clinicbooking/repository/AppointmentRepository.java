@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,4 +59,54 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("SELECT MAX(a.visitNumber) FROM Appointment a " +
            "WHERE a.doctor.id = :doctorId AND a.doctorSchedule.id = :doctorScheduleId")
     Integer countVisitNumber(@Param("doctorId") Integer doctorId, @Param("doctorScheduleId") Integer doctorScheduleId);
+
+    // Tổng số bệnh nhân khám trong ngày
+    Integer countByVisitDateTimeBetween(LocalDateTime visitDateTimeAfter, LocalDateTime visitDateTimeBefore);
+
+    //Tổng số cuộc hẹn được đặt trực tuyến diên ra trong ngày
+    @Query("SELECT COUNT(a) FROM Appointment a JOIN AppointmentStatus ap on a.id = ap.appointment.id WHERE " +
+            "a.doctor.id = :doctorId AND " +
+            "a.doctorSchedule.date = :todayDate AND " +
+            "a.visitType LIKE 'scheduled' AND " +
+            "ap.appointment = a AND " +
+            "ap.status IN (2, 3) AND " +
+            "ap.updateAt = (SELECT MAX(as2.updateAt) FROM AppointmentStatus as2 WHERE as2.appointment = a)")
+    Integer countConfirmedAndPendingAppointmentsForDoctorToday(
+            @Param("doctorId") int doctorId,
+            @Param("todayDate") LocalDate todayDate
+    );
+
+    //Tổng số lượt khám đã hoàn thành trong ngày
+    @Query("SELECT COUNT(a) FROM Appointment a JOIN AppointmentStatus ap on a.id = ap.appointment.id  WHERE " +
+            "a.doctor.id = :doctorId AND " +
+            "a.doctorSchedule.date = :todayDate AND " +
+            "ap.appointment = a AND " +
+            "ap.status = 5 AND " +
+            "ap.updateAt = (SELECT MAX(as2.updateAt) FROM AppointmentStatus as2 WHERE as2.appointment = a)")
+    Integer countCompletedAppointmentsForDoctorToday(
+            @Param("doctorId") int doctorId,
+            @Param("todayDate") LocalDate todayDate
+    );
+
+    //Tổng số bệnh nhân trong ngày của bác sĩ
+    @Query("SELECT COUNT(a) FROM Appointment a WHERE " +
+            "a.doctor.id = :doctorId AND " +
+            "a.doctorSchedule.date = :todayDate")
+    Integer countPatientForDoctorToday(
+            @Param("doctorId") int doctorId,
+            @Param("todayDate") LocalDate todayDate
+    );
+
+    @Query("SELECT a FROM Appointment a JOIN AppointmentStatus ap on a.id = ap.appointment.id  WHERE " +
+            "a.doctor.id = :doctorId AND " +
+            "a.doctorSchedule.date >= :currentDate AND " +
+            "ap.appointment = a AND " +
+            "ap.status = 1 AND " +
+            "ap.updateAt = (SELECT MAX(as2.updateAt) FROM AppointmentStatus as2 WHERE as2.appointment = a)" +
+            "ORDER BY a.presentTime ASC")
+        // Truy vấn cuộc hẹn sắp tới nhất
+    List<Appointment> findAllUpcomingAppointmentsByDoctor(
+            @Param("doctorId") int doctorId,
+            @Param("currentDate") LocalDate currentDate
+    );
 }

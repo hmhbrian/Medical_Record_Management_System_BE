@@ -19,7 +19,7 @@ public class Icd10Controller {
     private Icd10Service icd10Service;
 
     @GetMapping
-    public ResponseEntity<List<Icd10Reponse>> findAllExaminations(
+    public ResponseEntity<List<Icd10Reponse>> findAllIcd10(
             @RequestParam(name = "keyword", required = false) String keyword) {
 
         List<Icd10Reponse> results = icd10Service.search(keyword);

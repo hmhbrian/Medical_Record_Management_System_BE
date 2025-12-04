@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class InvoiceSummaryResponse {
     private Integer paymentId;
+    private String paymentCode;
     private String paymentStatus; // PAID, PENDING_PAYMENT, CANCELED
     private BigDecimal totalAmount;
     private BigDecimal patientPaid;

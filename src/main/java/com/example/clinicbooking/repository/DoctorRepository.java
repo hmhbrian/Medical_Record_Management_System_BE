@@ -36,6 +36,14 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     """)
     Integer findIdByUserId(Integer userId);
 
+    @Query("""
+        select d
+        from Staff s
+        join Doctor d on s.id = d.staff.id
+        where s.user.id = :userId
+    """)
+    Doctor findByUserId(Integer userId);
+
     Integer countBySpecialtyId(Integer specialtyId);
 
     Optional<Doctor> findByStaff_User_Id(Integer userId);

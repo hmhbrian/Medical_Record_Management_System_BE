@@ -39,28 +39,31 @@ public class AllMedicalRecordSpecification {
                 spec = spec.and((r, q, cb) -> cb.equal(r.get("status"), request.getStatus()));
             }
 
-            //Lọc theo ngày khám
-            // Lấy ngày hiện tại để làm mặc định nếu không có ngày tìm kiếm
-            LocalDate defaultDate = LocalDate.now();
-
-            //Xác định ngày tìm kiếm (Search Date)
-            // Nếu request.getCurrentDate() có giá trị, dùng nó. Ngược lại, dùng ngày hiện tại.
-            LocalDate searchLocalDate;
-            if (request.getCurrentDate() != null && !request.getCurrentDate().isEmpty()) {
-                try {
-                    // Chuyển chuỗi ngày thành LocalDate
-                    searchLocalDate = LocalDate.parse(request.getCurrentDate(), DateTimeFormatter.ISO_LOCAL_DATE);
-                } catch (Exception e) {
-                    // Xử lý lỗi hoặc sử dụng ngày mặc định nếu định dạng sai
-                    searchLocalDate = defaultDate;
-                }
-            } else {
-                // Nếu không có ngày tìm kiếm, sử dụng ngày hiện tại (hoặc bỏ qua lọc nếu không muốn mặc định)
-                searchLocalDate = defaultDate;
-            }
+//            //Lọc theo ngày khám
+//            // Lấy ngày hiện tại để làm mặc định nếu không có ngày tìm kiếm
+//            LocalDate defaultDate = LocalDate.now();
+//
+//            //Xác định ngày tìm kiếm (Search Date)
+//            // Nếu request.getCurrentDate() có giá trị, dùng nó. Ngược lại, dùng ngày hiện tại.
+//            LocalDate searchLocalDate;
+//            if (request.getCurrentDate() != null && !request.getCurrentDate().isEmpty()) {
+//                try {
+//                    // Chuyển chuỗi ngày thành LocalDate
+//                    searchLocalDate = LocalDate.parse(request.getCurrentDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+//                } catch (Exception e) {
+//                    // Xử lý lỗi hoặc sử dụng ngày mặc định nếu định dạng sai
+//                    searchLocalDate = defaultDate;
+//                }
+//            } else {
+//                // Nếu không có ngày tìm kiếm, sử dụng ngày hiện tại (hoặc bỏ qua lọc nếu không muốn mặc định)
+//                searchLocalDate = defaultDate;
+//            }
 
             // 4. Lọc theo Ngày khám
-            //spec = spec.and(filterByDateRange(searchLocalDate));
+            if( request.getCurrentDate() != null && !request.getCurrentDate().isEmpty()){
+                LocalDate searchLocalDate = LocalDate.parse(request.getCurrentDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+                spec = spec.and(filterByDateRange(searchLocalDate));
+            }
 
             // 5. Tìm kiếm chung (Query)
             if (request.getQuery() != null && !request.getQuery().isEmpty()) {

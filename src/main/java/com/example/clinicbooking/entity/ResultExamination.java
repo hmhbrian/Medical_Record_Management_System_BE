@@ -14,9 +14,6 @@ public class ResultExamination {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "inpatient_record_id", nullable = true) // <-- Cần có nullable = true
-    private InpatientRecord inpatientRecord;
-    @ManyToOne
     @JoinColumn(name = "record_id", nullable = true)
     private MedicalRecord record;
     @ManyToOne
