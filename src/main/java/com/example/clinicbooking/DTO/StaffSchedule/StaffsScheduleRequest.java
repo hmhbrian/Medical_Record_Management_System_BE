@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class StaffsScheduleRequest {
-    private List<Integer> staffId;
+    private List<Integer> staffIds;
     private int shiftTypeId;
     private int roomId;
     private LocalDate date;

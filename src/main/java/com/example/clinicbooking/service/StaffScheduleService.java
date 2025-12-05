@@ -86,7 +86,7 @@ public class StaffScheduleService {
 
     //Thêm lịch làm việc mới cho 1 nhân viên sau khi kiểm tra công suất phòng.
     public ApiResponse<?> addBulkSchedule(StaffsScheduleRequest request) {
-        List<Integer> staffIds = request.getStaffId();
+        List<Integer> staffIds = request.getStaffIds();
         Integer shiftTypeId = request.getShiftTypeId();
         Integer roomId = request.getRoomId();
         LocalDate date = request.getDate();
