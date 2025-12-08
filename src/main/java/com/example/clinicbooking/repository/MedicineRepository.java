@@ -20,4 +20,13 @@ public interface MedicineRepository extends JpaRepository<Medicine, Integer>, Jp
 
     List<Medicine> findAllByOrderByStatusDesc();
 
+    // ==================== ADMIN DASHBOARD QUERIES ====================
+
+    /**
+     * Đếm số thuốc sắp hết (current_quantity <= minimum_quantity)
+     * 
+     * @return Số lượng thuốc sắp hết
+     */
+    @Query("SELECT COUNT(m) FROM Medicine m WHERE m.current_quantity <= m.minimum_quantity")
+    Long countLowStockMedicines();
 }

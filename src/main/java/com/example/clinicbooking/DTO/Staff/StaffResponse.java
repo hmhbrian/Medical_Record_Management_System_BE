@@ -25,5 +25,8 @@ public interface StaffResponse {
     String  getAddress();
     String  getAvatarUrl();
     Integer getStaffId();       // id ở bảng Staff
+    String getCertificationName();
+    String getIssuedBy();
+    LocalDate getIssuedDate();
 }
 

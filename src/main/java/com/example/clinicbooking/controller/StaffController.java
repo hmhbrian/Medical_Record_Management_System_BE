@@ -55,4 +55,20 @@ public class StaffController {
     public ApiResponse<List<StaffSummary>> getStaffByPosition(@PathVariable int positionId) {
         return staffService.findStaffByPosition(positionId);
     }
+
+    /**
+     * Cập nhật thông tin nhân viên
+     * Endpoint: PUT /api/staffs/{staffId}
+     * 
+     * @param staffId ID của staff cần cập nhật
+     * @param request Thông tin cập nhật
+     * @return ApiResponse với thông báo kết quả
+     */
+    @PutMapping("/{staffId}")
+    public ResponseEntity<ApiResponse<?>> update(
+            @PathVariable Integer staffId,
+            @RequestBody StaffRequest request) {
+        String message = staffService.update(staffId, request);
+        return ResponseEntity.ok(new ApiResponse<>(true, message, null));
+    }
 }

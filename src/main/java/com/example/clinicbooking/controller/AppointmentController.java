@@ -2,6 +2,7 @@ package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.Appointment.*;
+import com.example.clinicbooking.DTO.Dashboard.AppointmentOverviewDTO;
 import com.example.clinicbooking.DTO.Notification.NotificationRequest;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.entity.Appointment;
@@ -29,6 +30,19 @@ import java.util.Map;
 public class AppointmentController {
     private final AppointmentService appointmentService;
     private final FCMService fcmService;
+
+    /**
+     * Lấy tổng quan quản lý lịch hẹn cho Admin/Lễ tân
+     * Endpoint: GET /api/dashboard/appointment-overview
+     *
+     * @param searchDate Ngày cần thống kê (định dạng yyyy-MM-dd), không bắt buộc
+     * @return AppointmentOverviewDTO chứa các thống kê tổng quan lịch hẹn
+     */
+    @GetMapping("/appointment-overview")
+    public AppointmentOverviewDTO getAppointmentOverview(
+            @RequestParam(required = false) String searchDate) {
+        return appointmentService.getAppointmentOverview(searchDate);
+    }
 
     // Lấy danh sách lịch hẹn với phân trang và lọc
     @GetMapping("/find-all")

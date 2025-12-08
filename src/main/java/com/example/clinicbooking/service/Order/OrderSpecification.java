@@ -23,10 +23,9 @@ public class OrderSpecification {
             Join<Order, Doctor> doctorJoin = root.join("doctor", JoinType.INNER);
 
             // 2. Lọc bắt buộc theo doctor ID
-            if(request.getDoctorId() != null) {
+            if (request.getDoctorId() != null) {
                 spec = Specification.where(
-                        (r, q, cb) -> cb.equal(doctorJoin.get("id"), request.getDoctorId())
-                );
+                        (r, q, cb) -> cb.equal(doctorJoin.get("id"), request.getDoctorId()));
             }
 
             // 3. Lọc theo Trạng thái
@@ -34,10 +33,9 @@ public class OrderSpecification {
                 spec = spec.and((r, q, cb) -> cb.equal(r.get("status"), request.getStatus()));
             }
 
-
             LocalDate searchLocalDate;
             // 4. Lọc theo Ngày ra chỉ định
-            if (request.getFindDate() != null && !request.getFindDate().isEmpty()){
+            if (request.getFindDate() != null && !request.getFindDate().isEmpty()) {
                 searchLocalDate = LocalDate.parse(request.getFindDate(), DateTimeFormatter.ISO_LOCAL_DATE);
                 spec = spec.and(filterByDateRange(searchLocalDate));
             }
@@ -54,8 +52,8 @@ public class OrderSpecification {
                             // Tìm theo Mã hồ sơ
                             criteriaBuilderSearch.like(criteriaBuilderSearch.lower(recordJoin.get("code")), likeQuery),
                             // Tìm theo Tên dịch vụ
-                            criteriaBuilderSearch.like(criteriaBuilderSearch.lower(rootSearch.get("serviceName")), likeQuery)
-                    );
+                            criteriaBuilderSearch.like(criteriaBuilderSearch.lower(rootSearch.get("serviceName")),
+                                    likeQuery));
                 };
                 spec = spec.and(searchSpec);
             }
@@ -64,7 +62,8 @@ public class OrderSpecification {
         };
     }
 
-    // Hàm hỗ trợ tạo Specification để lọc trường LocalDateTime trong phạm vi một ngày.
+    // Hàm hỗ trợ tạo Specification để lọc trường LocalDateTime trong phạm vi một
+    // ngày.
     private static Specification<Order> filterByDateRange(LocalDate date) {
         return (root, query, criteriaBuilder) -> {
             // Tính thời điểm bắt đầu của ngày (ví dụ: 2025-11-01 00:00:00)
@@ -76,17 +75,16 @@ public class OrderSpecification {
         };
     }
 
-    //Trạng thái đang chờ (PAID, IN_PROGRESS)
+    // Trạng thái đang chờ (PAID, IN_PROGRESS)
     public static Specification<Order> isPending() {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.or(
                     criteriaBuilder.equal(root.get("status"), ServiceStatus.PAID),
-                    criteriaBuilder.equal(root.get("status"), ServiceStatus.IN_PROGRESS)
-            );
+                    criteriaBuilder.equal(root.get("status"), ServiceStatus.IN_PROGRESS));
         };
     }
 
-    //Y lệnh đã hoàn thành
+    // Y lệnh đã hoàn thành
     public static Specification<Order> isCompleted() {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.equal(root.get("status"), ServiceStatus.COMPLETED);
@@ -102,8 +100,46 @@ public class OrderSpecification {
 
             return criteriaBuilder.and(
                     criteriaBuilder.equal(root.get("status"), ServiceStatus.COMPLETED),
-                    criteriaBuilder.between(root.get("completedAt"), startOfDay, endOfDay)
-            );
+                    criteriaBuilder.between(root.get("completedAt"), startOfDay, endOfDay));
         };
+    }
+
+    // ==================== ORDER OVERVIEW SPECIFICATIONS ====================
+
+    /**
+     * Lọc y lệnh theo ngày requestedAt
+     * 
+     * @param date Ngày cần lọc
+     * @return Specification lọc theo ngày
+     */
+    public static Specification<Order> byRequestedDate(LocalDate date) {
+        return (root, query, criteriaBuilder) -> {
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+            return criteriaBuilder.between(root.get("requestedAt"), startOfDay, endOfDay);
+        };
+    }
+
+    /**
+     * Lọc y lệnh theo trạng thái cụ thể
+     * 
+     * @param status Trạng thái cần lọc
+     * @return Specification lọc theo trạng thái
+     */
+    public static Specification<Order> byStatus(ServiceStatus status) {
+        return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.equal(root.get("status"), status);
+        };
+    }
+
+    /**
+     * Lọc y lệnh theo trạng thái và ngày
+     * 
+     * @param status Trạng thái cần lọc
+     * @param date   Ngày cần lọc
+     * @return Specification lọc theo trạng thái và ngày
+     */
+    public static Specification<Order> byStatusAndDate(ServiceStatus status, LocalDate date) {
+        return byStatus(status).and(byRequestedDate(date));
     }
 }

@@ -1,19 +1,12 @@
 package com.example.clinicbooking.service.Order;
 
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchAllRequest;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSummaryDTO;
 import com.example.clinicbooking.DTO.Order.OrderOverviewResponse;
 import com.example.clinicbooking.DTO.Order.OrderRequest;
 import com.example.clinicbooking.DTO.Order.OrderResponse;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
-import com.example.clinicbooking.DTO.Patient.PatientSummary;
-import com.example.clinicbooking.entity.MedicalRecord;
 import com.example.clinicbooking.entity.Order;
-import com.example.clinicbooking.repository.DoctorRepository;
-import com.example.clinicbooking.repository.MedicalRecordRepository;
+import com.example.clinicbooking.entity.ServiceStatus;
 import com.example.clinicbooking.repository.OrderRepository;
-import com.example.clinicbooking.repository.PatientRepository;
-import com.example.clinicbooking.service.MedicalRecord.AllMedicalRecordSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +16,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,77 +52,56 @@ public class OrderService {
                 orderPage.getSize(),
                 orderPage.getTotalElements(),
                 orderPage.getTotalPages(),
-                responseOrders
-        );
+                responseOrders);
     }
 
-    public OrderOverviewResponse getOrderOverviewMetrics() {
-        OrderOverviewResponse response = new OrderOverviewResponse();
-
-        // 1. Tổng số Y lệnh Đang Chờ
-        response.setTotalPendingOrders(calculateTotalPendingOrders());
-
-        // 2. Y lệnh Quá hạn (> 24h)
-        response.setTotalOverdueOrders(calculateOverdueOrders());
-
-        // 3. Tổng số Y lệnh Hoàn thành Hôm nay
-        response.setTotalCompletedToday(calculateCompletedToday());
-
-        // 4. Thời gian Xử lý Trung bình (TAT)
-        response.setAverageTAT(calculateAverageTAT());
-
-        return response;
-    }
-
-    // --- 1. Tổng số Y lệnh Đang Chờ (PAID, IN_PROGRESS) ---
-    private long calculateTotalPendingOrders() {
-        Specification<Order> pendingSpec = OrderSpecification.isPending();
-        return orderRepo.count(pendingSpec);
-    }
-
-    // --- 2. Y lệnh Quá hạn (> 24h) ---
-    private long calculateOverdueOrders() {
-        List<Order> pendingOrders = orderRepo.findAll(OrderSpecification.isPending());
-        long overdueCount = 0;
-        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
-
-        for (Order order : pendingOrders) {
-            // Lọc các order đang chờ đã được yêu cầu quá 24h trước
-            if (order.getRequestedAt().isBefore(twentyFourHoursAgo)) {
-                overdueCount++;
-            }
-        }
-        return overdueCount;
-    }
-
-    // --- 3. Tổng số Y lệnh Hoàn thành Hôm nay ---
-    private long calculateCompletedToday() {
-        Specification<Order> completedTodaySpec = OrderSpecification.isCompletedToday();
-        return orderRepo.count(completedTodaySpec);
-    }
-
-    // --- 4. Thời gian Xử lý Trung bình (Average TAT) ---
-    private double calculateAverageTAT() {
-        Specification<Order> completedSpec = OrderSpecification.isCompleted();
-        List<Order> completedOrders = orderRepo.findAll(completedSpec);
-
-        if (completedOrders.isEmpty()) {
-            return 0.0; // Trả về 0 nếu không có y lệnh nào hoàn thành
+    /**
+     * Lấy tổng quan y lệnh cho Admin
+     * Bao gồm các thống kê:
+     * - Tổng số y lệnh (tất cả thời gian)
+     * - Tổng số y lệnh trong ngày
+     * - Y lệnh chờ xử lý trong ngày (status = PAID)
+     * - Y lệnh đang thực hiện trong ngày (status = IN_PROGRESS)
+     * - Y lệnh hoàn thành trong ngày (status = COMPLETED)
+     * 
+     * @param searchDateStr Ngày cần thống kê (định dạng yyyy-MM-dd), null = ngày
+     *                      hiện tại
+     * @return OrderOverviewResponse chứa các thống kê tổng quan
+     */
+    public OrderOverviewResponse getOrderOverviewMetrics(String searchDateStr) {
+        // --- 1. Xác định ngày thống kê ---
+        LocalDate searchDate = LocalDate.now();
+        if (searchDateStr != null && !searchDateStr.isEmpty()) {
+            searchDate = LocalDate.parse(searchDateStr, DateTimeFormatter.ISO_LOCAL_DATE);
         }
 
-        long totalMinutes = 0;
+        // --- 2. Truy vấn dữ liệu ---
 
-        for (Order order : completedOrders) {
-            // Đảm bảo cả hai mốc thời gian đều tồn tại trước khi tính
-            if (order.getRequestedAt() != null && order.getCompletedAt() != null) {
-                Duration duration = Duration.between(order.getRequestedAt(), order.getCompletedAt());
-                totalMinutes += duration.toMinutes();
-            }
-        }
+        // 2.1. Tổng số y lệnh (tất cả thời gian)
+        Long totalOrders = orderRepo.count();
 
-        // Tính TAT trung bình (tính theo Giờ)
-        double averageMinutes = (double) totalMinutes / completedOrders.size();
-        return averageMinutes / 60.0;
+        // 2.2. Tổng số y lệnh trong ngày (theo requestedAt)
+        Long totalOrdersToday = orderRepo.count(OrderSpecification.byRequestedDate(searchDate));
+
+        // 2.3. Y lệnh chờ xử lý trong ngày (status = PAID)
+        Long pendingOrdersToday = orderRepo.count(
+                OrderSpecification.byStatusAndDate(ServiceStatus.PAID, searchDate));
+
+        // 2.4. Y lệnh đang thực hiện trong ngày (status = IN_PROGRESS)
+        Long inProgressOrdersToday = orderRepo.count(
+                OrderSpecification.byStatusAndDate(ServiceStatus.IN_PROGRESS, searchDate));
+
+        // 2.5. Y lệnh hoàn thành trong ngày (status = COMPLETED)
+        Long completedOrdersToday = orderRepo.count(
+                OrderSpecification.byStatusAndDate(ServiceStatus.COMPLETED, searchDate));
+
+        // --- 3. Đóng gói và trả về DTO ---
+        return new OrderOverviewResponse(
+                totalOrders,
+                totalOrdersToday,
+                pendingOrdersToday,
+                inProgressOrdersToday,
+                completedOrdersToday);
     }
 
     private OrderResponse covertToSummaryResponse(Order order) {
@@ -146,13 +120,13 @@ public class OrderService {
         dto.setDoctorCode(order.getDoctor().getDoctorcode());
         dto.setSpecialty(order.getDoctor().getSpecialty().getName());
 
-        //3.Thông tin thời gian chỉ định
+        // 3.Thông tin thời gian chỉ định
         dto.setRequestedAt(order.getRequestedAt());
         dto.setCompletedAt(order.getCompletedAt());
         // --- TÍNH TIME EXECUTION ---
         LocalDateTime startTime = order.getRequestedAt();
         Duration duration;
-        //Nếu dịch vụ ĐÃ hoàn thành (có CompletedAt)
+        // Nếu dịch vụ ĐÃ hoàn thành (có CompletedAt)
         if (order.getCompletedAt() != null) {
             LocalDateTime endTime = order.getCompletedAt();
             duration = Duration.between(startTime, endTime);
@@ -169,7 +143,7 @@ public class OrderService {
 
         // 4. Thông tin nhân viên thực hiện
         dto.setStaffCode(order.getStaffCode());
-        if(order.getStaffName() != null)
+        if (order.getStaffName() != null)
             dto.setStaffName(order.getStaffName());
         else
             dto.setStaffName("Chưa phân công");
@@ -183,11 +157,11 @@ public class OrderService {
         }
 
         long seconds = duration.getSeconds();
-        long days = seconds / (24 * 3600); //Lấy số ngày
-        seconds %= (24 * 3600);            //Cập nhật lại seconds còn lại sau khi lấy ngày
-        long hours = seconds / 3600;       //Lấy số giờ
-        seconds %= 3600;                   //Cập nhật lại seconds còn lại sau khi lấy giờ
-        long minutes = seconds / 60;       //Lấy số phút
+        long days = seconds / (24 * 3600); // Lấy số ngày
+        seconds %= (24 * 3600); // Cập nhật lại seconds còn lại sau khi lấy ngày
+        long hours = seconds / 3600; // Lấy số giờ
+        seconds %= 3600; // Cập nhật lại seconds còn lại sau khi lấy giờ
+        long minutes = seconds / 60; // Lấy số phút
 
         StringBuilder sb = new StringBuilder();
 

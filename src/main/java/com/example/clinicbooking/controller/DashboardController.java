@@ -1,6 +1,8 @@
 package com.example.clinicbooking.controller;
 
+import com.example.clinicbooking.DTO.Dashboard.AdminDashboardOverviewDTO;
 import com.example.clinicbooking.DTO.Dashboard.DashboardOverview;
+import com.example.clinicbooking.DTO.Dashboard.WeeklyStatisticsDTO;
 import com.example.clinicbooking.DTO.Dashboard.Doctor.AppointmentUpcomingDTO;
 import com.example.clinicbooking.DTO.Dashboard.Doctor.PatientOverview;
 import com.example.clinicbooking.security.CustomUserDetails;
@@ -73,5 +75,33 @@ public class DashboardController {
         Integer currentUserId = cud.getId();
 
         return dashboardService.getUpcomingAppointmentForDoctor(currentUserId);
+    }
+
+    // ==================== ADMIN DASHBOARD ====================
+
+    /**
+     * Lấy tổng quan Dashboard Admin
+     * Endpoint: GET /api/dashboard/admin-overview
+     * 
+     * @param searchDate Ngày cần thống kê (định dạng yyyy-MM-dd), không bắt buộc
+     * @return AdminDashboardOverviewDTO chứa các thống kê tổng quan Admin
+     */
+    @GetMapping("/admin-overview")
+    public AdminDashboardOverviewDTO getAdminDashboardOverview(
+            @RequestParam(required = false) String searchDate) {
+        return dashboardService.getAdminDashboardOverview(searchDate);
+    }
+
+    /**
+     * Lấy thống kê theo tuần
+     * Endpoint: GET /api/dashboard/weekly-statistics
+     * 
+     * @param weekStartDate Ngày bắt đầu tuần (định dạng yyyy-MM-dd), không bắt buộc
+     * @return WeeklyStatisticsDTO chứa thống kê theo tuần
+     */
+    @GetMapping("/weekly-statistics")
+    public WeeklyStatisticsDTO getWeeklyStatistics(
+            @RequestParam(required = false) String weekStartDate) {
+        return dashboardService.getWeeklyStatistics(weekStartDate);
     }
 }

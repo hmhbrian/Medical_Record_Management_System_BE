@@ -28,6 +28,7 @@ public class StaffService implements IStaffService {
     private final StaffPositionRepository staffPositionRepo;
     private final StaffCreationService staffCreationService;
     private final UnifiedStaffViewRepository unifiedRepo;
+    private final StaffRepository staffRepo;
 
     @Override
     public String create(StaffRequest staffRequest) {
@@ -100,9 +101,93 @@ public class StaffService implements IStaffService {
         return "";
     }
 
+    /**
+     * Cập nhật thông tin nhân viên theo staffId
+     * Bao gồm cập nhật User, Staff và entity chuyên môn (Doctor, Nurse, etc.)
+     * 
+     * @param staffId ID của staff
+     * @param request Thông tin cập nhật
+     * @return Thông báo kết quả
+     */
     @Override
-    public String update(Integer id, StaffRequest staffRequest) {
-        return "";
+    public String update(Integer staffId, StaffRequest request) {
+        // 1. Tìm Staff theo ID
+        Staff staff = staffRepo.findById(staffId)
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy nhân viên với ID: " + staffId));
+
+        // 2. Cập nhật User và Staff cơ bản
+        staffCreationService.updateUserAndStaff(
+                staff.getUser(),
+                staff,
+                request,
+                request.getDepartmentId(),
+                request.getPositionId());
+
+        // 3. Cập nhật entity chuyên môn dựa trên positionId
+        int positionId = request.getPositionId();
+        String message = "Cập nhật nhân viên thành công!";
+
+        if (positionId == 1) {
+            // Doctor
+            Doctor doctor = doctorRepo.findByStaffId(staffId)
+                    .orElseThrow(() -> new InvalidInputException("Không tìm thấy thông tin bác sĩ"));
+            doctor.setExperienceYears(request.getExperienceYears());
+            if (request.getSpecialtyId() > 0) {
+                Specialty specialty = specialtyRepo.findById(request.getSpecialtyId())
+                        .orElseThrow(() -> new InvalidInputException(
+                                "Chuyên khoa không tồn tại với id: " + request.getSpecialtyId()));
+                doctor.setSpecialty(specialty);
+            }
+            doctor.setCertificationName(request.getCertificationName());
+            doctor.setIssuedBy(request.getIssuedBy());
+            doctor.setIssueDate(request.getIssueDate());
+            doctorRepo.save(doctor);
+            message = "Cập nhật bác sĩ thành công!";
+        } else if (positionId == 2) {
+            // Nurse
+            Nurse nurse = nurseRepo.findByStaffId(staffId)
+                    .orElseThrow(() -> new InvalidInputException("Không tìm thấy thông tin y tá"));
+            nurse.setExperienceYears(request.getExperienceYears());
+            nurseRepo.save(nurse);
+            message = "Cập nhật y tá thành công!";
+        } else if (positionId == 3) {
+            // LabTechnician
+            LabTechnician labTech = labTechnicianRepo.findByStaffId(staffId)
+                    .orElseThrow(() -> new InvalidInputException("Không tìm thấy thông tin kỹ thuật viên"));
+            labTech.setExperienceYears(request.getExperienceYears());
+            labTechnicianRepo.save(labTech);
+            message = "Cập nhật kỹ thuật viên phòng thí nghiệm thành công!";
+        } else if (positionId == 4) {
+            // ImagingStaff
+            ImagingStaff imagingStaff = imagingStaffRepo.findByStaffId(staffId)
+                    .orElseThrow(() -> new InvalidInputException("Không tìm thấy thông tin nhân viên hình ảnh"));
+            imagingStaff.setExperienceYears(request.getExperienceYears());
+            imagingStaffRepo.save(imagingStaff);
+            message = "Cập nhật nhân viên phòng hình ảnh thành công!";
+        } else if (positionId == 5) {
+            // PharmacyStaff
+            PharmacyStaff pharmacyStaff = pharmacyStaffRepo.findByStaffId(staffId)
+                    .orElseThrow(() -> new InvalidInputException("Không tìm thấy thông tin nhân viên phát thuốc"));
+            pharmacyStaff.setExperienceYears(request.getExperienceYears());
+            pharmacyStaffRepo.save(pharmacyStaff);
+            message = "Cập nhật nhân viên phát thuốc thành công!";
+        } else if (positionId == 6) {
+            // Cashier
+            Cashier cashier = cashierRepo.findByStaffId(staffId)
+                    .orElseThrow(() -> new InvalidInputException("Không tìm thấy thông tin thu ngân"));
+            cashier.setExperienceYears(request.getExperienceYears());
+            cashierRepo.save(cashier);
+            message = "Cập nhật nhân viên thu ngân thành công!";
+        } else if (positionId == 7) {
+            // Receptionist
+            Receptionist receptionist = receptionistRepo.findByStaffId(staffId)
+                    .orElseThrow(() -> new InvalidInputException("Không tìm thấy thông tin nhân viên tiếp nhận"));
+            receptionist.setExperienceYears(request.getExperienceYears());
+            receptionistRepo.save(receptionist);
+            message = "Cập nhật nhân viên tiếp nhận bệnh nhân thành công!";
+        }
+
+        return message;
     }
 
     @Override
