@@ -3,7 +3,6 @@ package com.example.clinicbooking.controller;
 import com.example.clinicbooking.DTO.Patient.PatientRequest;
 import com.example.clinicbooking.DTO.Patient.PatientResponse;
 import com.example.clinicbooking.service.IPatientService;
-import com.example.clinicbooking.service.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +26,7 @@ public class PatientController {
     public ResponseEntity<List<PatientResponse>> getAll() {
         return ResponseEntity.ok(patientService.getAll());
     }
+
     @GetMapping("/{userId}")
     public ResponseEntity<PatientResponse> getbyUserId(@PathVariable Integer userId) {
         PatientResponse patient = patientService.getbyUserId(userId);

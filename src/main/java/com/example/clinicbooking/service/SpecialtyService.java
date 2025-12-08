@@ -1,11 +1,8 @@
 package com.example.clinicbooking.service;
 
-import com.example.clinicbooking.DTO.Department.DepartmentRequest;
 import com.example.clinicbooking.DTO.Specialty.SpecialtyRequest;
 import com.example.clinicbooking.DTO.Specialty.SpecialtyResponse;
 import com.example.clinicbooking.entity.Department;
-import com.example.clinicbooking.entity.Doctor;
-import com.example.clinicbooking.entity.Medicine;
 import com.example.clinicbooking.entity.Specialty;
 import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.DepartmentRepository;
@@ -15,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +21,11 @@ public class SpecialtyService {
     private final DepartmentRepository departmentRepo;
     private final DoctorRepository doctorRepo;
 
-    //TẠO MỚI CHUYÊN KHOA
+    // TẠO MỚI CHUYÊN KHOA
     public Specialty save(SpecialtyRequest specialtyRq) {
         Department dept = departmentRepo.findById(specialtyRq.getDepartmentId())
-                .orElseThrow(() -> new InvalidInputException("Department not found with id: " + specialtyRq.getDepartmentId()));
+                .orElseThrow(() -> new InvalidInputException(
+                        "Department not found with id: " + specialtyRq.getDepartmentId()));
 
         Specialty specialty = new Specialty();
         specialty.setName(specialtyRq.getName());
@@ -38,7 +35,7 @@ public class SpecialtyService {
         return specialtyRepository.save(specialty);
     }
 
-    //CẬP NHẬT CHUYÊN KHOA
+    // CẬP NHẬT CHUYÊN KHOA
     public Specialty update(int id, SpecialtyRequest specialtyRq) {
         Specialty specialty = specialtyRepository.findById(id)
                 .orElseThrow(() -> new InvalidInputException("Specialty not found with id: " + id));
@@ -46,7 +43,8 @@ public class SpecialtyService {
         // Nếu request có departmentId thì lấy ra department
         if (specialtyRq.getDepartmentId() > 0) {
             Department department = departmentRepo.findById(specialtyRq.getDepartmentId())
-                    .orElseThrow(() -> new InvalidInputException("Department not found with id: " + specialtyRq.getDepartmentId()));
+                    .orElseThrow(() -> new InvalidInputException(
+                            "Department not found with id: " + specialtyRq.getDepartmentId()));
             specialty.setDepartment(department);
         }
 
@@ -58,26 +56,26 @@ public class SpecialtyService {
         return specialtyRepository.save(specialty);
     }
 
-    //XÓA CHUYÊN KHOA THEO ID
+    // XÓA CHUYÊN KHOA THEO ID
     public void deleteSpecialtyById(int id) {
         specialtyRepository.deleteById(id);
     }
 
-    //LẤY TẤT CẢ CHUYÊN KHOA
+    // LẤY TẤT CẢ CHUYÊN KHOA
     public List<SpecialtyResponse> getAll() {
         return specialtyRepository.findAll().stream()
                 .map(this::covertToResponse)
                 .collect(Collectors.toList());
     }
 
-    //LẤY CHUYÊN KHOA THEO ID
+    // LẤY CHUYÊN KHOA THEO ID
     public Specialty getSpecialtyById(int id) {
-        Specialty specialty = specialtyRepository.findById(id).orElseThrow(()
-                -> new InvalidInputException("Không tìm thấy chuyên khoa"));
+        Specialty specialty = specialtyRepository.findById(id)
+                .orElseThrow(() -> new InvalidInputException("Không tìm thấy chuyên khoa"));
         return specialty;
     }
 
-    //LẤY DANH SÁCH CHUYÊN KHOA THEO DEPARTMENT ID
+    // LẤY DANH SÁCH CHUYÊN KHOA THEO DEPARTMENT ID
     public List<SpecialtyResponse> getSpecialtiesByDepartment(int departmentId) {
         Department department = departmentRepo.findById(departmentId)
                 .orElseThrow(() -> new InvalidInputException("Department not found with id: " + departmentId));
@@ -88,7 +86,7 @@ public class SpecialtyService {
                 .collect(Collectors.toList());
     }
 
-    //Chuyển đổi entity Specialty sang DTO SpecialtyResponse
+    // Chuyển đổi entity Specialty sang DTO SpecialtyResponse
     private SpecialtyResponse covertToResponse(Specialty specialty) {
         SpecialtyResponse dto = new SpecialtyResponse();
         dto.setId(specialty.getId());
@@ -98,7 +96,7 @@ public class SpecialtyService {
         dto.setDepartmentName(specialty.getDepartment().getName());
         dto.setIcon(specialty.getIcon());
 
-        //số lượng bác sĩ theo specialty
+        // số lượng bác sĩ theo specialty
         int countDoctors = doctorRepo.countBySpecialtyId(specialty.getId());
         dto.setNumberOfDoctors(countDoctors);
         return dto;

@@ -1,6 +1,6 @@
 package com.example.clinicbooking.config;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -42,11 +42,15 @@ public class SupabaseStorageService {
 
         try {
             // Loại bỏ dấu '/' ở đầu/cuối folderPath nếu có
-            if (folderPath.startsWith("/")) folderPath = folderPath.substring(1);
-            if (!folderPath.endsWith("/")) folderPath = folderPath + "/";
+            if (folderPath.startsWith("/"))
+                folderPath = folderPath.substring(1);
+            if (!folderPath.endsWith("/"))
+                folderPath = folderPath + "/";
 
             // Tên file đã được định dạng duy nhất sẽ nằm ở cuối path
-            String storageFilePath = folderPath + uniqueFileName; // Lưu ý: file.getName() trong MultipartFile là tên tham số, không phải tên file gốc. Cần lấy tên file đã tạo duy nhất từ logic service gọi
+            String storageFilePath = folderPath + uniqueFileName; // Lưu ý: file.getName() trong MultipartFile là tên
+                                                                  // tham số, không phải tên file gốc. Cần lấy tên file
+                                                                  // đã tạo duy nhất từ logic service gọi
 
             // Lấy byte array của file và kích thước
             byte[] fileBytes = file.getBytes();

@@ -1,8 +1,8 @@
 package com.example.clinicbooking.controller;
 
+import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.Specialty.SpecialtyRequest;
 import com.example.clinicbooking.DTO.Specialty.SpecialtyResponse;
-import com.example.clinicbooking.entity.Department;
 import com.example.clinicbooking.entity.Specialty;
 import com.example.clinicbooking.service.SpecialtyService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +26,7 @@ public class SpecialtyController {
         return specialtyService.getAll();
     }
 
-    // IMPORTANT: This route must come BEFORE /{id} to avoid conflicts  
+    // IMPORTANT: This route must come BEFORE /{id} to avoid conflicts
     @GetMapping("/department")
     public ResponseEntity<List<SpecialtyResponse>> getSpecialtiesByDepartment(@RequestParam int departmentId) {
         List<SpecialtyResponse> specialties = specialtyService.getSpecialtiesByDepartment(departmentId);
@@ -44,10 +44,11 @@ public class SpecialtyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateSpecialty(@PathVariable int id, @RequestBody SpecialtyRequest specialtyRq) {
+    public ResponseEntity<ApiResponse<?>> updateSpecialty(@PathVariable int id,
+            @RequestBody SpecialtyRequest specialtyRq) {
         try {
             Specialty updated = specialtyService.update(id, specialtyRq);
-            return ResponseEntity.ok("Cập nhật chuyên khoa thành công!");
+            return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật chuyên khoa thành công!", updated));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
@@ -55,7 +56,7 @@ public class SpecialtyController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSpecialtyById(@PathVariable int id) {
-        if(specialtyService.getSpecialtyById(id) == null) {
+        if (specialtyService.getSpecialtyById(id) == null) {
             return ResponseEntity.notFound().build();
         }
         specialtyService.deleteSpecialtyById(id);

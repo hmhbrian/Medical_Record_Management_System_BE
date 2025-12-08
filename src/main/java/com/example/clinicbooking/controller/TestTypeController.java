@@ -3,9 +3,7 @@ package com.example.clinicbooking.controller;
 import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.LabParameter.LabParameterDTO;
 import com.example.clinicbooking.DTO.LabParameter.TestTypeParameterDetailDTO;
-import com.example.clinicbooking.DTO.Services.MedicalExaminationResponse;
 import com.example.clinicbooking.DTO.Services.TestTypeResponse;
-import com.example.clinicbooking.service.MedicalExamination.MedicalExaminationService;
 import com.example.clinicbooking.service.TestType.TestTypeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ public class TestTypeController {
     @Autowired
     private TestTypeService testTypeService;
 
-    //Endpoint tìm kiếm không phân trang (tùy chọn)
+    // Endpoint tìm kiếm không phân trang (tùy chọn)
     @GetMapping
     public ResponseEntity<List<TestTypeResponse>> findAllExaminations(
             @RequestParam(name = "keyword", required = false) String keyword) {

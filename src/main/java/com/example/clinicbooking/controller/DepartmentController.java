@@ -1,5 +1,6 @@
 package com.example.clinicbooking.controller;
 
+import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.Department.DepartmentRequest;
 import com.example.clinicbooking.DTO.Department.DepartmentResponse;
 import com.example.clinicbooking.DTO.Department.DepartmentRpDetail;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/api/departments")
 public class DepartmentController {
     private final DepartmentService service;
+
     public DepartmentController(DepartmentService service) {
         this.service = service;
     }
@@ -28,7 +30,7 @@ public class DepartmentController {
     @GetMapping("/{id}")
     public ResponseEntity<DepartmentRpDetail> getDepartmentById(@PathVariable int id) {
         return service.findDetailById(id)
-                .map(ResponseEntity ::ok)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -38,10 +40,11 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateDepartment(@PathVariable int id, @RequestBody DepartmentRequest deptRq) {
+    public ResponseEntity<ApiResponse<?>> updateDepartment(@PathVariable int id,
+            @RequestBody DepartmentRequest deptRq) {
         try {
             Department updated = service.update(id, deptRq);
-            return ResponseEntity.ok("Cập nhật khoa thành công!");
+            return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật khoa thành công!", updated));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }

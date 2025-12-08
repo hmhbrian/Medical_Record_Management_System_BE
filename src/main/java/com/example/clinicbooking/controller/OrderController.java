@@ -1,7 +1,5 @@
 package com.example.clinicbooking.controller;
 
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchAllRequest;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSummaryDTO;
 import com.example.clinicbooking.DTO.Order.OrderOverviewResponse;
 import com.example.clinicbooking.DTO.Order.OrderRequest;
 import com.example.clinicbooking.DTO.Order.OrderResponse;

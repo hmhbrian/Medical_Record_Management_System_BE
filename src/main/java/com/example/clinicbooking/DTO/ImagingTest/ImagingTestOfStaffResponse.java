@@ -1,6 +1,5 @@
 package com.example.clinicbooking.DTO.ImagingTest;
 
-import com.example.clinicbooking.entity.ImagingTests;
 import lombok.Data;
 
 import java.time.LocalDateTime;

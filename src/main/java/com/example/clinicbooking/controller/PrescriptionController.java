@@ -1,7 +1,6 @@
 package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.ApiResponse;
-import com.example.clinicbooking.DTO.Dashboard.DashboardOverview;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.DTO.Prescription.*;
 import com.example.clinicbooking.DTO.Prescription.Detail.PrescriptionDetailsOfStaffRp;
@@ -23,13 +22,14 @@ public class PrescriptionController {
 
     // Tạo hoặc gửi đơn thuốc
     @PostMapping("/record/{recordId}")
-    public ResponseEntity<ApiResponse<?>> createPrescription(@PathVariable Integer recordId, @RequestBody PrescriptionRequest prescriptionRequest) {
-        return ResponseEntity.ok(prescriptionService.saveOrSendPrescription(recordId,prescriptionRequest));
+    public ResponseEntity<ApiResponse<?>> createPrescription(@PathVariable Integer recordId,
+            @RequestBody PrescriptionRequest prescriptionRequest) {
+        return ResponseEntity.ok(prescriptionService.saveOrSendPrescription(recordId, prescriptionRequest));
     }
 
     @PostMapping("/assign/{prescriptionId}")
     public ResponseEntity<ApiResponse<?>> assignPrescription(@PathVariable Integer prescriptionId) {
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
@@ -41,7 +41,7 @@ public class PrescriptionController {
 
     @PutMapping("/complete/{prescriptionId}")
     public ResponseEntity<ApiResponse<?>> completePrescription(@PathVariable Integer prescriptionId) {
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
@@ -62,8 +62,9 @@ public class PrescriptionController {
     @GetMapping("/record/{recordId}")
     public ResponseEntity<ApiResponse<?>> getPrescription(@PathVariable Integer recordId) {
         PrescriptionResponse prescription = prescriptionService.getPrescriptionByRecordId(recordId);
-        if(prescription == null){
-            return ResponseEntity.ok(new ApiResponse<>(false, "Không tìm thấy đơn thuốc cho hồ sơ ngoại trú này.", null));
+        if (prescription == null) {
+            return ResponseEntity
+                    .ok(new ApiResponse<>(false, "Không tìm thấy đơn thuốc cho hồ sơ ngoại trú này.", null));
         }
         return ResponseEntity.ok(new ApiResponse<>(true, "Lấy đơn thuốc thành công.", prescription));
     }
@@ -110,7 +111,8 @@ public class PrescriptionController {
         request.setSortDir(SortDir);
         request.setSortBy(SortBy);
 
-        PaginatedResponseDTO<PrescriptionWaitingResponse> response = prescriptionService.searchPrescriptionWaiting(request);
+        PaginatedResponseDTO<PrescriptionWaitingResponse> response = prescriptionService
+                .searchPrescriptionWaiting(request);
         return ResponseEntity.ok(response);
     }
 
@@ -133,14 +135,15 @@ public class PrescriptionController {
         request.setSortDir(SortDir);
         request.setSortBy(SortBy);
 
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
         }
         Integer currentUserId = cud.getId();
 
-        PaginatedResponseDTO<PrescriptionOfStaffResponse> response = prescriptionService.searchPrescriptionOfPharmacist(request, currentUserId);
+        PaginatedResponseDTO<PrescriptionOfStaffResponse> response = prescriptionService
+                .searchPrescriptionOfPharmacist(request, currentUserId);
         return ResponseEntity.ok(response);
     }
 

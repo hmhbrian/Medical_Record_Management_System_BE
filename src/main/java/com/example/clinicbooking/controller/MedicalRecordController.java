@@ -12,7 +12,6 @@ import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.entity.MedicalRecord;
 import com.example.clinicbooking.entity.MedicalRecordStatus;
 import com.example.clinicbooking.service.MedicalRecord.MedicalRecordService;
-import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 
 @Tag(name = "MedicalRecord", description = "Quản lý hồ sơ ngoại trú")
 @RestController
@@ -56,7 +54,7 @@ public class MedicalRecordController {
         return ResponseEntity.ok(response);
     }
 
-    //Lấy danh sách hồ sơ ngoại trú của bác sĩ với phân trang và lọc
+    // Lấy danh sách hồ sơ ngoại trú của bác sĩ với phân trang và lọc
     @GetMapping("/OfDoctor")
     public ResponseEntity<PaginatedResponseDTO<MedicalRecordResponse>> getDoctorMedicalRecords(
             @RequestParam(required = false) String keyword,
@@ -96,9 +94,11 @@ public class MedicalRecordController {
     // Cập nhật trạng thái hồ sơ ngoại trú thành "Đang tiến hành"
     @PutMapping("/{recordId}/in_progress")
     public ResponseEntity<ApiResponse<?>> update_inProgress(@PathVariable Integer recordId) {
-        Boolean updateStatus = recordService.UpdateMedicalRecordStatus(recordId, MedicalRecordStatus.IN_PROGRESS.name());
-        if(!updateStatus){
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Trạng thái hồ sơ không thể cập nhật lại!", null));
+        Boolean updateStatus = recordService.UpdateMedicalRecordStatus(recordId,
+                MedicalRecordStatus.IN_PROGRESS.name());
+        if (!updateStatus) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, "Trạng thái hồ sơ không thể cập nhật lại!", null));
         }
         return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật trạng thái hồ sơ thành công!", null));
     }
@@ -128,7 +128,7 @@ public class MedicalRecordController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Lấy chi tiết hồ sơ ngoại trú thành công", response));
     }
 
-    //Cập nhật chẩn đoán cho hồ sơ ngoại trú.
+    // Cập nhật chẩn đoán cho hồ sơ ngoại trú.
     @PutMapping("/{recordId}/diagnosis")
     public ResponseEntity<ApiResponse<?>> updateDiagnosis(
             @PathVariable Integer recordId,
@@ -138,7 +138,7 @@ public class MedicalRecordController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật chẩn đoán thành công", null));
     }
 
-    //Lấy dữ liệu để hiển thị Tab 1: Khám & Chẩn đoán.
+    // Lấy dữ liệu để hiển thị Tab 1: Khám & Chẩn đoán.
     @GetMapping("/{recordId}/diagnosis-data")
     public ResponseEntity<ApiResponse<DiagnosisDataResponse>> getDiagnosisData(
             @PathVariable Integer recordId) {
@@ -153,7 +153,7 @@ public class MedicalRecordController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Lấy dữ liệu khám & chẩn đoán thành công", response));
     }
 
-    //Tạo các chỉ định xét nghiệm/hình ảnh và phiếu thanh toán liên quan.
+    // Tạo các chỉ định xét nghiệm/hình ảnh và phiếu thanh toán liên quan.
     @PostMapping("/{recordId}/service-orders")
     public ResponseEntity<ApiResponse<?>> createServiceOrders(
             @PathVariable Integer recordId,
@@ -162,23 +162,23 @@ public class MedicalRecordController {
         // Kiểm tra dữ liệu đầu vào cơ bản
         if ((dto.getLabTestCatalogIds() == null || dto.getLabTestCatalogIds().isEmpty()) &&
                 (dto.getImagingTypeIds() == null || dto.getImagingTypeIds().isEmpty())) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Cần chỉ định ít nhất một dịch vụ.", null));
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, "Cần chỉ định ít nhất một dịch vụ.", null));
         }
 
         // Trả về 201 Created (hoặc 200 OK)
         return new ResponseEntity<>(recordService.createServiceOrders(recordId, dto), HttpStatus.CREATED);
     }
 
-    //Lấy danh sách các chỉ định xét nghiệm/hình ảnh đã tạo cho Tab 2.
+    // Lấy danh sách các chỉ định xét nghiệm/hình ảnh đã tạo cho Tab 2.
     @GetMapping("/{recordId}/service-orders")
     public ResponseEntity<ApiResponse<List<ServiceOrderResponse>>> getServiceOrders(
             @PathVariable Integer recordId) {
 
         List<ServiceOrderResponse> response = recordService.getServiceOrders(recordId);
-        if(response.isEmpty()) {
-            return ResponseEntity.ok(new ApiResponse<>(false,"Không tìm thấy chỉ định nào!",null));
+        if (response.isEmpty()) {
+            return ResponseEntity.ok(new ApiResponse<>(false, "Không tìm thấy chỉ định nào!", null));
         }
-        return ResponseEntity.ok(new ApiResponse<>(true,"Danh sách các chỉ định",response));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Danh sách các chỉ định", response));
     }
 }
-

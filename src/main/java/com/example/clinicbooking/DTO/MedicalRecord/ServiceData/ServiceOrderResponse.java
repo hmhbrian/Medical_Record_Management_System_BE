@@ -1,10 +1,8 @@
 package com.example.clinicbooking.DTO.MedicalRecord.ServiceData;
 
-import com.example.clinicbooking.entity.ServiceStatus;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 public class ServiceOrderResponse {

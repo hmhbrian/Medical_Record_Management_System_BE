@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Doctors", description = "Quản lý bác sĩ")
@@ -59,14 +58,13 @@ public class DoctorController {
     @GetMapping("/filter-by-chief-complaint")
     public ResponseEntity<List<DoctorByComplaintResponse>> getDoctorsByComplaint(
             @RequestParam String chiefComplaint,
-            @RequestParam(required = false) String date
-    ) {
+            @RequestParam(required = false) String date) {
         DoctorFilterByComplaintRequest request = new DoctorFilterByComplaintRequest();
         request.setChiefComplaint(chiefComplaint);
         request.setDate(date);
 
         List<DoctorByComplaintResponse> result = doctorService.getAvailableDoctorsByComplaint(request);
-        //List<DoctorByComplaintResponse> doctors = new ArrayList<>();
+        // List<DoctorByComplaintResponse> doctors = new ArrayList<>();
         return ResponseEntity.ok(result);
     }
 }
