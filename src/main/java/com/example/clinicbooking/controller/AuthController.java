@@ -9,26 +9,16 @@ import com.example.clinicbooking.config.CurrentUser;
 import com.example.clinicbooking.config.JwtService;
 import com.example.clinicbooking.entity.Staff;
 import com.example.clinicbooking.entity.User;
-import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.repository.StaffRepository;
 import com.example.clinicbooking.repository.UserRepository;
-import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.PatientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
-
 import static com.example.clinicbooking.Utils.TextUtils.normalizeText;
-
 
 @Tag(name = "Auth", description = "Xác thực và quản lý người dùng")
 @RestController
@@ -41,8 +31,6 @@ public class AuthController {
     @Autowired
     private PatientService patientService;
     @Autowired
-    private AuthenticationManager authManager;
-    @Autowired
     private JwtService jwtService;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -51,10 +39,10 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
         String phone = normalizeText(request.getPhoneNumber());
-        String raw   = normalizeText(request.getPassword());
+        String raw = normalizeText(request.getPassword());
 
         User user = userRepo.findByPhoneNumber(phone).orElse(null);
-        if(user == null){
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Số điện thoại không tồn tại");
         }
 
@@ -108,7 +96,7 @@ public class AuthController {
         user.setPass(encoded);
         userRepo.save(user);
 
-        //test:
+        // test:
         boolean ok = passwordEncoder.matches(raw, user.getPass());
         System.out.println("matches after save? " + ok + " | len=" + user.getPass().length());
 

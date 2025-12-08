@@ -2,23 +2,14 @@ package com.example.clinicbooking.service.TestType;
 
 import com.example.clinicbooking.DTO.LabParameter.LabParameterDTO;
 import com.example.clinicbooking.DTO.LabParameter.TestTypeParameterDetailDTO;
-import com.example.clinicbooking.DTO.Services.MedicalExaminationResponse;
 import com.example.clinicbooking.DTO.Services.TestTypeResponse;
 import com.example.clinicbooking.entity.LabParameter;
-import com.example.clinicbooking.entity.Medical_Examination;
 import com.example.clinicbooking.entity.TestTypes;
 import com.example.clinicbooking.exceptions.ResourceNotFoundException;
-import com.example.clinicbooking.repository.DoctorRepository;
 import com.example.clinicbooking.repository.LabParameterRepository;
-import com.example.clinicbooking.repository.MedicalExaminationRepository;
 import com.example.clinicbooking.repository.TestTypeRepository;
-import com.example.clinicbooking.security.CustomUserDetails;
-import com.example.clinicbooking.service.MedicalExamination.MedicalExaminationSpecification;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +22,8 @@ public class TestTypeService {
     private final TestTypeRepository testTypeRepo;
     private final LabParameterRepository labParameterRepo;
 
-    //====GET METHODS====//
-    //TÌM KIẾM LOẠI XÉT NGHIỆM TRÊN DS THEO TỪ KHÓA
+    // ====GET METHODS====//
+    // TÌM KIẾM LOẠI XÉT NGHIỆM TRÊN DS THEO TỪ KHÓA
     public List<TestTypeResponse> search(String keyword) {
         return testTypeRepo.findAll(TestTypeSpecification.searchByKeyword(keyword))
                 .stream()
@@ -40,12 +31,13 @@ public class TestTypeService {
                 .collect(Collectors.toList());
     }
 
-    //LẤY DANH SÁCH THAM SỐ THEO LOẠI XÉT NGHIỆM
+    // LẤY DANH SÁCH THAM SỐ THEO LOẠI XÉT NGHIỆM
     public TestTypeParameterDetailDTO getTestParameters(Integer testTypeId) {
 
         // 1. Tìm TestType. Nếu không tìm thấy, ném ngoại lệ 404
         TestTypes testType = testTypeRepo.findById(testTypeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại xét nghiệm với ID: " + testTypeId));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Không tìm thấy loại xét nghiệm với ID: " + testTypeId));
 
         // 2. Lấy danh sách các tham số của loại xét nghiệm đó
         List<LabParameter> parameters = labParameterRepo.findByTestTypes(testType);
@@ -64,7 +56,7 @@ public class TestTypeService {
         return resultDTO;
     }
 
-    //====PUT METHODS====//
+    // ====PUT METHODS====//
     @Transactional // Đảm bảo tất cả thao tác (thêm, sửa, xóa) là nguyên tử
     public void saveAllParameters(Integer testTypeId, List<LabParameterDTO> newParameterDTOs) {
 
@@ -103,7 +95,8 @@ public class TestTypeService {
             LabParameter parameter;
 
             if (dto.getParameterId() == null || !existingIds.contains(dto.getParameterId())) {
-                // THÊM MỚI (INSERT): ID là null hoặc không có trong CSDL (dùng DTO mới hoàn toàn)
+                // THÊM MỚI (INSERT): ID là null hoặc không có trong CSDL (dùng DTO mới hoàn
+                // toàn)
                 parameter = new LabParameter();
             } else {
                 // SỬA (UPDATE): ID tồn tại trong CSDL
@@ -124,8 +117,8 @@ public class TestTypeService {
         }
     }
 
-    //====CONVERSION METHODS====//
-    //HÀM CHUYỂN ĐỔI TỪ ENTITY SANG DTO RESPONSE
+    // ====CONVERSION METHODS====//
+    // HÀM CHUYỂN ĐỔI TỪ ENTITY SANG DTO RESPONSE
     private TestTypeResponse covertToResponse(TestTypes testTypes) {
         TestTypeResponse dto = new TestTypeResponse();
         dto.setId(testTypes.getId());
@@ -136,14 +129,13 @@ public class TestTypeService {
         return dto;
     }
 
-    //HÀM CHUYỂN ĐỔI TỪ ENTITY SANG DTO PARAMETER
+    // HÀM CHUYỂN ĐỔI TỪ ENTITY SANG DTO PARAMETER
     private LabParameterDTO convertToParameterDTO(LabParameter parameter) {
         return new LabParameterDTO(
                 parameter.getId(),
                 parameter.getName(),
                 parameter.getUnit(),
                 parameter.getMin_reference(),
-                parameter.getMax_reference()
-        );
+                parameter.getMax_reference());
     }
 }

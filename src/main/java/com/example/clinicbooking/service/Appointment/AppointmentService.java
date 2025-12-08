@@ -2,6 +2,7 @@ package com.example.clinicbooking.service.Appointment;
 
 import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.Appointment.*;
+import com.example.clinicbooking.DTO.Dashboard.AppointmentOverviewDTO;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.entity.*;
 import com.example.clinicbooking.exceptions.InvalidInputException;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,20 +39,23 @@ public class AppointmentService {
     private final UserRepository UserRepository;
     private final StaffRepository StaffRepo;
     private final MedicalRecordRepository medicalRecordRepo;
+    private final PaymentRepository paymentRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
-    //đặt lịch khám mới của bệnh nhân
+    // đặt lịch khám mới của bệnh nhân
     @Transactional
     public AppointmentDTO bookAppointment(AppointmentRequest request) {
         Patient patient = patientRepository.findById(request.getPatientId())
                 .orElseThrow(() -> new InvalidInputException("Patient not found with id: " + request.getPatientId()));
         DoctorSchedules schedule = doctorScheduleRepository.findById(request.getDoctorScheduleId())
-                .orElseThrow(() -> new InvalidInputException("Schedule not found with id: " + request.getDoctorScheduleId()));
+                .orElseThrow(() -> new InvalidInputException(
+                        "Schedule not found with id: " + request.getDoctorScheduleId()));
         Doctor doctor = doctorRepository.findById(request.getDoctorId())
                 .orElseThrow(() -> new InvalidInputException("Doctor not found with id: " + request.getDoctorId()));
         ScheduleSlot slot = scheduleSlotRepo.findById(request.getScheduleSlotId())
-                .orElseThrow(() -> new InvalidInputException("Schedule slot not found with id: " + request.getScheduleSlotId()));
+                .orElseThrow(() -> new InvalidInputException(
+                        "Schedule slot not found with id: " + request.getScheduleSlotId()));
 
         if (schedule.getBookedPatients() >= schedule.getMaxPatients()) {
             throw new InvalidInputException("No available slots for the selected schedule.");
@@ -74,7 +79,7 @@ public class AppointmentService {
         status.setUpdate_by(patient.getUser());
         appointmentStatusRepository.save(status);
 
-        //Tăng số bệnh nhân đã đặt trong DoctorSchedules
+        // Tăng số bệnh nhân đã đặt trong DoctorSchedules
         schedule.setBookedPatients(schedule.getBookedPatients() + 1);
         doctorScheduleRepository.save(schedule);
 
@@ -85,17 +90,19 @@ public class AppointmentService {
         return covertToResponse(savedAppointment);
     }
 
-    //Xác nhận lịch hẹn
+    // Xác nhận lịch hẹn
     @Transactional
     public Appointment ConfirmAppointment(int appointmentId, int updatedByUserId) {
         Appointment appointment = appointmentRepository.findByIdWithDetails(appointmentId)
                 .orElseThrow(() -> new InvalidInputException("Appointment not found with id: " + appointmentId));
 
         // Kiểm tra trạng thái hiện tại
-        AppointmentStatus appointmentStatus = appointmentStatusRepository.findTopByAppointmentIdOrderByUpdateAtDesc(appointmentId)
-                .orElseThrow(() -> new InvalidInputException("Appointment status not found for appointment id: " + appointmentId));
+        AppointmentStatus appointmentStatus = appointmentStatusRepository
+                .findTopByAppointmentIdOrderByUpdateAtDesc(appointmentId)
+                .orElseThrow(() -> new InvalidInputException(
+                        "Appointment status not found for appointment id: " + appointmentId));
         // Chỉ cho phép xác nhận nếu trạng thái hiện tại là "Chờ xác nhận" (1)
-        if(appointmentStatus.getStatus() > 2)
+        if (appointmentStatus.getStatus() > 2)
             throw new InvalidInputException("Cuộc hẹn này đã qua giai đoạn xác nhận.");
 
         // Tạo mới trạng thái
@@ -113,7 +120,7 @@ public class AppointmentService {
         return appointment;
     }
 
-    //Hủy lịch hẹn
+    // Hủy lịch hẹn
     @Transactional
     public Appointment DeleteAppointment(int appointmentId, int updatedByUserId, String reason) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
@@ -130,7 +137,7 @@ public class AppointmentService {
                 .orElseThrow(() -> new InvalidInputException("User not found"));
         status.setUpdate_by(updatedBy);
 
-        //Giảm số bệnh nhân đã đặt trong DoctorSchedules
+        // Giảm số bệnh nhân đã đặt trong DoctorSchedules
         DoctorSchedules schedule = appointment.getDoctorSchedule();
         schedule.setBookedPatients(schedule.getBookedPatients() - 1);
         doctorScheduleRepository.save(schedule);
@@ -144,24 +151,25 @@ public class AppointmentService {
         return appointment;
     }
 
-    //Check-in lịch hẹn
+    // Check-in lịch hẹn
     @Transactional
     public Appointment CheckInAppointment(int appointmentId, int updatedByUserId) {
         Appointment appointment = appointmentRepository.findByIdWithDetails(appointmentId)
                 .orElseThrow(() -> new InvalidInputException("Appointment not found with id: " + appointmentId));
 
-        AppointmentStatus appointmentStatus = appointmentStatusRepository.findTopByAppointmentIdOrderByUpdateAtDesc(appointmentId)
-                .orElseThrow(() -> new InvalidInputException("Appointment status not found for appointment id: " + appointmentId));
-        if(appointmentStatus.getStatus() != 2 && appointment.getVisitType().equals("scheduled")) {
+        AppointmentStatus appointmentStatus = appointmentStatusRepository
+                .findTopByAppointmentIdOrderByUpdateAtDesc(appointmentId)
+                .orElseThrow(() -> new InvalidInputException(
+                        "Appointment status not found for appointment id: " + appointmentId));
+        if (appointmentStatus.getStatus() != 2 && appointment.getVisitType().equals("scheduled")) {
             throw new InvalidInputException("Cuộc hẹn phải ở trạng thái 'Đã xác nhận' để có thể check-in.");
         }
 
         // Đếm số lượt khám hiện tại của bác sĩ trong ca làm việc hiện tại
         Integer currentVisitNumber = appointmentRepository.countVisitNumber(
                 appointment.getDoctor().getId(),
-                appointment.getDoctorSchedule().getId()
-        );
-        if(currentVisitNumber == null) {
+                appointment.getDoctorSchedule().getId());
+        if (currentVisitNumber == null) {
             currentVisitNumber = 0;
         }
         Integer newQueueNumber = currentVisitNumber + 1;
@@ -183,25 +191,25 @@ public class AppointmentService {
 
         appointmentStatusRepository.save(status);
 
-
-//        // Lấy lý do từ trạng thái đầu tiên
-//        Optional<AppointmentStatus> statusFirst = appointmentStatusRepository
-//                .findTopByAppointmentIdOrderByUpdateAtAsc(appointment.getId());
-//        String reason = statusFirst.map(AppointmentStatus::getReason).orElse("No reason provided");
-//
-//        //Tự động tạo hồ sơ bệnh án khi check-in
-//        MedicalRecord record = new MedicalRecord();
-//        record.setPatient(appointment.getPatient());
-//        record.setDoctor(appointment.getDoctor());
-//        record.setAppointment(appointment);
-//        record.setInitialSymptoms(reason);
-//        record.setStatus(MedicalRecordStatus.WAITING);
-//        medicalRecordRepo.save(record);
+        // // Lấy lý do từ trạng thái đầu tiên
+        // Optional<AppointmentStatus> statusFirst = appointmentStatusRepository
+        // .findTopByAppointmentIdOrderByUpdateAtAsc(appointment.getId());
+        // String reason = statusFirst.map(AppointmentStatus::getReason).orElse("No
+        // reason provided");
+        //
+        // //Tự động tạo hồ sơ bệnh án khi check-in
+        // MedicalRecord record = new MedicalRecord();
+        // record.setPatient(appointment.getPatient());
+        // record.setDoctor(appointment.getDoctor());
+        // record.setAppointment(appointment);
+        // record.setInitialSymptoms(reason);
+        // record.setStatus(MedicalRecordStatus.WAITING);
+        // medicalRecordRepo.save(record);
 
         return appointment;
     }
 
-    //Tạo lịch hẹn khám bệnh dạng Walk-in
+    // Tạo lịch hẹn khám bệnh dạng Walk-in
     public ApiResponse<?> createWalkInAppointment(WalkInAppointmentRequest request, Integer createdByUserId) {
 
         // 1. Chuẩn bị Dữ liệu & Kiểm tra Hợp lệ
@@ -225,9 +233,8 @@ public class AppointmentService {
         // Tìm số thứ tự lớn nhất cho bác sĩ này trong ngày hôm nay
         Integer maxQueueNumber = appointmentRepository.countVisitNumber(
                 request.getDoctorId(),
-                request.getDoctorScheduleId()
-        ); // Nếu chưa có ai, số lớn nhất là 0
-        if(maxQueueNumber == null) {
+                request.getDoctorScheduleId()); // Nếu chưa có ai, số lớn nhất là 0
+        if (maxQueueNumber == null) {
             maxQueueNumber = 0;
         }
         Integer newQueueNumber = maxQueueNumber + 1;
@@ -244,16 +251,15 @@ public class AppointmentService {
 
         Appointment savedAppointment = appointmentRepository.save(appointment);
 
-
         // 4. Cập nhật Bảng Liên quan
 
-        //4a.Cập nhật DoctorSchedules: Tăng số lượng bệnh nhân đã đặt
+        // 4a.Cập nhật DoctorSchedules: Tăng số lượng bệnh nhân đã đặt
         schedule.setBookedPatients(schedule.getBookedPatients() + 1);
         doctorScheduleRepository.save(schedule);
 
-        //4b.Tự động tạo Appointment Status (Trạng thái: Chờ khám)
+        // 4b.Tự động tạo Appointment Status (Trạng thái: Chờ khám)
         AppointmentStatus initialStatus = new AppointmentStatus();
-        //Tìm người tạo cuộc hẹn
+        // Tìm người tạo cuộc hẹn
         User createdBy = UserRepository.findById(createdByUserId)
                 .orElseThrow(() -> new InvalidInputException("User not found with id: " + createdByUserId));
 
@@ -271,7 +277,93 @@ public class AppointmentService {
         return new ApiResponse<>(true, "Lich hẹn khám bệnh đã được tạo thành công.", null);
     }
 
-    //Lấy danh sách tất cả các lịch hẹn của một bệnh nhân cụ thể.
+    /**
+     * Lấy tổng quan quản lý lịch hẹn cho Admin/Lễ tân
+     * Bao gồm các thống kê:
+     * - Tổng số cuộc hẹn (tất cả thời gian)
+     * - Áp lực phòng chờ (theo ngày): người có mặt, đang chờ, đang khám
+     * - Số lượng chờ xác nhận (tất cả thời gian)
+     * - Số lượng đã hủy (tất cả thời gian)
+     * - Đã hoàn thành trong ngày
+     * - Thống kê loại bệnh nhân: hẹn trước / vãng lai (theo ngày)
+     *
+     * @param currentDateStr Ngày cần thống kê (định dạng yyyy-MM-dd), null = ngày
+     *                       hiện tại
+     * @return AppointmentOverviewDTO chứa các thống kê tổng quan
+     */
+    public AppointmentOverviewDTO getAppointmentOverview(String currentDateStr) {
+        // --- 1. Xác định ngày thống kê ---
+        LocalDate searchDate = LocalDate.now();
+        if (currentDateStr != null && !currentDateStr.isEmpty()) {
+            searchDate = LocalDate.parse(currentDateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        }
+
+        // --- 2. Truy vấn dữ liệu ---
+
+        // 2.1. Tổng số cuộc hẹn (tất cả thời gian)
+        Long totalAppointments = appointmentRepository.count();
+
+        // 2.2. Áp lực phòng chờ (theo ngày)
+        // Tổng số người có mặt tại bệnh viện (đã check-in)
+        Long totalPresentAtHospital = appointmentRepository.countPresentTodayByDate(searchDate);
+        if (totalPresentAtHospital == null)
+            totalPresentAtHospital = 0L;
+
+        // Số người đang chờ khám (status = 3)
+        Long waitingCount = appointmentRepository.countByCurrentStatusAndDate(3, searchDate);
+        if (waitingCount == null)
+            waitingCount = 0L;
+
+        // Số người đang khám (status = 4)
+        Long inProgressCount = appointmentRepository.countByCurrentStatusAndDate(4, searchDate);
+        if (inProgressCount == null)
+            inProgressCount = 0L;
+
+        AppointmentOverviewDTO.WaitingRoomPressure waitingRoomPressure = new AppointmentOverviewDTO.WaitingRoomPressure(
+                totalPresentAtHospital,
+                waitingCount,
+                inProgressCount);
+
+        // 2.3. Số lượng lịch hẹn chờ xác nhận (status = 1, tất cả thời gian)
+        Long pendingConfirmation = appointmentRepository.countByCurrentStatus(1);
+        if (pendingConfirmation == null)
+            pendingConfirmation = 0L;
+
+        // 2.4. Số lượng lịch hẹn đã hủy (status = 6, tất cả thời gian)
+        Long cancelledCount = appointmentRepository.countByCurrentStatus(6);
+        if (cancelledCount == null)
+            cancelledCount = 0L;
+
+        // 2.5. Số lượng đã hoàn thành trong ngày (status = 5)
+        Long completedToday = appointmentRepository.countByCurrentStatusAndDate(5, searchDate);
+        if (completedToday == null)
+            completedToday = 0L;
+
+        // 2.6. Thống kê loại bệnh nhân trong ngày
+        // Khách hẹn trước (visitType = 'scheduled')
+        Long scheduledCount = appointmentRepository.countByVisitTypeAndDate("scheduled", searchDate);
+        if (scheduledCount == null)
+            scheduledCount = 0L;
+
+        // Khách vãng lai (visitType = 'walk-in')
+        Long walkInCount = appointmentRepository.countByVisitTypeAndDate("walk-in", searchDate);
+        if (walkInCount == null)
+            walkInCount = 0L;
+
+        AppointmentOverviewDTO.PatientTypeToday patientTypeToday = new AppointmentOverviewDTO.PatientTypeToday(
+                scheduledCount, walkInCount);
+
+        // --- 3. Đóng gói và trả về DTO ---
+        return new AppointmentOverviewDTO(
+                totalAppointments,
+                waitingRoomPressure,
+                pendingConfirmation,
+                cancelledCount,
+                completedToday,
+                patientTypeToday);
+    }
+
+    // Lấy danh sách tất cả các lịch hẹn của một bệnh nhân cụ thể.
     public List<AppointmentDTO> getAppointmentsByPatient(int patientId) {
         return appointmentRepository.findByPatientId(patientId)
                 .stream()
@@ -285,12 +377,11 @@ public class AppointmentService {
 
     public AppointmentDTO getAppointmentDetails(int appointmentId) {
         Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(
-                () -> new InvalidInputException("Appointment not found with id: " + appointmentId)
-        );
+                () -> new InvalidInputException("Appointment not found with id: " + appointmentId));
         return covertToResponse(appointment);
     }
 
-    //Lấy tất cả các lịch hẹn thuộc một ca làm việc cụ thể của bác sĩ.
+    // Lấy tất cả các lịch hẹn thuộc một ca làm việc cụ thể của bác sĩ.
     public List<AppointmentDTO> getAppointmentsByDoctorSchedule(int doctorScheduleId) {
         return appointmentRepository.findByDoctorScheduleId(doctorScheduleId)
                 .stream()
@@ -298,7 +389,7 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
-    //Lấy danh sách các lịch hẹn theo trạng thái hiện tại
+    // Lấy danh sách các lịch hẹn theo trạng thái hiện tại
     public List<AppointmentDTO> getAppointmentsByStatus(int status) {
         return appointmentRepository.findByStatus(status)
                 .stream()
@@ -306,7 +397,7 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
-    //Lấy tất cả các lịch hẹn trong một tuần tính từ startDate
+    // Lấy tất cả các lịch hẹn trong một tuần tính từ startDate
     public List<AppointmentDTO> getAppointmentsByWeek(LocalDate startDate) {
         LocalDate endDate = startDate.plusDays(6);
         return appointmentRepository.findByAppointmentDateBetween(startDate, endDate)
@@ -315,29 +406,30 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 
-    //Lấy danh sách lịch hẹn của một bác sĩ cụ thể, không giới hạn thời gian.
+    // Lấy danh sách lịch hẹn của một bác sĩ cụ thể, không giới hạn thời gian.
     public List<QueueResponse> getAppointmentsByDoctor(LocalDate fromDate) {
-        //Lấy id doctor từ user đang đăng nhập
+        // Lấy id doctor từ user đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
         }
         Integer doctorId = doctorRepository.findIdByUserId(cud.getId());
 
-        return appointmentRepository.findByDoctorIdAndDoctorSchedule_DateEqualsOrderByScheduleSlotAsc(doctorId, fromDate)
+        return appointmentRepository
+                .findByDoctorIdAndDoctorSchedule_DateEqualsOrderByScheduleSlotAsc(doctorId, fromDate)
                 .stream()
                 .map(this::covertToQueueResponse)
                 .collect(Collectors.toList());
     }
 
-    //lấy danh sách lịch hẹn với các tiêu chí tìm kiếm và phân trang
+    // lấy danh sách lịch hẹn với các tiêu chí tìm kiếm và phân trang
     public PaginatedResponseDTO<AppointmentDTO> searchAppointments(AppointmentSearchRequest req) {
         // Parse sort
-//        Pageable pageable = PageRequest.of(
-//                Optional.ofNullable(req.getPage()).orElse(0),
-//                Optional.ofNullable(req.getSize()).orElse(10),
-//                Sort.by(Sort.Direction.DESC, "presentTime")
-//        );
+        // Pageable pageable = PageRequest.of(
+        // Optional.ofNullable(req.getPage()).orElse(0),
+        // Optional.ofNullable(req.getSize()).orElse(10),
+        // Sort.by(Sort.Direction.DESC, "presentTime")
+        // );
         Sort sort = Sort.by(Sort.Direction.fromString(req.getSortDir()), req.getSortBy());
         Pageable pageable = PageRequest.of(req.getPage(), req.getSize(), sort);
 
@@ -345,8 +437,7 @@ public class AppointmentService {
                 req.getKeyword(),
                 Optional.ofNullable(req.getStatus()).orElse(0),
                 req.getDepartmentId(),
-                req.getFromDate()
-        );
+                req.getFromDate());
 
         Page<Appointment> page = appointmentRepository.findAll(spec, pageable);
 
@@ -354,35 +445,33 @@ public class AppointmentService {
                 .map(this::covertToResponse)
                 .collect(Collectors.toList());
 
-        //return new PageImpl<>(data, pageable, page.getTotalElements());
+        // return new PageImpl<>(data, pageable, page.getTotalElements());
         return new PaginatedResponseDTO<AppointmentDTO>(
                 page.getNumber(),
                 page.getSize(),
                 page.getTotalElements(),
                 page.getTotalPages(),
-                data
-        );
+                data);
     }
 
-    //lấy danh sách hàng đợi khám bệnh với các tiêu chí tìm kiếm và phân trang
+    // lấy danh sách hàng đợi khám bệnh với các tiêu chí tìm kiếm và phân trang
     public PaginatedResponseDTO<QueueResponse> getQueueAppointments(QueueSearchRequest request) {
-        //Chuẩn bị phân trang và sắp xếp
+        // Chuẩn bị phân trang và sắp xếp
         Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDir()), request.getSortBy());
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
-        //Xây dựng Specification
+        // Xây dựng Specification
         Specification<Appointment> spec = filterQueue(
                 request.getKeyword(),
                 request.getSpecialtyId(),
                 Optional.ofNullable(request.getStatus()).orElse(0),
                 request.getFindDate(),
-                request.getPatientType()
-        );
+                request.getPatientType());
 
-        //Thực hiện truy vấn với phân trang
+        // Thực hiện truy vấn với phân trang
         Page<Appointment> queuepage = appointmentRepository.findAll(spec, pageable);
 
-        //Chuyển đổi kết quả sang DTO
+        // Chuyển đổi kết quả sang DTO
         List<QueueResponse> responseQueue = queuepage.getContent().stream()
                 .map(this::covertToQueueResponse)
                 .collect(Collectors.toList());
@@ -393,15 +482,14 @@ public class AppointmentService {
                 queuepage.getSize(),
                 queuepage.getTotalElements(),
                 queuepage.getTotalPages(),
-                responseQueue
-        );
+                responseQueue);
     }
 
-
-    //Chuyển đổi entity Appointment sang DTO AppointmentDTO
+    // Chuyển đổi entity Appointment sang DTO AppointmentDTO
     private AppointmentDTO covertToResponse(Appointment appointment) {
         AppointmentDTO dto = new AppointmentDTO();
-        //String appointmentTime = appointment.getScheduleSlot().getStartTime() + " - " + appointment.getScheduleSlot().getEndTime();
+        // String appointmentTime = appointment.getScheduleSlot().getStartTime() + " - "
+        // + appointment.getScheduleSlot().getEndTime();
         // Null-safe cho slot
         ScheduleSlot slot = appointment.getScheduleSlot();
         String appointmentTime;
@@ -470,11 +558,13 @@ public class AppointmentService {
                 dto.setStatus("Không xác định");
                 dto.setStatusId(0);
             }
-        };
+        }
+        ;
 
-        //Reason của riêng trạng thái "Chờ xác nhận" đối với scheduled và "Chờ khám" đối với walk-in
+        // Reason của riêng trạng thái "Chờ xác nhận" đối với scheduled và "Chờ khám"
+        // đối với walk-in
         AppointmentStatus latestStatus;
-        if(appointment.getVisitType().equals("scheduled")) {
+        if (appointment.getVisitType().equals("scheduled")) {
             latestStatus = appointmentStatusRepository
                     .findByAppointmentIdAndStatus(appointment.getId(), 1).orElse(null);
         } else {
@@ -482,18 +572,23 @@ public class AppointmentService {
                     .findByAppointmentIdAndStatus(appointment.getId(), 3).orElse(null);
         }
 
-        if(latestStatus != null)
+        if (latestStatus != null)
             dto.setReason(latestStatus.getReason());
         else
             dto.setReason("");
 
-        //danh sách lịch sử trạng thái để hiển thị rõ ràng
+        // danh sách lịch sử trạng thái để hiển thị rõ ràng
         var history = appointmentStatusRepository
                 .findByAppointmentIdOrderByUpdateAtDesc(appointment.getId())
                 .stream()
                 .map(this::mapStatusToHistoryItem)
                 .toList();
         dto.setStatusHistory(history);
+
+        // Tính tổng hóa đơn của cuộc hẹn (qua MedicalRecord -> Payment)
+        dto.setTotalPrice(paymentRepository.sumTotalPaymentByAppointmentId(appointment.getId()));
+        dto.setInsurancePrice(paymentRepository.sumInsurancePaymentByAppointmentId(appointment.getId()));
+        dto.setPatientPrice(paymentRepository.sumPatientPaymentByAppointmentId(appointment.getId()));
 
         return dto;
     }
@@ -523,19 +618,19 @@ public class AppointmentService {
                 st.getUpdateAt(),
                 updatedById,
                 updatedByName,
-                updatedByRole
-        );
+                updatedByRole);
     }
 
-    private String roleName(Integer userId,Integer role) {
-        if (role == null) return null;
+    private String roleName(Integer userId, Integer role) {
+        if (role == null)
+            return null;
         return switch (role) {
             case 0 -> "Admin";
             case 1 -> "Patient";
             case 2 -> {
                 Staff staff = StaffRepo.findByUserId(userId)
                         .orElseThrow(() -> new InvalidInputException("Staff not found for userId: " + userId));
-                if(staff.getStaff_position().getId() == 1) {
+                if (staff.getStaff_position().getId() == 1) {
                     yield "Doctor";
                 } else if (staff.getStaff_position().getId() == 7) {
                     yield "Receptionist";
@@ -547,10 +642,11 @@ public class AppointmentService {
         };
     }
 
-    //Chuyển đổi entity Appointment sang DTO QueueDTO
+    // Chuyển đổi entity Appointment sang DTO QueueDTO
     private QueueResponse covertToQueueResponse(Appointment appointment) {
         QueueResponse dto = new QueueResponse();
-        //String appointmentTime = appointment.getScheduleSlot().getStartTime() + " - " + appointment.getScheduleSlot().getEndTime();
+        // String appointmentTime = appointment.getScheduleSlot().getStartTime() + " - "
+        // + appointment.getScheduleSlot().getEndTime();
         // Null-safe cho slot
         ScheduleSlot slot = appointment.getScheduleSlot();
         String appointmentTime;
@@ -584,13 +680,12 @@ public class AppointmentService {
         dto.setRoomName(appointment.getDoctorSchedule().getRoom().getName());
         dto.setAppointmentTime(appointmentTime);
         dto.setPatientType(appointment.getVisitType());
-        if(appointment.getVisitDateTime() != null && appointment.getVisitNumber() != null){
+        if (appointment.getVisitDateTime() != null && appointment.getVisitNumber() != null) {
             dto.setVisitDateTime(appointment.getVisitDateTime());
             dto.setVisitNumber(appointment.getVisitNumber());
         }
         dto.setShift(appointment.getDoctorSchedule().getShiftType().getName_type());
 
-
         Optional<AppointmentStatus> statusOpt = appointmentStatusRepository
                 .findTopByAppointmentIdOrderByUpdateAtDesc(appointment.getId());
         int statusId = statusOpt.map(AppointmentStatus::getStatus).orElse(0);
@@ -623,11 +718,13 @@ public class AppointmentService {
                 dto.setStatus("Không xác định");
                 dto.setStatusId(0);
             }
-        };
+        }
+        ;
 
-        //Reason của riêng trạng thái "Chờ xác nhận" đối với scheduled và "Chờ khám" đối với walk-in
+        // Reason của riêng trạng thái "Chờ xác nhận" đối với scheduled và "Chờ khám"
+        // đối với walk-in
         AppointmentStatus latestStatus;
-        if(appointment.getVisitType().equals("scheduled")) {
+        if (appointment.getVisitType().equals("scheduled")) {
             latestStatus = appointmentStatusRepository
                     .findByAppointmentIdAndStatus(appointment.getId(), 1).orElse(null);
         } else {
@@ -635,95 +732,7 @@ public class AppointmentService {
                     .findByAppointmentIdAndStatus(appointment.getId(), 3).orElse(null);
         }
 
-        if(latestStatus != null)
-            dto.setReason(latestStatus.getReason());
-        else
-            dto.setReason("");
-
-        return dto;
-    }
-
-    //Chuyển đổi entity Appointment sang DTO QueueDoctorResponse(Cho bác sĩ xem lịch khám)
-    private QueueDoctorResponse covertToQueueDoctorResponse(Appointment appointment) {
-        QueueDoctorResponse dto = new QueueDoctorResponse();
-
-        // Null-safe cho slot
-        ScheduleSlot slot = appointment.getScheduleSlot();
-        String appointmentTime;
-        if (slot != null && slot.getStartTime() != null && slot.getEndTime() != null) {
-            appointmentTime = slot.getStartTime() + " - " + slot.getEndTime();
-        } else if (appointment.getDoctorSchedule() != null
-                && appointment.getDoctorSchedule().getShiftType() != null
-                && appointment.getDoctorSchedule().getShiftType().getStart_time() != null
-                && appointment.getDoctorSchedule().getShiftType().getEnd_time() != null) {
-            // fallback theo giờ của ca/shift nếu muốn
-            appointmentTime = appointment.getDoctorSchedule().getShiftType().getStart_time()
-                    + " - "
-                    + appointment.getDoctorSchedule().getShiftType().getEnd_time();
-        } else {
-            appointmentTime = "Không có khung giờ";
-        }
-        dto.setAppointmentId(appointment.getId());
-        dto.setCode(appointment.getCode());
-        dto.setPatientName(appointment.getPatient().getUser().getFullname());
-        dto.setPatientYearOfBirth(appointment.getPatient().getUser().getDateOfBirth());
-        dto.setPatientGender(appointment.getPatient().getUser().getGender() == 1 ? "Nữ" : "Nam");
-        dto.setPatientAge(appointment.getPatient().getUser().getAge());
-        dto.setPatientPhone(appointment.getPatient().getUser().getPhoneNumber());
-
-        dto.setRoomName(appointment.getDoctorSchedule().getRoom().getName());
-        dto.setAppointmentTime(appointmentTime);
-        dto.setPatientType(appointment.getVisitType());
-        dto.setVisitDateTime(appointment.getVisitDateTime());
-        dto.setVisitNumber(appointment.getVisitNumber());
-        dto.setShift(appointment.getDoctorSchedule().getShiftType().getName_type());
-
-
-        Optional<AppointmentStatus> statusOpt = appointmentStatusRepository
-                .findTopByAppointmentIdOrderByUpdateAtDesc(appointment.getId());
-        int statusId = statusOpt.map(AppointmentStatus::getStatus).orElse(0);
-        switch (statusId) {
-            case 1 -> {
-                dto.setStatus("Chờ xác nhận");
-                dto.setStatusId(statusId);
-            }
-            case 2 -> {
-                dto.setStatus("Đã xác nhận");
-                dto.setStatusId(statusId);
-            }
-            case 3 -> {
-                dto.setStatus("Chờ Khám");
-                dto.setStatusId(statusId);
-            }
-            case 4 -> {
-                dto.setStatus("Đang Khám");
-                dto.setStatusId(statusId);
-            }
-            case 5 -> {
-                dto.setStatus("Hoàn thành");
-                dto.setStatusId(statusId);
-            }
-            case 6 -> {
-                dto.setStatus("Hủy");
-                dto.setStatusId(statusId);
-            }
-            default -> {
-                dto.setStatus("Không xác định");
-                dto.setStatusId(0);
-            }
-        };
-
-        //Reason của riêng trạng thái "Chờ xác nhận" đối với scheduled và "Chờ khám" đối với walk-in
-        AppointmentStatus latestStatus;
-        if(appointment.getVisitType().equals("scheduled")) {
-            latestStatus = appointmentStatusRepository
-                    .findByAppointmentIdAndStatus(appointment.getId(), 1).orElse(null);
-        } else {
-            latestStatus = appointmentStatusRepository
-                    .findByAppointmentIdAndStatus(appointment.getId(), 3).orElse(null);
-        }
-
-        if(latestStatus != null)
+        if (latestStatus != null)
             dto.setReason(latestStatus.getReason());
         else
             dto.setReason("");

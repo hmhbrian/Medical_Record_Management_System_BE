@@ -23,7 +23,6 @@ public class DepartmentService {
     private final DepartmentMapper departmentMapper;
     private final DepartmentAuxService aux;
 
-
     public List<DepartmentResponse> findAll() {
         return repo.findAll()
                 .stream()
@@ -36,7 +35,9 @@ public class DepartmentService {
                 .map(d -> departmentMapper.toDetail(d, aux));
     }
 
-    public Optional<Department> findById(int id) { return repo.findById(id); }
+    public Optional<Department> findById(int id) {
+        return repo.findById(id);
+    }
 
     public Department save(DepartmentRequest deptRq) {
         Department dept = new Department();
@@ -64,7 +65,8 @@ public class DepartmentService {
         // Nếu request có headDoctorId thì lấy ra Doctor
         if (deptRq.getHead_doctor_id() > 0) {
             Doctor headDoctor = doctorRepo.findById(deptRq.getHead_doctor_id())
-                    .orElseThrow(() -> new InvalidInputException("Head doctor not found with id: " + deptRq.getHead_doctor_id()));
+                    .orElseThrow(() -> new InvalidInputException(
+                            "Head doctor not found with id: " + deptRq.getHead_doctor_id()));
             dept.setHeadDoctor(headDoctor);
         }
 

@@ -27,7 +27,7 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    //Lấy danh sách phiếu thanh toán với phân trang và lọc
+    // Lấy danh sách phiếu thanh toán với phân trang và lọc
     @GetMapping
     public ResponseEntity<PaginatedResponseDTO<PaymentResponse>> getDoctorMedicalRecords(
             @RequestParam(required = false) String keyword,
@@ -53,10 +53,10 @@ public class PaymentController {
     @GetMapping("{paymentId}/detail")
     public ResponseEntity<ApiResponse<PaymentDetailResponse>> getPaymentDetail(@PathVariable Integer paymentId) {
         PaymentDetailResponse response = paymentService.getPaymentDetails(paymentId);
-        return ResponseEntity.ok(new ApiResponse<>(true,"Lấy danh sách chi tiết thanh toán thành công!",response));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Lấy danh sách chi tiết thanh toán thành công!", response));
     }
 
-    //API để thực hiện thanh toán cho một phiếu nợ.
+    // API để thực hiện thanh toán cho một phiếu nợ.
     @PostMapping("/{paymentId}/pay")
     public ResponseEntity<ApiResponse<?>> processPayment(
             @PathVariable Integer paymentId,
@@ -65,7 +65,7 @@ public class PaymentController {
         // Xử lý logic tại Service Layer
         Payment updatedPayment = paymentService.processPayment(paymentId, request);
 
-        return ResponseEntity.ok(new ApiResponse<>(true, "Thanh toán thành công!", null));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Thanh toán thành công!", updatedPayment));
     }
 
     @GetMapping("/{paymentId}/invoice")
@@ -75,7 +75,7 @@ public class PaymentController {
 
             // Thiết lập Headers
             HttpHeaders headers = new HttpHeaders();
-            //Đặt Content-Type là application/pdf
+            // Đặt Content-Type là application/pdf
             headers.setContentType(MediaType.APPLICATION_PDF);
             LocalDate currentDate = LocalDate.now();
             String filename = "invoice_" + paymentId + currentDate + ".pdf";
@@ -83,7 +83,7 @@ public class PaymentController {
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-        } catch (JRException | InvalidInputException  e) {
+        } catch (JRException | InvalidInputException e) {
             // Xử lý lỗi và trả về thông báo phù hợp
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage().getBytes());
         }

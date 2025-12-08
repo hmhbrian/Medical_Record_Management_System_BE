@@ -1,12 +1,10 @@
 package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.Notification.NotificationResponse;
-import com.example.clinicbooking.repository.NotificationRepository;
 import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.NotificationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.Repository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,9 +31,8 @@ public class NotificationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NotificationResponse>> getNotification()
-    {
-        //Lấy id User đang đăng nhập
+    public ResponseEntity<List<NotificationResponse>> getNotification() {
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");

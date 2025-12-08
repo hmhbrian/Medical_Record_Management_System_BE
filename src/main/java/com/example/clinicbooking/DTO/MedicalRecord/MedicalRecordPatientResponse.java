@@ -1,9 +1,6 @@
 package com.example.clinicbooking.DTO.MedicalRecord;
 
-import com.example.clinicbooking.DTO.Patient.PatientSummary;
 import lombok.Data;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data

@@ -2,9 +2,6 @@ package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.ApiResponse;
 import com.example.clinicbooking.DTO.ImagingTest.*;
-import com.example.clinicbooking.DTO.LabTest.LabTestOfStaffResponse;
-import com.example.clinicbooking.DTO.LabTest.LabTestWaitingRequest;
-import com.example.clinicbooking.DTO.LabTest.LabTestWaitingResponse;
 import com.example.clinicbooking.DTO.PaginatedResponseDTO;
 import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.ImagingTest.ImagingTestService;
@@ -24,7 +21,7 @@ public class ImagingTestController {
 
     @PostMapping("/assign/{imagingTestId}")
     public ResponseEntity<ApiResponse<?>> assignImagingTest(@PathVariable Integer imagingTestId) {
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
@@ -39,7 +36,7 @@ public class ImagingTestController {
             @PathVariable Integer imagingTestId,
             @ModelAttribute ImagingResultUploadRequest request // Sử dụng @ModelAttribute cho form-data
     ) {
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
@@ -58,7 +55,7 @@ public class ImagingTestController {
     public ResponseEntity<ImagingReportResponse> getLabTestDetails(
             @PathVariable("imagingtestId") Integer imagingTestId) {
 
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
@@ -89,7 +86,8 @@ public class ImagingTestController {
         request.setSortDir(SortDir);
         request.setSortBy(SortBy);
 
-        PaginatedResponseDTO<ImagingTestWaitingResponse> response = imagingTestService.searchImagingTestWaiting(request);
+        PaginatedResponseDTO<ImagingTestWaitingResponse> response = imagingTestService
+                .searchImagingTestWaiting(request);
         return ResponseEntity.ok(response);
     }
 
@@ -113,14 +111,15 @@ public class ImagingTestController {
         request.setSortDir(SortDir);
         request.setSortBy(SortBy);
 
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
         }
         Integer currentUserId = cud.getId();
 
-        PaginatedResponseDTO<ImagingTestOfStaffResponse> response = imagingTestService.searchImagingTestOfStaff(request, currentUserId);
+        PaginatedResponseDTO<ImagingTestOfStaffResponse> response = imagingTestService.searchImagingTestOfStaff(request,
+                currentUserId);
         return ResponseEntity.ok(response);
     }
 }

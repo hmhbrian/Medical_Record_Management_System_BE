@@ -7,7 +7,6 @@ import com.example.clinicbooking.repository.DepartmentRepository;
 import com.example.clinicbooking.repository.SpecialtyRepository;
 import com.example.clinicbooking.repository.StaffRepository;
 import com.example.clinicbooking.repository.roomRepository;
-import com.example.clinicbooking.service.StaffService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

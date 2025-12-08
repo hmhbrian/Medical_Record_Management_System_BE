@@ -12,36 +12,36 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     List<Doctor> findBySpecialtyId(Integer specialty);
 
     @Query("""
-        SELECT d FROM Doctor d 
-        JOIN FETCH d.staff s 
-        LEFT JOIN FETCH s.user 
-        LEFT JOIN FETCH s.staff_position p
-        LEFT JOIN FETCH s.department dept
-    """)
+                SELECT d FROM Doctor d
+                JOIN FETCH d.staff s
+                LEFT JOIN FETCH s.user
+                LEFT JOIN FETCH s.staff_position p
+                LEFT JOIN FETCH s.department dept
+            """)
     List<Doctor> findAllWithDetails();
 
     @Query("""
-        SELECT d FROM Doctor d 
-        JOIN FETCH d.staff s 
-        JOIN FETCH s.user 
-        WHERE d.id = :doctorId
-    """)
+                SELECT d FROM Doctor d
+                JOIN FETCH d.staff s
+                JOIN FETCH s.user
+                WHERE d.id = :doctorId
+            """)
     Optional<Doctor> findByIdWithDetails(Integer doctorId);
 
     @Query("""
-        select d.id
-        from Staff s
-        join Doctor d on s.id = d.staff.id
-        where s.user.id = :userId
-    """)
+                select d.id
+                from Staff s
+                join Doctor d on s.id = d.staff.id
+                where s.user.id = :userId
+            """)
     Integer findIdByUserId(Integer userId);
 
     @Query("""
-        select d
-        from Staff s
-        join Doctor d on s.id = d.staff.id
-        where s.user.id = :userId
-    """)
+                select d
+                from Staff s
+                join Doctor d on s.id = d.staff.id
+                where s.user.id = :userId
+            """)
     Doctor findByUserId(Integer userId);
 
     Integer countBySpecialtyId(Integer specialtyId);
@@ -49,13 +49,16 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     Optional<Doctor> findByStaff_User_Id(Integer userId);
 
     @Query("""
-        select s.department.id
-        from Specialty s
-        join Doctor d on s.id = d.specialty.id
-        where d.id = :doctorId
-    """)
+                select s.department.id
+                from Specialty s
+                join Doctor d on s.id = d.specialty.id
+                where d.id = :doctorId
+            """)
     Integer findDepartmentIdByDoctorId(Integer doctorId);
 
     // Lấy danh sách bác sĩ theo tập hợp specialtyIds
     List<Doctor> findBySpecialtyIdIn(Set<Integer> specialtyIds);
+
+    // Tìm Doctor theo staffId
+    Optional<Doctor> findByStaffId(Integer staffId);
 }

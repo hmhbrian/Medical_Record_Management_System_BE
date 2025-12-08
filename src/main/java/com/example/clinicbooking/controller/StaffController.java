@@ -1,13 +1,10 @@
 package com.example.clinicbooking.controller;
 
 import com.example.clinicbooking.DTO.ApiResponse;
-import com.example.clinicbooking.DTO.Doctor.DoctorRequest;
-import com.example.clinicbooking.DTO.Doctor.DoctorResponse;
 import com.example.clinicbooking.DTO.Staff.StaffRequest;
 import com.example.clinicbooking.DTO.Staff.StaffResponse;
 import com.example.clinicbooking.DTO.Staff.StaffSummary;
 import com.example.clinicbooking.entity.staff_position;
-import com.example.clinicbooking.service.IDoctorService;
 import com.example.clinicbooking.service.IStaffService;
 import com.example.clinicbooking.service.StaffPositionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +12,6 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,16 +32,16 @@ public class StaffController {
         String message = staffService.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true, message,null));
+                .body(new ApiResponse<>(true, message, null));
     }
+
     @GetMapping
     public ResponseEntity<ApiResponse<Page<StaffResponse>>> search(
-            @RequestParam(required = false) String roleType,      // DOCTOR|NURSE|LAB|IMAGING
+            @RequestParam(required = false) String roleType, // DOCTOR|NURSE|LAB|IMAGING
             @RequestParam(required = false) Integer departmentId,
             @RequestParam(required = false) Integer positionId,
             @RequestParam(required = false) String keyword,
-            @ParameterObject Pageable pageable
-    ) {
+            @ParameterObject Pageable pageable) {
         Page<StaffResponse> page = staffService.search(roleType, departmentId, positionId, keyword, pageable);
         return ResponseEntity.ok(new ApiResponse<>(true, "Lấy danh sách nhân viên thành công!", page));
     }
@@ -58,5 +54,21 @@ public class StaffController {
     @GetMapping("/positions/{positionId}")
     public ApiResponse<List<StaffSummary>> getStaffByPosition(@PathVariable int positionId) {
         return staffService.findStaffByPosition(positionId);
+    }
+
+    /**
+     * Cập nhật thông tin nhân viên
+     * Endpoint: PUT /api/staffs/{staffId}
+     * 
+     * @param staffId ID của staff cần cập nhật
+     * @param request Thông tin cập nhật
+     * @return ApiResponse với thông báo kết quả
+     */
+    @PutMapping("/{staffId}")
+    public ResponseEntity<ApiResponse<?>> update(
+            @PathVariable Integer staffId,
+            @RequestBody StaffRequest request) {
+        String message = staffService.update(staffId, request);
+        return ResponseEntity.ok(new ApiResponse<>(true, message, null));
     }
 }

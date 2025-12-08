@@ -1,8 +1,6 @@
 package com.example.clinicbooking.controller;
 
-
 import com.example.clinicbooking.DTO.ApiResponse;
-import com.example.clinicbooking.DTO.Dashboard.DashboardOverview;
 import com.example.clinicbooking.DTO.LabTest.Detail.LabTestDetailRequest;
 import com.example.clinicbooking.DTO.LabTest.Detail.LabTestDetailResponse;
 import com.example.clinicbooking.DTO.LabTest.LabTestOfStaffResponse;
@@ -27,7 +25,7 @@ public class LabTestController {
 
     @PostMapping("/assign/{labTestId}")
     public ResponseEntity<ApiResponse<?>> assignLabTest(@PathVariable Integer labTestId) {
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
@@ -40,9 +38,8 @@ public class LabTestController {
     @PutMapping("/{labTestId}/result")
     public ApiResponse<?> updateLabTestResults(
             @PathVariable Integer labTestId,
-            @RequestBody LabTestDetailRequest updateDTO
-    ) {
-        //Lấy id User đang đăng nhập
+            @RequestBody LabTestDetailRequest updateDTO) {
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
@@ -103,14 +100,15 @@ public class LabTestController {
         request.setSortDir(SortDir);
         request.setSortBy(SortBy);
 
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
         }
         Integer currentUserId = cud.getId();
 
-        PaginatedResponseDTO<LabTestOfStaffResponse> response = labTestService.searchTestOfLabStaff(request, currentUserId);
+        PaginatedResponseDTO<LabTestOfStaffResponse> response = labTestService.searchTestOfLabStaff(request,
+                currentUserId);
         return ResponseEntity.ok(response);
     }
 
@@ -118,7 +116,7 @@ public class LabTestController {
     public ResponseEntity<LabTestDetailResponse> getLabTestDetails(
             @PathVariable("labTestId") Integer labTestId) {
 
-        //Lấy id User đang đăng nhập
+        // Lấy id User đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");

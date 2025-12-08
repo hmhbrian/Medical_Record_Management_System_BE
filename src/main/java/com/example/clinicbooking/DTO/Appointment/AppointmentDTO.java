@@ -34,6 +34,9 @@ public class AppointmentDTO {
     private String reason; //reason của trạng thái "Chờ xác nhận"
     private int statusId; // 1: Chờ xác nhận, 2: Đã xác nhận, 3:Hoàn thành, 4: Hủy.
     private String status;
+    // Thông tin thanh toán
     private BigDecimal totalPrice;
+    private BigDecimal insurancePrice;
+    private BigDecimal patientPrice;
     private List<StatusHistoryItemDTO> statusHistory; // danh sách lịch sử trạng thái
 }

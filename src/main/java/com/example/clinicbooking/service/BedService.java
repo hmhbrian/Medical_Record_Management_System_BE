@@ -24,7 +24,6 @@ import java.text.DecimalFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,12 +35,11 @@ public class BedService {
 
     // Danh sách Bed (lọc + phân trang)
     public Page<BedResponse> listBeds(String keyword, Integer status, Integer departmentId,
-                                      Integer page, Integer size) {
+            Integer page, Integer size) {
         Pageable pageable = PageRequest.of(
                 page != null && page > 0 ? page - 1 : 0, // 1-based -> 0-based
                 size != null && size > 0 ? size : 10,
-                Sort.by(Sort.Direction.DESC, "updatedAt").and(Sort.by(Sort.Direction.DESC, "id"))
-        );
+                Sort.by(Sort.Direction.DESC, "updatedAt").and(Sort.by(Sort.Direction.DESC, "id")));
 
         Specification<Bed> spec = buildSpec(keyword, status, departmentId);
 
@@ -60,13 +58,12 @@ public class BedService {
             // Join Room -> Department -> RoomType
             Join<Bed, Room> roomJ = root.join("room", JoinType.INNER);
             Join<Room, Department> deptJ = roomJ.join("department", JoinType.LEFT);
-            Join<Room, RoomTypes> typeJ = roomJ.join("roomType", JoinType.LEFT);
 
             if (keyword != null && !keyword.isBlank()) {
                 String like = "%" + keyword.trim().toLowerCase() + "%";
                 Predicate byBedNumber = cb.like(cb.lower(root.get("bedNumber")), like);
-                Predicate byRoomName  = cb.like(cb.lower(roomJ.get("name")), like);
-                Predicate byDeptName  = cb.like(cb.lower(deptJ.get("name")), like);
+                Predicate byRoomName = cb.like(cb.lower(roomJ.get("name")), like);
+                Predicate byDeptName = cb.like(cb.lower(deptJ.get("name")), like);
                 ps.add(cb.or(byBedNumber, byRoomName, byDeptName));
             }
 
@@ -104,8 +101,8 @@ public class BedService {
 
         OverViewResponse rp = new OverViewResponse();
         rp.setSumBed((int) totals.getTotal());
-        rp.setAvailableBeds((int) totals.getAvailable());     // GiuongTrong
-        rp.setOccupiedBeds((int) totals.getOccupied());       // GiuongDangSuDung
+        rp.setAvailableBeds((int) totals.getAvailable()); // GiuongTrong
+        rp.setOccupiedBeds((int) totals.getOccupied()); // GiuongDangSuDung
         rp.setMaintenanceBeds((int) totals.getMaintenance()); // GiuongDangBaoTri
 
         var byDept = bedRepo.aggregateByDepartment().stream().map(agg -> {
@@ -113,8 +110,7 @@ public class BedService {
             d.setDepartmentName(agg.getDeptName());
             d.setGiuongDangSuDung((int) agg.getOccupied());
             d.setTongGiuongTrongKhoa((int) agg.getTotal());
-            double tyle = agg.getTotal() == 0 ? 0.0 :
-                    (agg.getOccupied()/ agg.getTotal());
+            double tyle = agg.getTotal() == 0 ? 0.0 : (agg.getOccupied() / agg.getTotal());
             d.setTyle(Math.round(tyle)); // làm tròn 2 chữ số
             return d;
         }).collect(Collectors.toList());
@@ -145,7 +141,8 @@ public class BedService {
     }
 
     private String statusLabel(Integer s) {
-        if (s == null) return "Unknown";
+        if (s == null)
+            return "Unknown";
         return switch (s) {
             case 0 -> "Đang sử dụng";
             case 1 -> "Trống";
@@ -157,7 +154,8 @@ public class BedService {
 
     // "000.000 đ" (dấu . ngăn cách nghìn, không dùng ký hiệu ₫)
     private String formatVND(Double val) {
-        if (val == null) return null;
+        if (val == null)
+            return null;
         DecimalFormatSymbols sym = new DecimalFormatSymbols();
         sym.setGroupingSeparator('.');
         sym.setDecimalSeparator(',');
@@ -165,5 +163,7 @@ public class BedService {
         return df.format(val);
     }
 
-    private String nullSafe(String s) { return s == null ? "" : s; }
+    private String nullSafe(String s) {
+        return s == null ? "" : s;
+    }
 }

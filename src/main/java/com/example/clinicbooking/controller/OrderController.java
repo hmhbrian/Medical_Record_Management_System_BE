@@ -1,7 +1,5 @@
 package com.example.clinicbooking.controller;
 
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSearchAllRequest;
-import com.example.clinicbooking.DTO.MedicalRecord.MedicalRecordSummaryDTO;
 import com.example.clinicbooking.DTO.Order.OrderOverviewResponse;
 import com.example.clinicbooking.DTO.Order.OrderRequest;
 import com.example.clinicbooking.DTO.Order.OrderResponse;
@@ -22,9 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     private final OrderService orderService;
 
+    /**
+     * Lấy tổng quan quản lý y lệnh
+     * Endpoint: GET /api/orders/overview
+     * 
+     * @param searchDate Ngày cần thống kê (định dạng yyyy-MM-dd), không bắt buộc
+     * @return OrderOverviewResponse chứa các thống kê tổng quan y lệnh
+     */
     @GetMapping("/overview")
-    public ResponseEntity<OrderOverviewResponse> getOrderOverviewMetrics() {
-        OrderOverviewResponse response = orderService.getOrderOverviewMetrics();
+    public ResponseEntity<OrderOverviewResponse> getOrderOverviewMetrics(
+            @RequestParam(required = false) String searchDate) {
+        OrderOverviewResponse response = orderService.getOrderOverviewMetrics(searchDate);
         return ResponseEntity.ok(response);
     }
 
