@@ -39,31 +39,35 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().permitAll()
-                )
+                        // QUAN TRỌNG: SePay webhook endpoint PHẢI public (không authenticate)
+                        // .requestMatchers("/api/payments/sepay-webhook").permitAll()
+                        .anyRequest().permitAll())
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptions -> exceptions
-                                // Xử lý lỗi 403 Forbidden
-                                .accessDeniedHandler(accessDeniedHandler)
-                );
+                        // Xử lý lỗi 403 Forbidden
+                        .accessDeniedHandler(accessDeniedHandler));
 
         return http.build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-//    @Bean
-//    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-//        return http.getSharedObject(AuthenticationManagerBuilder.class)
-//                .authenticationProvider(daoAuthenticationProvider())
-//                .build();
-//    }
+
+    // @Bean
+    // public AuthenticationManager authenticationManager(HttpSecurity http) throws
+    // Exception {
+    // return http.getSharedObject(AuthenticationManagerBuilder.class)
+    // .authenticationProvider(daoAuthenticationProvider())
+    // .build();
+    // }
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
