@@ -11,13 +11,20 @@ import com.example.clinicbooking.entity.Staff;
 import com.example.clinicbooking.entity.User;
 import com.example.clinicbooking.repository.StaffRepository;
 import com.example.clinicbooking.repository.UserRepository;
+import com.example.clinicbooking.security.CustomUserDetails;
 import com.example.clinicbooking.service.PatientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
 import static com.example.clinicbooking.Utils.TextUtils.normalizeText;
 
 @Tag(name = "Auth", description = "Xác thực và quản lý người dùng")
@@ -86,29 +93,17 @@ public class AuthController {
         return ResponseEntity.ok(patientService.create(request));
     }
 
-    @PutMapping("/Changepass/{id}")
-    public ResponseEntity<?> ChangePass(@PathVariable int id, @RequestBody ChangePassDTO newPass) {
-        User user = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bệnh nhân"));
 
-        String raw = normalizeText(newPass.getNewPassword());
-        String encoded = passwordEncoder.encode(raw);
-        user.setPass(encoded);
-        userRepo.save(user);
-
-        // test:
-        boolean ok = passwordEncoder.matches(raw, user.getPass());
-        System.out.println("matches after save? " + ok + " | len=" + user.getPass().length());
-
-        return ResponseEntity.ok("Change pass successfully");
-    }
 
     @GetMapping("/me")
     public ResponseEntity<?> getMe() {
-        Integer userId = CurrentUser.id();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+        Integer currentUserId = cud.getId();
 
         // principal có thể là "anonymousUser" (String) nếu chưa đăng nhập
-        return ResponseEntity.ok(userRepo.findById(userId));
+        return ResponseEntity.ok(userRepo.findById(currentUserId));
     }
-
 }

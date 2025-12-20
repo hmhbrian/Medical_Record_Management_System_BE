@@ -109,6 +109,11 @@ public class MedicalRecordController {
         return ResponseEntity.ok(recordService.getRecordsByPatientId(patientId));
     }
 
+    @GetMapping("/patient-history/{patientId}")
+    public ResponseEntity<List<MedicalHistoryResponse>> getHistoryByPatient(@PathVariable Integer patientId) {
+        return ResponseEntity.ok(recordService.getPatientMedicalHistory(patientId));
+    }
+
     // Lấy hồ sơ ngoại trú theo bác sĩ
     @GetMapping("/doctor/{doctorId}")
     public ResponseEntity<List<MedicalRecordResponse>> getByDoctor(@PathVariable Integer doctorId) {

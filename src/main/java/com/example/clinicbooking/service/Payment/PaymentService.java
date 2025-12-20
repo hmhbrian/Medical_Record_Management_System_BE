@@ -506,7 +506,7 @@ public class PaymentService {
         }
 
         // 2. Lấy thông tin Cashier đang đăng nhập
-        // QUAN TRỌNG: Lưu thông tin Cashier phụ trách ngay khi tạo QR
+        // Lưu thông tin Cashier phụ trách ngay khi tạo QR
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized - Chỉ Cashier mới được tạo mã QR");

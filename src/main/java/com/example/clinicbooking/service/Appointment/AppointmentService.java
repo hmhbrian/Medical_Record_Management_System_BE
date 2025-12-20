@@ -40,6 +40,8 @@ public class AppointmentService {
     private final StaffRepository StaffRepo;
     private final MedicalRecordRepository medicalRecordRepo;
     private final PaymentRepository paymentRepository;
+    private final ScheduleSlotRepository scheduleSlotRepository;
+    private final UserRepository userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
@@ -275,6 +277,69 @@ public class AppointmentService {
 
         // 5. Trả về Response
         return new ApiResponse<>(true, "Lich hẹn khám bệnh đã được tạo thành công.", null);
+    }
+
+    // Tạo lịch hẹn tái khám cho bệnh nhân
+    @Transactional
+    public ApiResponse<?> createReExamination(ReExaminationRequest request, Integer doctorUserId) {
+        // 1. Kiểm tra tồn tại các thành phần
+        Patient patient = patientRepository.findById(request.getPatientId())
+                .orElseThrow(() -> new InvalidInputException("Bệnh nhân không tồn tại."));
+
+
+        Doctor doctor = doctorRepository.findByUserId(doctorUserId);
+        if (doctor == null) {
+            throw new InvalidInputException("Bác sĩ không tồn tại.");
+        }
+
+        DoctorSchedules schedule = doctorScheduleRepository.findById(request.getDoctorScheduleId())
+                .orElseThrow(() -> new InvalidInputException("Lịch làm việc không tồn tại."));
+
+        ScheduleSlot slot = scheduleSlotRepository.findById(request.getScheduleSlotId())
+                .orElseThrow(() -> new InvalidInputException("Khung giờ không tồn tại."));
+
+        User doctorUser = userRepository.findById(doctorUserId)
+                .orElseThrow(() -> new InvalidInputException("Người dùng (Bác sĩ) không tồn tại."));
+
+        // 2. Kiểm tra tính sẵn sàng của lịch
+        if (schedule.getBookedPatients() >= schedule.getMaxPatients()) {
+            throw new InvalidInputException("Lịch làm việc đã đầy.");
+        }
+
+        if (Boolean.TRUE.equals(slot.getIsBooked())) {
+            throw new InvalidInputException("Khung giờ này đã được đặt.");
+        }
+
+        // 3. Tạo Appointment
+        Appointment appointment = new Appointment();
+        appointment.setPatient(patient);
+        appointment.setDoctor(doctor);
+        appointment.setDoctorSchedule(schedule);
+        appointment.setScheduleSlot(slot);
+        appointment.setPresentTime(LocalDateTime.now());
+        appointment.setVisitType("scheduled"); // Loại tái khám
+
+
+        Appointment savedAppointment = appointmentRepository.save(appointment);
+
+        // 4. Tạo AppointmentStatus đầu tiên (Đã xác nhận - 2)
+        AppointmentStatus status = new AppointmentStatus();
+        status.setAppointment(savedAppointment);
+        status.setStatus(2); // Đã xác nhận
+        status.setReason(request.getReason() != null ? request.getReason() : "Tái khám");
+        status.setUpdateAt(LocalDateTime.now());
+        status.setUpdate_by(doctorUser);
+        appointmentStatusRepository.save(status);
+
+        // 5. Cập nhật số lượng booked trong schedule
+        schedule.setBookedPatients(schedule.getBookedPatients() + 1);
+        doctorScheduleRepository.save(schedule);
+
+        // 6. Cập nhật trạng thái slot
+        slot.setIsBooked(true);
+        scheduleSlotRepository.save(slot);
+
+        return new ApiResponse<>(true, "Hẹn lịch tái khám thành công.", null);
     }
 
     /**
@@ -634,6 +699,8 @@ public class AppointmentService {
                     yield "Doctor";
                 } else if (staff.getStaff_position().getId() == 7) {
                     yield "Receptionist";
+                }  else if (staff.getStaff_position().getId() == 6) {
+                    yield "Cashier";
                 } else {
                     yield "Staff";
                 }

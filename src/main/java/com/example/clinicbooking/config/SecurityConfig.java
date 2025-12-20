@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        // QUAN TRỌNG: SePay webhook endpoint PHẢI public (không authenticate)
+                        // SePay webhook endpoint PHẢI public (không authenticate)
                         // .requestMatchers("/api/payments/sepay-webhook").permitAll()
                         .anyRequest().permitAll())
                 .authenticationProvider(daoAuthenticationProvider())
