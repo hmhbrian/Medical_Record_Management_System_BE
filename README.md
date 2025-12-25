@@ -3,7 +3,6 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)](https://www.mysql.com/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Hệ thống backend quản lý hồ sơ bệnh án và đặt lịch khám bệnh, được xây dựng bằng Spring Boot với kiến trúc RESTful API.
 
@@ -26,12 +25,12 @@ Hệ thống backend quản lý hồ sơ bệnh án và đặt lịch khám bệ
 
 - 🏥 Quản lý lịch hẹn khám bệnh
 - 📋 Quản lý hồ sơ bệnh án điện tử
-- 👨‍⚕️ Quản lý bác sĩ và lịch làm việc
+- 👨‍⚕️ Quản lý nhân viên y tế và lịch làm việc
 - 👤 Quản lý bệnh nhân
 - 🔔 Thông báo đẩy qua Firebase Cloud Messaging
 - 💳 Tích hợp thanh toán SEPAY
-- 🤖 Tích hợp Gemini AI để hỗ trợ phân tích
-- 📄 Xuất hóa đơn PDF với JasperReports
+- 🤖 Tích hợp Gemini AI để hỗ trợ bệnh nhân
+- 📄 Xuất hóa đơn PDF
 
 ## 🛠 Công nghệ sử dụng
 
