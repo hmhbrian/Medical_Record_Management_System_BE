@@ -9,6 +9,7 @@ import java.util.List;
 public class DiagnosisDataResponse {
     // Thông tin cơ bản (Hiển thị)
     private Integer recordId;
+    private Integer patientId;
     private PatientSummary patient;
     private String medicalHistory;
     private String initialSymptoms;

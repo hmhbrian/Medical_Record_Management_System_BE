@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -197,6 +199,7 @@ public class AppointmentController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Check-in lịch hẹn thành công!", appointment));
     }
 
+    // Tạo lịch khám mới cho bệnh nhân đến khám không hẹn trước (walk-in) và check-in
     @PostMapping("/walk-in")
     public ResponseEntity<ApiResponse<?>> CreateWalkInAppointment(@RequestBody WalkInAppointmentRequest request) {
         var auth = SecurityContextHolder.getContext().getAuthentication();
@@ -208,6 +211,18 @@ public class AppointmentController {
         // Tạo lịch khám mới cho bệnh nhân đến khám không hẹn trước (walk-in) và
         // check-in
         return ResponseEntity.ok(appointmentService.createWalkInAppointment(request, currentUserId));
+    }
+
+    @PostMapping("/re-examination")
+    public ResponseEntity<ApiResponse<?>> createReExamination(
+            @RequestBody ReExaminationRequest request) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+        Integer currentUserId = cud.getId();
+
+        return ResponseEntity.ok(appointmentService.createReExamination(request, currentUserId));
     }
 
     // Lấy danh sách lịch hẹn theo trạng thái

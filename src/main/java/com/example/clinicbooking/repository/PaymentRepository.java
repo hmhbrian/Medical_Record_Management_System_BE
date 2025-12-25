@@ -52,10 +52,23 @@ public interface PaymentRepository extends JpaRepository<Payment, Integer>, JpaS
         BigDecimal sumTotalPaymentByAppointmentId(@Param("appointmentId") Integer appointmentId);
 
         @Query("SELECT COALESCE(SUM(p.insuranceCoverage), 0) FROM Payment p " +
-                "WHERE p.record.appointment.id = :appointmentId")
+                        "WHERE p.record.appointment.id = :appointmentId")
         BigDecimal sumInsurancePaymentByAppointmentId(@Param("appointmentId") Integer appointmentId);
 
         @Query("SELECT COALESCE(SUM(p.patientPayment), 0) FROM Payment p " +
-                "WHERE p.record.appointment.id = :appointmentId")
+                        "WHERE p.record.appointment.id = :appointmentId")
         BigDecimal sumPatientPaymentByAppointmentId(@Param("appointmentId") Integer appointmentId);
+
+        // ==================== QR PAYMENT QUERIES ====================
+
+        /**
+         * Tìm Payment theo paymentCode
+         * Được sử dụng bởi SePay webhook để map giao dịch chuyển khoản với phiếu thanh
+         * toán
+         * 
+         * @param paymentCode Mã thanh toán duy nhất (ví dụ: "PAY00123",
+         *                    "HD20231210001")
+         * @return Payment entity hoặc null nếu không tìm thấy
+         */
+        Payment findByPaymentCode(String paymentCode);
 }

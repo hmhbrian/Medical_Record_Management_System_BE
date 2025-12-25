@@ -52,9 +52,13 @@ public class PaymentService {
     private final UserRepository userRepo;
     private final AppointmentStatusRepository appointmentStatusRepo;
 
+    // ===== THÊM MỚI: Configuration cho SePay/VietQR =====
+    private final com.example.clinicbooking.config.SepayConfig sepayConfig;
+
     /**
      * logic tạo/cập nhật Payment và PaymentDetail.
-     * @param record Hồ sơ bệnh án
+     * 
+     * @param record       Hồ sơ bệnh án
      * @param serviceItems Danh sách dịch vụ cần thanh toán
      * @return Payment Entity đã được lưu/cập nhật
      */
@@ -81,7 +85,6 @@ public class PaymentService {
         // Cần tổng hợp lại tổng tiền BHYT và BN trả cho Payment chính
         BigDecimal totalInsuranceCovered = BigDecimal.ZERO;
         BigDecimal totalPatientOwed = BigDecimal.ZERO;
-
 
         for (ServiceDetail item : serviceItems) {
             BigDecimal servicePrice = BigDecimal.valueOf(item.price());
@@ -164,8 +167,7 @@ public class PaymentService {
                 paymentsPage.getSize(),
                 paymentsPage.getTotalElements(),
                 paymentsPage.getTotalPages(),
-                responsePayment
-        );
+                responsePayment);
     }
 
     // Chuyển đổi Payment entity sang PaymentResponse DTO
@@ -186,7 +188,7 @@ public class PaymentService {
         return dto;
     }
 
-    //Lấy chi tiết của một phiếu thanh toán theo ID.
+    // Lấy chi tiết của một phiếu thanh toán theo ID.
     public PaymentDetailResponse getPaymentDetails(Integer paymentId) {
         // 1. Lấy thông tin Payment và MedicalRecord/Patient
         Payment payment = paymentRepo.findById(paymentId)
@@ -195,7 +197,6 @@ public class PaymentService {
         User patientUser = payment.getRecord().getPatient().getUser();
         String patientName = patientUser.getFullname();
         Integer recordId = payment.getRecord().getId();
-
 
         // 2. Lấy danh sách chi tiết PaymentDetails
         List<PaymentDetail> details = paymentDetailRepo.findAllByPayment(payment);
@@ -225,7 +226,7 @@ public class PaymentService {
         return response;
     }
 
-    //Hàm mapping một PaymentDetail Entity sang PaymentDetailResponse DTO
+    // Hàm mapping một PaymentDetail Entity sang PaymentDetailResponse DTO
     private ItemPaymentDetail mapToPaymentDetailResponse(PaymentDetail detail) {
         ItemPaymentDetail dto = new ItemPaymentDetail();
         dto.setItemId(detail.getId());
@@ -242,7 +243,7 @@ public class PaymentService {
     @Transactional
     public Payment processPayment(Integer paymentId, PaymentProcessRequest request) {
 
-        //0.Lấy id cashier từ user đang đăng nhập
+        // 0.Lấy id cashier từ user đang đăng nhập
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
             throw new AccessDeniedException("Unauthorized");
@@ -265,9 +266,10 @@ public class PaymentService {
         BigDecimal patientDue = payment.getPatientPayment(); // Số tiền bệnh nhân nợ (đã tính BHYT)
         BigDecimal actualPaid = request.getActualPaidAmount().setScale(0, RoundingMode.HALF_UP); // Làm tròn (VND)
 
-        // Hiện tại chỉ xử lý ngoại trú, thường phải trả đủ
+        // kiểm tra số tiền thanh toán
         if (actualPaid.compareTo(patientDue) < 0) {
-            throw new InvalidInputException("Số tiền thanh toán không đủ. Bệnh nhân còn nợ: " + patientDue.subtract(actualPaid));
+            throw new InvalidInputException(
+                    "Số tiền thanh toán không đủ. Bệnh nhân còn nợ: " + patientDue.subtract(actualPaid));
         }
 
         // 4. Cập nhật Payment
@@ -287,46 +289,47 @@ public class PaymentService {
 
         Payment updatedPayment = paymentRepo.save(payment);
 
-        //Khởi tạo cờ để kiểm tra nhu cầu chờ kết quả
+        // Khởi tạo cờ để kiểm tra nhu cầu chờ kết quả
         boolean requiresPendingResults = false;
         List<PaymentDetail> paymentDetail = paymentDetailRepo.findAllByPayment(payment);
 
-        //CẬP NHẬT TRẠNG THÁI DỊCH VỤ
+        // CẬP NHẬT TRẠNG THÁI DỊCH VỤ
         for (PaymentDetail detail : paymentDetail) {
             String serviceType = detail.getServiceType();
             Integer serviceId = detail.getServiceId();
 
-            if(ServiceType.IMAGING_TEST.name().equals(serviceType)) {
+            if (ServiceType.IMAGING_TEST.name().equals(serviceType)) {
                 ImagingTests imagingTests = imagingTestsRepo.findById(serviceId)
-                        .orElseThrow(() -> new InvalidInputException("Dịch vụ hình ảnh không tồn tại với id: " + detail.getServiceId()));
+                        .orElseThrow(() -> new InvalidInputException(
+                                "Dịch vụ hình ảnh không tồn tại với id: " + detail.getServiceId()));
                 imagingTests.setStatus(ServiceStatus.PAID);
                 imagingTestsRepo.save(imagingTests);
                 // Đặt cờ: Hồ sơ này cần chờ kết quả
                 requiresPendingResults = true;
-            }
-            else if(ServiceType.LAB_TEST.name().equals(serviceType)) {
+            } else if (ServiceType.LAB_TEST.name().equals(serviceType)) {
                 LabTests labTests = labTestRepo.findById(detail.getServiceId())
-                        .orElseThrow(() -> new InvalidInputException("Dịch vụ xét nghiệm không tồn tại với id: " + detail.getServiceId()));
+                        .orElseThrow(() -> new InvalidInputException(
+                                "Dịch vụ xét nghiệm không tồn tại với id: " + detail.getServiceId()));
                 labTests.setStatus(ServiceStatus.PAID);
                 labTestRepo.save(labTests);
                 // Đặt cờ: Hồ sơ này cần chờ kết quả
                 requiresPendingResults = true;
-            }
-            else if(ServiceType.EXAMINATION.name().equals(serviceType)) {
+            } else if (ServiceType.EXAMINATION.name().equals(serviceType)) {
                 ResultExamination resultExamination = resultExaminationRepo.findById(detail.getServiceId())
-                        .orElseThrow(() -> new InvalidInputException("Dịch vụ khám bệnh không tồn tại với id: " + detail.getServiceId()));
+                        .orElseThrow(() -> new InvalidInputException(
+                                "Dịch vụ khám bệnh không tồn tại với id: " + detail.getServiceId()));
                 resultExamination.setStatus(ServiceStatus.PAID);
                 resultExaminationRepo.save(resultExamination);
-            }
-            else if(ServiceType.PRESCRIPTION.name().equals(serviceType)) {
+            } else if (ServiceType.PRESCRIPTION.name().equals(serviceType)) {
                 Prescriptions prescriptions = prescriptionRepo.findById(detail.getServiceId())
-                        .orElseThrow(() -> new InvalidInputException("Không có đơn thuốc tồn tại với id: " + detail.getServiceId()));
+                        .orElseThrow(() -> new InvalidInputException(
+                                "Không có đơn thuốc tồn tại với id: " + detail.getServiceId()));
                 prescriptions.setStatus(PrescriptionStatus.PAID);
                 prescriptionRepo.save(prescriptions);
             }
         }
 
-        //CẬP NHẬT TRẠNG THÁI HỒ SƠ CUỐI CÙNG
+        // CẬP NHẬT TRẠNG THÁI HỒ SƠ CUỐI CÙNG
         MedicalRecord record = payment.getRecord();
 
         if (requiresPendingResults) {
@@ -338,7 +341,7 @@ public class PaymentService {
 
             // Cập nhật trạng thái cuộc hẹn sau khi hoàn thành đơn thuốc(hoàn tất khám)
             Appointment appointment = record.getAppointment();
-            if(appointment != null){
+            if (appointment != null) {
                 User cudUser = userRepo.findById(cud.getId())
                         .orElseThrow(() -> new InvalidInputException("User not found with ID: " + cud.getId()));
                 AppointmentStatus appointmentStatus = new AppointmentStatus();
@@ -354,7 +357,6 @@ public class PaymentService {
 
         return updatedPayment;
     }
-
 
     // Hàm tạo Báo cáo Hóa đơn dưới dạng PDF (JasperReports)
     public byte[] generateInvoiceReport(Integer paymentId) throws JRException {
@@ -392,7 +394,8 @@ public class PaymentService {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("P_INVOICE_NUMBER", payment.getInvoiceNumber()); // Mã hóa đơn đã cấp
         parameters.put("P_PATIENT_NAME", payment.getRecord().getPatient().getUser().getFullname());
-        parameters.put("P_PAYMENT_DATE", payment.getPaymentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+        parameters.put("P_PAYMENT_DATE",
+                payment.getPaymentDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
 
         // Dữ liệu Tổng kết
         parameters.put("P_TOTAL_AMOUNT", payment.getTotalAmount());
@@ -406,7 +409,8 @@ public class PaymentService {
     // Hàm thực hiện việc Biên dịch và Xuất PDF
     private byte[] generateReport(List<ItemPaymentDetail> details, Map<String, Object> parameters) throws JRException {
         // 1. Load và Biên dịch Template
-        InputStream templateStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("reports/invoice_template.jrxml");
+        InputStream templateStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("reports/invoice_template.jrxml");
         if (templateStream == null) {
             // Ném ngoại lệ rõ ràng nếu không tìm thấy template
             throw new InvalidInputException("Invoice Template file not found in resources/reports/");
@@ -440,10 +444,12 @@ public class PaymentService {
                     invoiceDto.setPatientPaid(payment.getPatientPayment());
                     invoiceDto.setInsuranceCoverage(payment.getInsuranceCoverage());
                     invoiceDto.setPaymentDate(payment.getPaymentDate());
-                    if(payment.getCashier() != null && payment.getCashier().getStaff().getUser().getFullname() != null){
-                        invoiceDto.setCashierName(payment.getCashier().getStaff().getUser().getFullname()); // Lấy tên thu ngân
+                    if (payment.getCashier() != null
+                            && payment.getCashier().getStaff().getUser().getFullname() != null) {
+                        invoiceDto.setCashierName(payment.getCashier().getStaff().getUser().getFullname()); // Lấy tên
+                                                                                                            // thu ngân
                         invoiceDto.setCashierCode(payment.getCashier().getCashierCode());
-                    }else {
+                    } else {
                         invoiceDto.setCashierName("Chưa phân công");
                     }
 
@@ -465,5 +471,257 @@ public class PaymentService {
                 })
                 .collect(Collectors.toList());
     }
-}
 
+    // ============================================
+    // QR CODE PAYMENT VỚI VIETQR/SEPAY
+    // ============================================
+
+    /**
+     * Tạo mã QR VietQR cho thanh toán chuyển khoản
+     * 
+     * CÁCH HOẠT ĐỘNG:
+     * 1. Lấy thông tin Cashier đang đăng nhập
+     * 2. Gán Cashier vào Payment (lưu thông tin người phụ trách)
+     * 3. Lấy thông tin Payment từ database
+     * 4. Tạo URL QR Code sử dụng VietQR API (https://vietqr.io)
+     * 5. Trả về thông tin QR cho frontend hiển thị
+     * 
+     * LƯU Ý QUAN TRỌNG:
+     * - Cashier sẽ được GÁN VÀO PAYMENT ngay khi tạo QR
+     * - Khi webhook callback, Payment đã có sẵn thông tin Cashier phụ trách
+     * 
+     * VietQR API Format:
+     * https://img.vietqr.io/image/{BANK_CODE}-{ACCOUNT_NUMBER}-{TEMPLATE}.png?amount={AMOUNT}&addInfo={CONTENT}
+     * 
+     * @param paymentId ID của phiếu thanh toán
+     * @return QrCodeResponse chứa URL QR và thông tin ngân hàng
+     * @throws InvalidInputException nếu payment không tồn tại hoặc đã thanh toán
+     */
+    public QrCodeResponse generateQrCode(Integer paymentId) {
+        // 1. Kiểm tra xem có cấu hình SePay chưa
+        if (!sepayConfig.isConfigured()) {
+            throw new InvalidInputException(
+                    "Chưa cấu hình SePay. Vui lòng thêm thông tin vào application.properties: " +
+                            "sepay.api.key, sepay.account.number, sepay.bank.code");
+        }
+
+        // 2. Lấy thông tin Cashier đang đăng nhập
+        // Lưu thông tin Cashier phụ trách ngay khi tạo QR
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!(auth.getPrincipal() instanceof CustomUserDetails cud)) {
+            throw new AccessDeniedException("Unauthorized - Chỉ Cashier mới được tạo mã QR");
+        }
+
+        // Lấy thông tin Cashier từ userId
+        Integer cashierId = cashierRepo.findIdByUserId(cud.getId());
+        Cashier cashier = cashierRepo.findById(cashierId)
+                .orElseThrow(() -> new InvalidInputException("Nhân viên thu ngân không tồn tại."));
+
+        // 3. Lấy thông tin Payment
+        Payment payment = paymentRepo.findById(paymentId)
+                .orElseThrow(() -> new InvalidInputException("Phiếu thanh toán không tồn tại với ID: " + paymentId));
+
+        // 4. Kiểm tra trạng thái Payment (chỉ cho phép tạo QR với PENDING_PAYMENT)
+        if (!PaymentStatus.PENDING_PAYMENT.equals(payment.getStatus())) {
+            throw new InvalidInputException("Phiếu thanh toán này đã được xử lý hoặc đã hủy.");
+        }
+
+        // 5. GÁN CASHIER VÀO PAYMENT (lưu thông tin người phụ trách)
+        // Khi webhook callback, Payment sẽ có sẵn thông tin Cashier
+        payment.setCashier(cashier);
+        paymentRepo.save(payment);
+
+        System.out.println("=== QR CODE GENERATED ===");
+        System.out.println("Payment: " + payment.getPaymentCode());
+        System.out.println("Cashier: " + cashier.getStaff().getUser().getFullname());
+
+        // 6. Lấy số tiền bệnh nhân cần trả (sau khi trừ BHYT)
+        BigDecimal amount = payment.getPatientPayment();
+
+        // 7. Tạo nội dung chuyển khoản (transaction content)
+        // Format: Sử dụng paymentCode hoặc tạo mã duy nhất
+        // VÍ DỤ: "PAY00123" hoặc "HD20231210001"
+        String transactionContent = payment.getPaymentCode() != null
+                ? payment.getPaymentCode()
+                : "PAY" + String.format("%05d", paymentId);
+
+        // 8. Tạo URL QR Code sử dụng VietQR API
+        // Template options: "compact" (nhỏ gọn), "compact2", "print" (in ấn)
+        String template = "compact2";
+        String qrUrl = String.format(
+                "https://img.vietqr.io/image/%s-%s-%s.png?amount=%s&addInfo=%s&accountName=%s",
+                sepayConfig.getBankCode(),
+                sepayConfig.getAccountNumber(),
+                template,
+                amount.longValue(), // VietQR API chỉ nhận số nguyên (VND không có phần thập phân)
+                transactionContent,
+                sepayConfig.getAccountName());
+
+        // 9. Tạo Response DTO
+        QrCodeResponse response = new QrCodeResponse();
+        response.setQrDataUrl(qrUrl);
+        response.setAmount(amount);
+        response.setTransactionContent(transactionContent);
+        response.setBankCode(sepayConfig.getBankCode());
+        response.setBankName(sepayConfig.getBankName());
+        response.setAccountNumber(sepayConfig.getAccountNumber());
+        response.setAccountName(sepayConfig.getAccountName());
+
+        return response;
+    }
+
+    /**
+     * Xử lý webhook callback từ SePay khi có giao dịch chuyển khoản
+     * 
+     * FLOW:
+     * 1. Bệnh nhân quét QR và chuyển khoản
+     * 2. SePay nhận thông báo từ ngân hàng
+     * 3. SePay gửi POST request tới endpoint này
+     * 4. Parse nội dung chuyển khoản để lấy paymentCode
+     * 5. Tìm Payment tương ứng
+     * 6. Cập nhật status = PAID
+     * 7. Cập nhật trạng thái hồ sơ và dịch vụ (giống logic processPayment)
+     * 
+     * LƯU Ý:
+     * - Endpoint này phải public (không cần authentication)
+     * - Nên verify signature từ SePay (nếu có) để tránh fake webhook
+     * - Xử lý idempotent (tránh xử lý trùng lặp nếu SePay gửi nhiều lần)
+     * 
+     * @param request Data từ SePay webhook
+     * @return true nếu xử lý thành công
+     * @throws InvalidInputException nếu data không hợp lệ
+     */
+    @Transactional
+    public boolean handleSepayWebhook(SepayWebhookRequest request) {
+        try {
+            // 1. Log thông tin webhook để debug (nên dùng logger thay vì sysout trong
+            // production)
+            System.out.println("=== SEPAY WEBHOOK RECEIVED ===");
+            System.out.println("Reference Code: " + request.getReferenceCode());
+            System.out.println("Content: " + request.getContent());
+            System.out.println("Amount: " + request.getTransferAmount());
+            System.out.println("Type: " + request.getTransferType());
+
+            // 2. Chỉ xử lý giao dịch TIỀN VÀO (transferType = "in")
+            // Lưu ý: SePay dùng lowercase "in", không phải "IN"
+            if (!"in".equalsIgnoreCase(request.getTransferType())) {
+                System.out.println("Bỏ qua giao dịch type = " + request.getTransferType());
+                return false;
+            }
+
+            // 3. Parse nội dung chuyển khoản để lấy paymentCode
+            // Ví dụ content: "PAY11- Ma GD ACSP/ 8H081982"
+            // Lấy phần trước dấu gạch ngang hoặc dấu cách đầu tiên
+            String content = request.getContent();
+            if (content == null || content.trim().isEmpty()) {
+                System.out.println("ERROR: Nội dung chuyển khoản rỗng");
+                return false;
+            }
+
+            // FIXED: Split bởi dấu - hoặc space, lấy phần đầu tiên
+            // "PAY11- Ma GD ACSP" → ["PAY11", " Ma GD ACSP"] → "PAY11"
+            String paymentCode = content.trim().split("[-\\s]")[0].trim();
+            System.out.println("Parsed paymentCode: " + paymentCode);
+
+            // 4. Tìm Payment theo paymentCode
+            Payment payment = paymentRepo.findByPaymentCode(paymentCode);
+            if (payment == null) {
+                System.out.println("ERROR: Không tìm thấy Payment với code: " + paymentCode);
+                return false;
+            }
+
+            // 5. Kiểm tra trạng thái Payment (tránh xử lý trùng)
+            if (payment.getStatus() == PaymentStatus.PAID) {
+                System.out.println("WARNING: Payment đã được thanh toán trước đó, bỏ qua.");
+                return true; // Trả về true vì đã xử lý rồi (idempotent)
+            }
+
+            if (payment.getStatus() != PaymentStatus.PENDING_PAYMENT) {
+                System.out.println("ERROR: Payment status không hợp lệ: " + payment.getStatus());
+                return false;
+            }
+
+            // 6. Kiểm tra số tiền (optional - có thể bỏ qua nếu tin tưởng SePay)
+            BigDecimal expectedAmount = payment.getPatientPayment();
+            BigDecimal receivedAmount = BigDecimal.valueOf(request.getTransferAmount());
+
+            if (receivedAmount.compareTo(expectedAmount) < 0) {
+                System.out.println("WARNING: Số tiền chuyển khoản ít hơn số tiền cần thanh toán");
+                System.out.println("Expected: " + expectedAmount + ", Received: " + receivedAmount);
+                // Optional: Có thể từ chối hoặc vẫn chấp nhận tùy business logic
+            }
+
+            // 7. Cập nhật Payment (tương tự processPayment)
+            payment.setPaymentMethod("TRANSFER"); // Đánh dấu là chuyển khoản
+            payment.setActualPaidAmount(receivedAmount);
+            payment.setPaymentDate(LocalDateTime.now());
+            payment.setStatus(PaymentStatus.PAID);
+            payment.setNotes("Thanh toán qua QR - Reference: " + request.getReferenceCode());
+
+            paymentRepo.save(payment);
+
+            // 8. Cập nhật trạng thái dịch vụ (copy logic từ processPayment)
+            boolean requiresPendingResults = false;
+            List<PaymentDetail> paymentDetails = paymentDetailRepo.findAllByPayment(payment);
+
+            for (PaymentDetail detail : paymentDetails) {
+                String serviceType = detail.getServiceType();
+                Integer serviceId = detail.getServiceId();
+
+                if (ServiceType.IMAGING_TEST.name().equals(serviceType)) {
+                    ImagingTests imagingTests = imagingTestsRepo.findById(serviceId)
+                            .orElseThrow(() -> new InvalidInputException("Dịch vụ hình ảnh không tồn tại"));
+                    imagingTests.setStatus(ServiceStatus.PAID);
+                    imagingTestsRepo.save(imagingTests);
+                    requiresPendingResults = true;
+                } else if (ServiceType.LAB_TEST.name().equals(serviceType)) {
+                    LabTests labTests = labTestRepo.findById(serviceId)
+                            .orElseThrow(() -> new InvalidInputException("Dịch vụ xét nghiệm không tồn tại"));
+                    labTests.setStatus(ServiceStatus.PAID);
+                    labTestRepo.save(labTests);
+                    requiresPendingResults = true;
+                } else if (ServiceType.EXAMINATION.name().equals(serviceType)) {
+                    ResultExamination resultExamination = resultExaminationRepo.findById(serviceId)
+                            .orElseThrow(() -> new InvalidInputException("Dịch vụ khám bệnh không tồn tại"));
+                    resultExamination.setStatus(ServiceStatus.PAID);
+                    resultExaminationRepo.save(resultExamination);
+                } else if (ServiceType.PRESCRIPTION.name().equals(serviceType)) {
+                    Prescriptions prescriptions = prescriptionRepo.findById(serviceId)
+                            .orElseThrow(() -> new InvalidInputException("Đơn thuốc không tồn tại"));
+                    prescriptions.setStatus(PrescriptionStatus.PAID);
+                    prescriptionRepo.save(prescriptions);
+                }
+            }
+
+            // 9. Cập nhật trạng thái hồ sơ
+            MedicalRecord record = payment.getRecord();
+            if (requiresPendingResults) {
+                record.setStatus(MedicalRecordStatus.PENDING_RESULTS);
+            } else {
+                record.setStatus(MedicalRecordStatus.COMPLETED);
+
+                // Cập nhật trạng thái cuộc hẹn (nếu có)
+                Appointment appointment = record.getAppointment();
+                if (appointment != null) {
+                    // Lưu ý: Webhook không có user context, dùng system user hoặc bỏ qua update_by
+                    AppointmentStatus appointmentStatus = new AppointmentStatus();
+                    appointmentStatus.setStatus(5); // Đã hoàn thành
+                    appointmentStatus.setAppointment(appointment);
+                    appointmentStatus.setUpdateAt(LocalDateTime.now());
+                    // update_by có thể null hoặc tạo system user
+                    appointmentStatusRepo.save(appointmentStatus);
+                }
+            }
+            medicalRecordRepos.save(record);
+
+            System.out.println("=== SUCCESS: Payment " + paymentCode + " đã được cập nhật ===");
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("ERROR xử lý SePay webhook: " + e.getMessage());
+            e.printStackTrace();
+            // Không throw exception để tránh SePay retry liên tục
+            return false;
+        }
+    }
+}

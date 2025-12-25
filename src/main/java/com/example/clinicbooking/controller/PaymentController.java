@@ -6,6 +6,8 @@ import com.example.clinicbooking.DTO.Payment.DetailForCashier.PaymentDetailRespo
 import com.example.clinicbooking.DTO.Payment.PaymentProcessRequest;
 import com.example.clinicbooking.DTO.Payment.PaymentResponse;
 import com.example.clinicbooking.DTO.Payment.PaymentSearchRequest;
+import com.example.clinicbooking.DTO.Payment.QrCodeResponse;
+import com.example.clinicbooking.DTO.Payment.SepayWebhookRequest;
 import com.example.clinicbooking.entity.Payment;
 import com.example.clinicbooking.exceptions.InvalidInputException;
 import com.example.clinicbooking.service.Payment.PaymentService;
@@ -56,7 +58,7 @@ public class PaymentController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Lấy danh sách chi tiết thanh toán thành công!", response));
     }
 
-    // API để thực hiện thanh toán cho một phiếu nợ.
+    // API để thực hiện thanh toán cho một hóa đơn.
     @PostMapping("/{paymentId}/pay")
     public ResponseEntity<ApiResponse<?>> processPayment(
             @PathVariable Integer paymentId,
@@ -86,6 +88,65 @@ public class PaymentController {
         } catch (JRException | InvalidInputException e) {
             // Xử lý lỗi và trả về thông báo phù hợp
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage().getBytes());
+        }
+    }
+
+    // ============================================
+    // PHẦN MỚI: QR CODE PAYMENT ENDPOINTS
+    // ============================================
+
+    /**
+     * API lấy mã QR cho thanh toán chuyển khoản
+     * 
+     * FLOW:
+     * 1. Frontend (Cashier) gọi API này khi chọn phương thức "Chuyển khoản"
+     * 2. Backend tạo QR Code URL từ VietQR API
+     * 3. Frontend hiển thị QR trong modal
+     * 4. Bệnh nhân quét QR bằng app ngân hàng
+     * 
+     * @param paymentId ID phiếu thanh toán
+     * @return QrCodeResponse chứa URL QR và thông tin ngân hàng
+     */
+    @GetMapping("/{paymentId}/qr-code")
+    public ResponseEntity<ApiResponse<QrCodeResponse>> getPaymentQrCode(@PathVariable Integer paymentId) {
+        try {
+            QrCodeResponse qrCode = paymentService.generateQrCode(paymentId);
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Tạo mã QR thành công!", qrCode));
+        } catch (InvalidInputException e) {
+            return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(false, e.getMessage(), null));
+        }
+    }
+
+    /**
+     * Webhook endpoint nhận callback từ SePay khi có giao dịch chuyển khoản
+     * 
+     * FLOW:
+     * 1. Bệnh nhân quét QR và chuyển khoản
+     * 2. SePay nhận thông báo từ ngân hàng
+     * 3. SePay gửi POST request tới đây
+     * 4. Backend parse paymentCode từ nội dung chuyển khoản
+     * 5. Cập nhật Payment status = PAID
+     * 6. Trả về 200 OK cho SePay
+     *
+     * @return ResponseEntity với status 200 nếu thành công
+     */
+    @PostMapping("/sepay-webhook")
+    public ResponseEntity<String> handleSepayWebhook(@RequestBody SepayWebhookRequest request) {
+        try {
+            // Gọi service để xử lý webhook
+            boolean success = paymentService.handleSepayWebhook(request);
+
+            if (success) {
+                return ResponseEntity.ok("Webhook processed successfully");
+            } else {
+                return ResponseEntity.ok("Webhook received but not processed");
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR in webhook: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.ok("Webhook error");
         }
     }
 }
